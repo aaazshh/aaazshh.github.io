@@ -15,8 +15,10 @@ async function start() {
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.96;
   renderer.setClearColor(0xe8e5df, 0);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.VSMShadowMap;
 
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-0.3, 0.3, 0.215, -0.215, 0.01, 10);
@@ -27,15 +29,22 @@ async function start() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const lighting = pmrem.fromScene(environment, 0.04);
   scene.environment = lighting.texture;
-  scene.environmentIntensity = 0.38;
+  scene.environmentIntensity = 0.3;
   environment.dispose();
   pmrem.dispose();
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x514839, 0.65));
-  const key = new THREE.DirectionalLight(0xffead9, 2.2);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x514839, 0.4));
+  const key = new THREE.DirectionalLight(0xfff3e8, 2.4);
   key.position.set(-0.5, 0.55, 0.8);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -0.32, right: 0.32, top: 0.28, bottom: -0.38, near: 0.1, far: 2 });
+  key.shadow.bias = -0.0003;
+  key.shadow.normalBias = 0.001;
+  key.shadow.radius = 4;
+  key.shadow.blurSamples = 8;
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xe8efff, 0.75);
+  const fill = new THREE.DirectionalLight(0xe8efff, 0.5);
   fill.position.set(0.6, 0.15, 0.6);
   scene.add(fill);
   const rim = new THREE.DirectionalLight(0xffefd9, 1.3);
@@ -56,10 +65,12 @@ async function start() {
   gltf.scene.traverse(object => {
     if (!object.isMesh) return;
     object.frustumCulled = false;
+    object.castShadow = true;
+    object.receiveShadow = object.name !== 'Hair';
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
       if (material.map) material.map.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-      // Cutouts retain depth testing, so hair and corneas occlude correctly.
+      // Cutouts write depth so individual hair cards occlude correctly.
       if (['BlackHair', 'Brows', 'Lashes'].includes(material.name)) {
         material.transparent = false;
         material.alphaTest = 0.25;
@@ -67,8 +78,8 @@ async function start() {
         material.depthWrite = true;
         material.needsUpdate = true;
       }
-      if (material.name === 'BrownEyes') {
-        material.transparent = true;
+      if (material.name === 'BrownEyesClean') {
+        material.transparent = false;
         material.side = THREE.FrontSide;
         material.depthWrite = true;
         material.needsUpdate = true;

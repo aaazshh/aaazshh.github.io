@@ -3,138 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maram</title>
+  <title>Maram Aashna</title>
   <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-inner">
-      <a href="#" class="logo">Maram</a>
-      <nav>
-        <a href="#work">Work</a>
-        <a href="#about">About</a>
-        <a href="https://github.com/aaazshh" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-    </div>
+  <header class="hero">
+    <canvas id="face" aria-hidden="true"></canvas>
+    <h1></h1>
   </header>
 
   <main>
-    <section class="hero">
-      <p class="eyebrow">IT Development Intern, now Temporary Staff</p>
-      <h1>I build the internal systems that keep operations running.</h1>
-      <p class="lede">
-        Five months in, working across PHP/Laravel backends, Flutter mobile apps,
-        and the plumbing between them, at a retail and logistics company.
-      </p>
-    </section>
-
-    <section id="work" class="work">
-      <h2>Work</h2>
-
-      <article class="project project--featured">
-        <div class="project-text">
-          <h3>Logistics platform</h3>
-          <p>
-            A multi-company logistics system built from scratch in plain PHP 7.4,
-            vanilla JS, and MySQL, no framework. Admins manage fleets and drag-and-drop
-            vehicle assignments across companies, drivers get routes on a Leaflet map
-            with OSRM-based route optimisation, and a public tracking page lets
-            customers follow a delivery without logging in. Bulk order intake happens
-            through an Excel import pipeline (Prime Online orders) that geocodes
-            addresses and assigns trucks automatically.
-          </p>
-          <ul class="stack">
-            <li>PHP 7.4</li><li>MySQL</li><li>Vanilla JS</li>
-            <li>Leaflet.js</li><li>OSRM</li><li>Chart.js</li>
-          </ul>
-        </div>
-      </article>
-
-      <div class="grid">
-        <article class="project">
-          <h3>Logistics, mobile</h3>
-          <p>
-            The driver-facing side of the logistics platform. Built in Flutter,
-            it pulls active routes from the PHP backend over a bearer-token REST
-            API, renders turn-by-turn stops with flutter_map, and reports GPS
-            position back so admins can watch deliveries move in real time.
-          </p>
-          <ul class="stack"><li>Flutter</li><li>flutter_map</li><li>REST API</li></ul>
-        </article>
-
-        <article class="project">
-          <h3>Fish farm operations portal</h3>
-          <p>
-            A daily-operations tool for fish farm staff to log harvests, feed and
-            medicine inventory, environment surveys, net changes and repairs, and
-            incidents, replacing what used to be paper logs. Role-based access
-            for admins vs. staff, built on a shared internal auth pattern used
-            across the company's other portals.
-          </p>
-          <ul class="stack"><li>PHP</li><li>MySQL</li><li>Bootstrap 5</li></ul>
-        </article>
-
-        <article class="project">
-          <h3>Fish farm, mobile</h3>
-          <p>
-            Flutter companion app so farm staff can log the same operational data
-            from the field instead of walking back to a desktop.
-          </p>
-          <ul class="stack"><li>Flutter</li></ul>
-        </article>
-
-        <article class="project">
-          <h3>IAM / SSO service</h3>
-          <p>
-            The identity layer other internal portals plug into: single sign-on,
-            role and department mapping, and per-portal access control, so
-            logging into one company system logs you into the rest without
-            re-authenticating.
-          </p>
-          <ul class="stack"><li>PHP</li><li>MySQL</li><li>SSO</li></ul>
-        </article>
-
-        <article class="project">
-          <h3>Analytics tooling</h3>
-          <p>
-            Report generation and data automation: Elasticsearch-backed indexing
-            for fast lookups, PHPSpreadsheet for Excel exports like ABC analysis
-            and vendor commission reports, and headless-browser scraping with
-            Puppeteer for data sources without an API.
-          </p>
-          <ul class="stack"><li>PHP</li><li>Elasticsearch</li><li>Node.js</li><li>Puppeteer</li></ul>
-        </article>
-
-        <article class="project">
-          <h3>HQ platform, web &amp; mobile</h3>
-          <p>
-            The company's internal HQ admin system, a Laravel app on the backend
-            with a Tailwind/Vite front end, paired with a Flutter mobile app for
-            the same workflows on the go.
-          </p>
-          <ul class="stack"><li>Laravel</li><li>Tailwind CSS</li><li>Flutter</li></ul>
-        </article>
-      </div>
-    </section>
-
-    <section id="about" class="about">
+    <section id="about">
       <h2>About</h2>
       <p>
-        I started as an IT Development Intern and, five months in, moved into a
-        temporary staff role on the same team. Most of what I've built sits
-        underneath the surface: internal admin tools, mobile companions to those
-        tools, and the shared services (auth, tracking, reporting) that tie
-        separate systems together. I like the parts of a project other people
-        don't see, the schema, the API contract, the thing that makes three
-        different apps agree on who's logged in.
+        I build internal systems: admin portals, the mobile apps that go with them,
+        and the auth, tracking and reporting services that tie them together.
+        Mostly PHP, Laravel, Flutter and MySQL.
       </p>
+    </section>
+
+    <section id="experience">
+      <h2>Experience</h2>
+      <article>
+        <h3>Prime Supermarket</h3>
+        <p>Six months. Built and shipped the systems below.</p>
+        <ul>
+          <li>Logistics platform, web: multi-company fleet management in plain PHP 7.4, MySQL and vanilla JS. Leaflet map with OSRM route optimisation, public delivery tracking page, Excel order import that geocodes addresses and assigns trucks.</li>
+          <li>Logistics, mobile: Flutter driver app pulling routes over a bearer-token REST API, turn-by-turn stops in flutter_map, live GPS reporting back to admins.</li>
+          <li>Fish farm operations portal, web and mobile: harvest, feed, medicine inventory, environment surveys, net repairs and incident logging. Replaced paper logs. PHP, MySQL, Bootstrap 5, Flutter companion app.</li>
+          <li>IAM / SSO service: single sign-on, role and department mapping, per-portal access control shared across the company's internal systems.</li>
+          <li>Analytics tooling: Elasticsearch indexing, PHPSpreadsheet exports (ABC analysis, vendor commission reports), Puppeteer scraping for sources without an API.</li>
+          <li>HQ platform: Laravel backend with Tailwind and Vite front end, plus a Flutter mobile app for the same workflows.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p><a href="https://github.com/aaazshh" target="_blank" rel="noopener">github.com/aaazshh</a></p>
     </section>
   </main>
 
-  <footer>
-    <p>Built by hand. <a href="https://github.com/aaazshh" target="_blank" rel="noopener">github.com/aaazshh</a></p>
-  </footer>
-
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,169 +1,33 @@
-:root {
-  --bg: #14130f;
-  --surface: #1c1b16;
-  --border: #34322a;
-  --text: #ece7db;
-  --muted: #a49d8b;
-  --accent: #d98e3f;
-}
+/* Stripped. Only what the 3D hero needs to work. Real styling comes later. */
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
-  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.65;
+  font-family: system-ui, sans-serif;
 }
 
-h1, h2, h3 {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+.hero {
+  position: relative;
+  height: 100vh;
 }
 
-a { color: var(--accent); }
-
-.nav {
-  border-bottom: 1px solid var(--border);
-}
-
-.nav-inner {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.logo {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 700;
-  color: var(--text);
-  text-decoration: none;
-}
-
-.nav nav a {
-  margin-left: 1.5rem;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-.nav nav a:hover { color: var(--accent); }
-
-main { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; }
-
-.hero { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
-
-.eyebrow {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin: 0 0 0.75rem;
+.hero canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .hero h1 {
-  font-size: 2rem;
-  margin: 0 0 1rem;
-  max-width: 20ch;
-}
-
-.hero .lede {
-  color: var(--muted);
-  max-width: 55ch;
-  font-size: 1.05rem;
-}
-
-.work { padding: 3rem 0; }
-
-.work h2, .about h2 {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  margin: 0 0 1.5rem;
-}
-
-.project {
-  border-top: 1px solid var(--border);
-  padding: 1.75rem 0;
-}
-
-.project--featured {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.project h3 {
-  font-size: 1.15rem;
-  margin: 0 0 0.6rem;
-  color: var(--text);
-}
-
-.project--featured h3 {
-  font-size: 1.35rem;
-}
-
-.project p {
-  color: var(--muted);
-  font-size: 0.95rem;
-  margin: 0 0 0.9rem;
-}
-
-.stack {
-  list-style: none;
-  padding: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  pointer-events: none;
 }
 
-.stack li {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.72rem;
-  color: var(--accent);
-  border: 1px solid var(--border);
-  padding: 0.2rem 0.55rem;
-  border-radius: 3px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-.about {
-  padding: 3rem 0 4rem;
-  border-top: 1px solid var(--border);
-}
-
-.about p {
-  color: var(--muted);
-  max-width: 65ch;
-  font-size: 1.02rem;
-}
-
-footer {
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  padding: 2rem 1.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-@media (min-width: 640px) {
-  .hero h1 { font-size: 2.5rem; }
+main {
+  max-width: 60rem;
+  padding: 2rem;
 }

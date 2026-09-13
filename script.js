@@ -69,10 +69,14 @@ async function start() {
     } else if (source.name === 'HairShell') {
       // Two passes: solid strands write depth, then the soft edges blend on
       // top without writing depth, so overlapping strands never halo.
-      object.material = hairMaterial(source, { alphaTest: 0.5 });
+      // The cutoff only claims hair that is genuinely solid. At 0.5 it drew
+      // every strand above half coverage as fully opaque, and since the matte
+      // straddles that value all along the edge, the silhouette tore into hard
+      // chunks with backdrop between them. Everything softer is the blend's job.
+      object.material = hairMaterial(source, { alphaTest: 0.97 });
       const edges = object.clone();
       // the edge pass carries no highlight of its own, or it would haze the skin behind it
-      edges.material = hairMaterial(source, { transparent: true, depthWrite: false, alphaTest: 0.02, specularIntensity: 0, envMapIntensity: 0.1, roughness: 0.7 });
+      edges.material = hairMaterial(source, { transparent: true, depthWrite: false, alphaTest: 0.004, specularIntensity: 0, envMapIntensity: 0.1, roughness: 0.7 });
       edges.renderOrder = 2;
       softHair.push([object, edges]);
       object.renderOrder = 1;
@@ -81,15 +85,22 @@ async function start() {
         map: source.map, roughness: 0.6, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06,
       });
     } else if (source.name === 'Mouth') {
-      // the dark of the lip seam, for the sliver of mouth that shows at the
-      // corners when the head turns
-      object.material = new THREE.MeshStandardMaterial({ color: 0x4a2327, roughness: 0.9 });
+      // The mesh's lips do not quite meet, so the cavity behind them shows
+      // through the gap. A flat colour there read as dark rectangles lying on
+      // the lip line; these faces share the skin's projected UVs, so they fill
+      // the gap with the photo's own lip seam, darkened for depth.
+      object.material = new THREE.MeshStandardMaterial({
+        map: source.map, color: 0xe4dcd9, roughness: 0.9, metalness: 0, side: THREE.DoubleSide,
+      });
     }
     if (object.material !== source) source.dispose();
   });
   for (const [solid, edges] of softHair) solid.parent.add(edges);
   scene.add(gltf.scene);
   scene.updateMatrixWorld(true);
+  // Only the face. The lashes are painted into the head texture rather than
+  // built into the hair shell, which carries nothing at the lash line, so they
+  // already travel with the lid vertices that move underneath them.
   for (const mesh of lids) prepareBlink(mesh, eyes);
 
   let frame = 0;
@@ -111,11 +122,13 @@ async function start() {
     }
   }
 
-  // Lids drop fast, rest a moment, open a little slower.
+  // Lids drop fast, rest a moment, then open at about half that speed. The
+  // asymmetry is most of what makes a blink read as one: closing and opening
+  // at the same rate looks like a flicker.
   function blinkAmount(elapsed) {
-    if (elapsed < 0.07) return THREE.MathUtils.smoothstep(elapsed, 0, 0.07);
-    if (elapsed < 0.11) return 1;
-    return 1 - THREE.MathUtils.smoothstep(elapsed, 0.11, 0.26);
+    if (elapsed < 0.085) return THREE.MathUtils.smoothstep(elapsed, 0, 0.085);
+    if (elapsed < 0.12) return 1;
+    return 1 - THREE.MathUtils.smoothstep(elapsed, 0.12, 0.34);
   }
 
   function draw(time) {
@@ -147,7 +160,7 @@ async function start() {
     if (blinkStart >= 0) {
       const elapsed = t - blinkStart;
       blink = blinkAmount(elapsed);
-      if (elapsed >= 0.26) {
+      if (elapsed >= 0.34) {
         blinkStart = -1;
         nextBlink = t + (doubleBlink ? 0.25 : 2.5 + Math.random() * 3.5);
         doubleBlink = false;
@@ -285,9 +298,13 @@ function skinMaterial(source) {
 // Hair shell material with the sway shear: hanging hair lags behind head
 // turns, growing below the ears and dying out again at the collar.
 function hairMaterial(source, options) {
+  // The shell texture holds the strand colour already multiplied by coverage,
+  // so the blend adds back what is behind rather than mixing the photo's own
+  // backdrop in a second time and washing the wisps out.
   const material = new THREE.MeshPhysicalMaterial({
     map: source.map, normalMap: source.normalMap, normalScale: new THREE.Vector2(0.5, 0.5),
-    side: THREE.DoubleSide, roughness: 0.4, metalness: 0, specularIntensity: 0.6, envMapIntensity: 0.7, ...options,
+    side: THREE.DoubleSide, roughness: 0.4, metalness: 0, specularIntensity: 0.6, envMapIntensity: 0.7,
+    premultipliedAlpha: true, ...options,
   });
   material.onBeforeCompile = shader => {
     shader.uniforms.sway = sway;

@@ -1,55 +1,40 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// The portrait is the reference photo projected onto a warped head mesh. The
+// photo's own light does nearly all the shading; a weak key light on top only
+// adds highlights that move when the head turns. The eyes are separate
+// spheres that follow the cursor.
 
 const canvas = document.getElementById('face');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const pointer = new THREE.Vector2();
 const gaze = new THREE.Vector3(0, 0, 3);
 const localGaze = new THREE.Vector3();
+const HALF_HEIGHT = 0.128;   // metres; matches the photo's crop
+const CENTRE_Y = -0.037;
+const PHOTO_RIGHT = 0.15;    // photo pixels stop here, right of the head centre
+const sway = { value: 0 };
 let renderer;
 
 async function start() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.96;
-  renderer.setClearColor(0xe8e5df, 0);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.VSMShadowMap;
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-0.3, 0.3, 0.215, -0.215, 0.01, 10);
-  camera.position.set(0, -0.055, 1);
-  camera.lookAt(0, -0.055, 0);
+  const camera = new THREE.OrthographicCamera(-0.3, 0.3, HALF_HEIGHT, -HALF_HEIGHT, 0.01, 10);
+  camera.position.set(0, CENTRE_Y, 1);
+  camera.lookAt(0, CENTRE_Y, 0);
 
-  const environment = new RoomEnvironment();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const lighting = pmrem.fromScene(environment, 0.04);
-  scene.environment = lighting.texture;
-  scene.environmentIntensity = 0.3;
-  environment.dispose();
-  pmrem.dispose();
-
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x514839, 0.4));
-  const key = new THREE.DirectionalLight(0xfff3e8, 2.4);
-  key.position.set(-0.5, 0.55, 0.8);
-  key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
-  Object.assign(key.shadow.camera, { left: -0.32, right: 0.32, top: 0.28, bottom: -0.38, near: 0.1, far: 2 });
-  key.shadow.bias = -0.0003;
-  key.shadow.normalBias = 0.001;
-  key.shadow.radius = 4;
-  key.shadow.blurSamples = 8;
+  // Ambient at pi reproduces the texture exactly; the key is kept small.
+  scene.add(new THREE.AmbientLight(0xffffff, Math.PI * 0.86));
+  const key = new THREE.DirectionalLight(0xfff6ee, 0.5);
+  key.position.set(-0.5, 0.6, 1);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xe8efff, 0.5);
-  fill.position.set(0.6, 0.15, 0.6);
-  scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xffefd9, 1.3);
-  rim.position.set(0.3, 0.4, -0.5);
-  scene.add(rim);
 
   const decoder = new DRACOLoader();
   decoder.setDecoderPath('./assets/vendor/three/draco/');
@@ -62,31 +47,61 @@ async function start() {
   const eyes = ['LeftEye', 'RightEye'].map(name => gltf.scene.getObjectByName(name));
   if (!character || eyes.some(eye => !eye)) throw new Error('The head model is missing its eye pivots.');
 
+  const anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+  let portraitMap = null;
+  const mouth = [];
   gltf.scene.traverse(object => {
     if (!object.isMesh) return;
     object.frustumCulled = false;
-    object.castShadow = true;
-    object.receiveShadow = object.name !== 'Hair';
-    const materials = Array.isArray(object.material) ? object.material : [object.material];
-    for (const material of materials) {
-      if (material.map) material.map.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-      // Cutouts write depth so individual hair cards occlude correctly.
-      if (['BlackHair', 'Brows', 'Lashes'].includes(material.name)) {
-        material.transparent = false;
-        material.alphaTest = 0.25;
-        material.alphaToCoverage = true;
-        material.depthWrite = true;
-        material.needsUpdate = true;
-      }
-      if (material.name === 'BrownEyesClean') {
-        material.transparent = false;
-        material.side = THREE.FrontSide;
-        material.depthWrite = true;
-        material.needsUpdate = true;
-      }
+    const source = object.material;
+    if (source.map) source.map.anisotropy = anisotropy;
+    if (source.name === 'Portrait') {
+      portraitMap = source.map;
+      object.material = new THREE.MeshStandardMaterial({
+        map: source.map, alphaTest: 0.5, roughness: 0.8, metalness: 0,
+      });
+    } else if (source.name === 'HairShell') {
+      object.material = new THREE.MeshStandardMaterial({
+        map: source.map, transparent: true, alphaTest: 0.01, side: THREE.DoubleSide,
+        roughness: 0.5, metalness: 0,
+      });
+      // Hanging hair lags behind head turns: a sideways shear that grows below
+      // the ears and dies out again at the collar so the shirt stays put.
+      object.material.onBeforeCompile = shader => {
+        shader.uniforms.sway = sway;
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', '#include <common>\nuniform float sway;')
+          .replace('#include <begin_vertex>', `#include <begin_vertex>
+            float hang = (1.0 - smoothstep(-0.13, 0.0, position.y)) * smoothstep(-0.175, -0.135, position.y);
+            transformed.x += sway * hang * hang;
+            transformed.y += abs(sway) * hang * 0.2;`);
+      };
+      object.renderOrder = 1;
+    } else if (source.name === 'PhotoEyes') {
+      object.material = new THREE.MeshBasicMaterial({ map: source.map });
+    } else if (source.name === 'Mouth') {
+      mouth.push(object);
     }
+    if (object.material !== source) source.dispose();
   });
+  // Inside the mouth, the same photo pixels darkened, so any gap between the
+  // lips reads as the shadow of the mouth line rather than a black slit.
+  for (const object of mouth) {
+    object.material.dispose();
+    object.material = new THREE.MeshBasicMaterial({ map: portraitMap, color: 0xa08886 });
+  }
   scene.add(gltf.scene);
+
+  // The photo's catchlights were painted out of the eye texture, so a fixed
+  // highlight sits on each cornea and stays put while the eye turns beneath it.
+  const glint = new THREE.SpriteMaterial({ map: catchlightTexture(), depthWrite: false, opacity: 0.92 });
+  for (const eye of eyes) {
+    const sprite = new THREE.Sprite(glint);
+    sprite.position.copy(eye.position).add(new THREE.Vector3(-0.0021, 0.0018, 0.0126));
+    sprite.scale.setScalar(0.0024);
+    sprite.renderOrder = 3;
+    character.add(sprite);
+  }
 
   let frame = 0;
   let lastTime = 0;
@@ -95,6 +110,8 @@ async function start() {
   let stopped = false;
   const desired = { yaw: 0, pitch: 0 };
   const clamp = THREE.MathUtils.clamp;
+  let swayVelocity = 0;
+  let previousYaw = 0;
 
   function queue() {
     if (!frame && visible && !document.hidden && !stopped) {
@@ -109,13 +126,23 @@ async function start() {
     const headEase = motion.matches ? 1 : 1 - Math.exp(-5 * dt);
     const eyeEase = motion.matches ? 1 : 1 - Math.exp(-15 * dt);
 
-    character.rotation.y = THREE.MathUtils.lerp(character.rotation.y, desired.yaw, headEase);
-    character.rotation.x = THREE.MathUtils.lerp(character.rotation.x, desired.pitch, headEase);
+    // A slow drift keeps the portrait from freezing into a still image.
+    const t = time / 1000;
+    const idleYaw = motion.matches ? 0 : 0.011 * Math.sin(t * 0.5) + 0.005 * Math.sin(t * 1.3 + 2);
+    const idlePitch = motion.matches ? 0 : 0.007 * Math.sin(t * 0.8 + 1);
+    character.rotation.y = THREE.MathUtils.lerp(character.rotation.y, desired.yaw + idleYaw, headEase);
+    character.rotation.x = THREE.MathUtils.lerp(character.rotation.x, desired.pitch + idlePitch, headEase);
     character.updateWorldMatrix(true, true);
 
+    // Damped spring: the hair takes an impulse from each turn and settles back.
+    const turned = character.rotation.y - previousYaw;
+    previousYaw = character.rotation.y;
+    swayVelocity += -turned * 0.35 + (-35 * sway.value - 3.5 * swayVelocity) * dt;
+    sway.value += swayVelocity * dt;
+
     if (activePointer && !motion.matches) {
-      gaze.set(pointer.x * (camera.right - camera.left) / 2,
-        pointer.y * 0.215 + camera.position.y, 0.72);
+      gaze.set(camera.position.x + pointer.x * (camera.right - camera.left) / 2,
+        pointer.y * HALF_HEIGHT + camera.position.y, 0.72);
     } else {
       gaze.set(0, 0, 3);
     }
@@ -126,8 +153,8 @@ async function start() {
       + Math.abs(desired.pitch - character.rotation.x);
     for (const eye of eyes) {
       const direction = localGaze.clone().sub(eye.position);
-      const yaw = clamp(Math.atan2(direction.x, direction.z), -0.3, 0.3);
-      const pitch = clamp(-Math.atan2(direction.y, Math.hypot(direction.x, direction.z)), -0.2, 0.2);
+      const yaw = clamp(Math.atan2(direction.x, direction.z), -0.26, 0.26);
+      const pitch = clamp(-Math.atan2(direction.y, Math.hypot(direction.x, direction.z)), -0.12, 0.12);
       eye.rotation.order = 'YXZ';
       eye.rotation.y = THREE.MathUtils.lerp(eye.rotation.y, yaw, eyeEase);
       eye.rotation.x = THREE.MathUtils.lerp(eye.rotation.x, pitch, eyeEase);
@@ -136,7 +163,7 @@ async function start() {
 
     renderer.render(scene, camera);
     canvas.classList.add('is-ready');
-    if (moving > 0.0001) queue();
+    if (moving > 0.0001 || !motion.matches) queue();
   }
 
   function resize() {
@@ -144,12 +171,16 @@ async function start() {
     if (!bounds.width || !bounds.height) return;
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
     renderer.setSize(bounds.width, bounds.height, false);
-    const halfHeight = 0.215;
-    const halfWidth = halfHeight * bounds.width / bounds.height;
+    const halfWidth = HALF_HEIGHT * bounds.width / bounds.height;
+    // Keep the head right of centre, away from the headline, and on wide
+    // canvases slide it further so the photo still reaches the right edge.
+    const offset = Math.min(-0.02, PHOTO_RIGHT - halfWidth);
+    camera.position.x = offset;
+    camera.lookAt(offset, CENTRE_Y, 0);
     camera.left = -halfWidth;
     camera.right = halfWidth;
-    camera.top = halfHeight;
-    camera.bottom = -halfHeight;
+    camera.top = HALF_HEIGHT;
+    camera.bottom = -HALF_HEIGHT;
     camera.updateProjectionMatrix();
     queue();
   }
@@ -172,8 +203,8 @@ async function start() {
     pointer.set(clamp((event.clientX - bounds.left) / bounds.width * 2 - 1, -1.8, 1.8),
       clamp(1 - (event.clientY - bounds.top) / bounds.height * 2, -1.2, 1.2));
     activePointer = true;
-    desired.yaw = Math.tanh(pointer.x) * 0.22;
-    desired.pitch = -Math.tanh(pointer.y) * 0.065;
+    desired.yaw = Math.tanh(pointer.x) * 0.14;
+    desired.pitch = -Math.tanh(pointer.y) * 0.05;
     queue();
   }, { passive: true });
 
@@ -197,6 +228,22 @@ async function start() {
     canvas.classList.remove('is-ready');
   });
   resize();
+}
+
+function catchlightTexture() {
+  const size = 64;
+  const sheet = document.createElement('canvas');
+  sheet.width = sheet.height = size;
+  const ctx = sheet.getContext('2d');
+  const fade = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  fade.addColorStop(0, 'rgba(255,255,255,1)');
+  fade.addColorStop(0.45, 'rgba(255,255,255,0.85)');
+  fade.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = fade;
+  ctx.fillRect(0, 0, size, size);
+  const texture = new THREE.CanvasTexture(sheet);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }
 
 start().catch(error => {

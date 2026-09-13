@@ -9,3 +9,4 @@ node_modules/
 .DS_Store
 *.blend1
 *.blend2
+model/portrait.blend

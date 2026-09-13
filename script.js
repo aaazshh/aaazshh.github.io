@@ -266,9 +266,9 @@ function prepareBlink(mesh, eyes) {
       if (Math.abs(dx) >= 0.021 || Math.abs(up) >= 0.022 || out <= 0.004) continue;
       const lateral = Math.sqrt(Math.max(0, 1 - (dx / 0.0195) ** 2));
       // stiff from the lash line up to the crease, then easing off towards the brow
-      const upper = up > 0.0015 ? 1 - smoothstep(up, 0.0105, 0.019) : 0;
+      const upper = up > 0.0015 ? 1 - smoothstep(up, 0.0095, 0.0155) : 0;
       const lower = up < -0.0015 ? 1 - smoothstep(-up, 0.0055, 0.011) : 0;
-      const angle = lateral * (upper * 0.72 - lower * 0.26);
+      const angle = lateral * (upper * 0.68 - lower * 0.18);
       if (Math.abs(angle) < 1e-6) continue;
       const scale = 1 + 0.02 * upper;
       const cos = Math.cos(angle);

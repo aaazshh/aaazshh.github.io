@@ -51,7 +51,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   padding: 28px 4.5%;
 }
 .hero-nav a { text-decoration: none; }
-.monogram { font-family: Georgia, serif; font-size: 36px; letter-spacing: -3px; }
+.monogram { font-family: Georgia, serif; font-size: 34px; letter-spacing: -1px; }
 .nav-links {
   display: flex;
   gap: 28px;

@@ -3,11 +3,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 // The portrait is the reference photo projected onto a warped head mesh. The
-// photo's own light does nearly all the shading; a weak key light on top only
-// adds highlights that move when the head turns. The eyes are separate
-// spheres that follow the cursor. For a blink the lids swing around each
-// eyeball as stiff pieces below the crease; only the skin above the crease
-// gives, the way a real lid folds. Worked out from the geometry after loading.
+// photo's own light does most of the shading; a small studio probe and a weak
+// key add the highlights that move when the head turns, and the corneas
+// reflect the probe for their catchlight. The eyes are separate spheres that
+// follow the cursor. For a blink the lids swing around each eyeball as stiff
+// pieces below the crease; only the skin above the crease gives, the way a
+// real lid folds. Worked out from the geometry after loading.
 
 const canvas = document.getElementById('face');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -17,6 +18,7 @@ const localGaze = new THREE.Vector3();
 const HALF_HEIGHT = 0.128;   // metres; matches the photo's crop
 const CENTRE_Y = -0.037;
 const PHOTO_RIGHT = 0.15;    // photo pixels stop here, right of the head centre
+const LID_TRAVEL = 0.68;     // radians the upper lid swings for a full blink
 const sway = { value: 0 };
 let renderer;
 
@@ -32,9 +34,12 @@ async function start() {
   camera.position.set(0, CENTRE_Y, 1);
   camera.lookAt(0, CENTRE_Y, 0);
 
-  // Ambient at pi reproduces the texture exactly; the key is kept small.
-  scene.add(new THREE.AmbientLight(0xffffff, Math.PI * 0.86));
-  const key = new THREE.DirectionalLight(0xfff6ee, 0.5);
+  // Ambient plus the probe's diffuse add up to about the texture's own value;
+  // the probe's softbox gives every glossy surface something to reflect.
+  scene.environment = studioProbe(renderer);
+  scene.environmentIntensity = 0.45;
+  scene.add(new THREE.AmbientLight(0xffffff, Math.PI * 0.68));
+  const key = new THREE.DirectionalLight(0xfff6ee, 0.4);
   key.position.set(-0.5, 0.6, 1);
   scene.add(key);
 
@@ -51,43 +56,39 @@ async function start() {
 
   const anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
   const lids = [];
+  const softHair = [];
   gltf.scene.traverse(object => {
     if (!object.isMesh) return;
     object.frustumCulled = false;
     const source = object.material;
-    if (source.map) source.map.anisotropy = anisotropy;
+    for (const map of [source.map, source.normalMap, source.roughnessMap]) if (map) map.anisotropy = anisotropy;
     if (source.name === 'Portrait') {
       object.material = new THREE.MeshStandardMaterial({
-        map: source.map, alphaTest: 0.5, roughness: 0.8, metalness: 0,
+        map: source.map, roughnessMap: source.roughnessMap, roughness: 1, metalness: 0, alphaTest: 0.5,
       });
       lids.push(object);
     } else if (source.name === 'HairShell') {
-      object.material = new THREE.MeshPhysicalMaterial({
-        map: source.map, normalMap: source.normalMap, normalScale: new THREE.Vector2(0.8, 0.8),
-        transparent: true, alphaTest: 0.01, side: THREE.DoubleSide,
-        roughness: 0.42, metalness: 0, specularIntensity: 1.4,
-      });
-      // Hanging hair lags behind head turns: a sideways shear that grows below
-      // the ears and dies out again at the collar so the body stays put.
-      object.material.onBeforeCompile = shader => {
-        shader.uniforms.sway = sway;
-        shader.vertexShader = shader.vertexShader
-          .replace('#include <common>', '#include <common>\nuniform float sway;')
-          .replace('#include <begin_vertex>', `#include <begin_vertex>
-            float hang = (1.0 - smoothstep(-0.13, 0.0, position.y)) * smoothstep(-0.175, -0.135, position.y);
-            transformed.x += sway * hang * hang;
-            transformed.y += abs(sway) * hang * 0.2;`);
-      };
+      // Two passes: solid strands write depth, then the soft edges blend on
+      // top without writing depth, so overlapping strands never halo.
+      object.material = hairMaterial(source, { alphaTest: 0.5 });
+      const edges = object.clone();
+      // the edge pass carries no highlight of its own, or it would haze the skin behind it
+      edges.material = hairMaterial(source, { transparent: true, depthWrite: false, alphaTest: 0.02, specularIntensity: 0, envMapIntensity: 0.1, roughness: 0.7 });
+      edges.renderOrder = 2;
+      softHair.push([object, edges]);
       object.renderOrder = 1;
     } else if (source.name === 'PhotoEyes') {
-      object.material = new THREE.MeshBasicMaterial({ map: source.map });
+      object.material = new THREE.MeshPhysicalMaterial({
+        map: source.map, roughness: 0.6, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06,
+      });
     } else if (source.name === 'Mouth') {
       // the dark of the lip seam, for the sliver of mouth that shows at the
       // corners when the head turns
-      object.material = new THREE.MeshBasicMaterial({ color: 0x4a2327 });
+      object.material = new THREE.MeshStandardMaterial({ color: 0x4a2327, roughness: 0.9 });
     }
     if (object.material !== source) source.dispose();
   });
+  for (const [solid, edges] of softHair) solid.parent.add(edges);
   scene.add(gltf.scene);
   scene.updateMatrixWorld(true);
   const blinkers = lids.map(mesh => prepareBlink(mesh, eyes));
@@ -153,7 +154,6 @@ async function start() {
         doubleBlink = false;
       }
     }
-    for (const blinker of blinkers) blinker(blink);
 
     if (activePointer && !motion.matches) {
       gaze.set(camera.position.x + pointer.x * (camera.right - camera.left) / 2,
@@ -164,8 +164,7 @@ async function start() {
     localGaze.copy(gaze);
     character.worldToLocal(localGaze);
 
-    let moving = Math.abs(desired.yaw - character.rotation.y)
-      + Math.abs(desired.pitch - character.rotation.x);
+    let pitchSum = 0;
     for (const eye of eyes) {
       const direction = localGaze.clone().sub(eye.position);
       const yaw = clamp(Math.atan2(direction.x, direction.z), -0.2, 0.2);
@@ -173,8 +172,11 @@ async function start() {
       eye.rotation.order = 'YXZ';
       eye.rotation.y = THREE.MathUtils.lerp(eye.rotation.y, yaw, eyeEase);
       eye.rotation.x = THREE.MathUtils.lerp(eye.rotation.x, pitch, eyeEase);
-      moving += Math.abs(yaw - eye.rotation.y) + Math.abs(pitch - eye.rotation.x);
+      pitchSum += eye.rotation.x;
     }
+    // The upper lid rides the globe: it follows a downward glance part way.
+    const follow = 0.6 * (pitchSum / eyes.length) / LID_TRAVEL;
+    for (const blinker of blinkers) blinker(blink + follow);
 
     renderer.render(scene, camera);
     canvas.classList.add('is-ready');
@@ -245,9 +247,49 @@ async function start() {
   resize();
 }
 
+// A small grey room with one softbox up and to the left, like the photo's
+// key, baked into a reflection probe. Colours are linear.
+function studioProbe(renderer) {
+  const room = new THREE.Scene();
+  room.add(new THREE.Mesh(new THREE.SphereGeometry(10, 24, 12),
+    new THREE.MeshBasicMaterial({ color: 0x2e2c2a, side: THREE.BackSide })));
+  const softbox = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.9), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+  softbox.position.set(-3.5, 3, 7);
+  softbox.lookAt(0, 0, 0);
+  room.add(softbox);
+  const fill = new THREE.Mesh(new THREE.PlaneGeometry(6, 4), new THREE.MeshBasicMaterial({ color: 0x555250 }));
+  fill.position.set(5, 1, 5);
+  fill.lookAt(0, 0, 0);
+  room.add(fill);
+  const generator = new THREE.PMREMGenerator(renderer);
+  const probe = generator.fromScene(room, 0.04).texture;
+  generator.dispose();
+  return probe;
+}
+
+// Hair shell material with the sway shear: hanging hair lags behind head
+// turns, growing below the ears and dying out again at the collar.
+function hairMaterial(source, options) {
+  const material = new THREE.MeshPhysicalMaterial({
+    map: source.map, normalMap: source.normalMap, normalScale: new THREE.Vector2(0.5, 0.5),
+    side: THREE.DoubleSide, roughness: 0.4, metalness: 0, specularIntensity: 0.6, envMapIntensity: 0.7, ...options,
+  });
+  material.onBeforeCompile = shader => {
+    shader.uniforms.sway = sway;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float sway;')
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        float hang = (1.0 - smoothstep(-0.13, 0.0, position.y)) * smoothstep(-0.175, -0.135, position.y);
+        transformed.x += sway * hang * hang;
+        transformed.y += abs(sway) * hang * 0.2;`);
+  };
+  return material;
+}
+
 // Finds the eyelid vertices around each eyeball and returns a function that
-// closes the lids by that amount: the upper lid rotates down over the sphere,
-// the lower lid rises a little, both pivoting at the eye corners.
+// closes the lids by that amount: the lid below the crease swings as one
+// piece around the sphere, the skin above the crease eases off towards the
+// brow, and both pivot at the eye corners. Negative amounts lift the lid.
 function prepareBlink(mesh, eyes) {
   const position = mesh.geometry.attributes.position;
   const centres = eyes.map(eye => mesh.worldToLocal(eye.getWorldPosition(new THREE.Vector3())));
@@ -265,10 +307,9 @@ function prepareBlink(mesh, eyes) {
       const out = z - c.z;                       // towards the viewer
       if (Math.abs(dx) >= 0.021 || Math.abs(up) >= 0.022 || out <= 0.004) continue;
       const lateral = Math.sqrt(Math.max(0, 1 - (dx / 0.0195) ** 2));
-      // stiff from the lash line up to the crease, then easing off towards the brow
       const upper = up > 0.0015 ? 1 - smoothstep(up, 0.0095, 0.0155) : 0;
       const lower = up < -0.0015 ? 1 - smoothstep(-up, 0.0055, 0.011) : 0;
-      const angle = lateral * (upper * 0.68 - lower * 0.18);
+      const angle = lateral * (upper * LID_TRAVEL - lower * 0.18);
       if (Math.abs(angle) < 1e-6) continue;
       const scale = 1 + 0.02 * upper;
       const cos = Math.cos(angle);

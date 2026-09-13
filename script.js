@@ -20,6 +20,7 @@ const CENTRE_Y = -0.037;
 const PHOTO_RIGHT = 0.15;    // photo pixels stop here, right of the head centre
 const LID_TRAVEL = 0.68;     // radians the upper lid swings for a full blink
 const sway = { value: 0 };
+const lid = { value: 0 };
 let renderer;
 
 async function start() {
@@ -63,9 +64,7 @@ async function start() {
     const source = object.material;
     for (const map of [source.map, source.normalMap, source.roughnessMap]) if (map) map.anisotropy = anisotropy;
     if (source.name === 'Portrait') {
-      object.material = new THREE.MeshStandardMaterial({
-        map: source.map, roughnessMap: source.roughnessMap, roughness: 1, metalness: 0, alphaTest: 0.5,
-      });
+      object.material = skinMaterial(source);
       lids.push(object);
     } else if (source.name === 'HairShell') {
       // Two passes: solid strands write depth, then the soft edges blend on
@@ -91,7 +90,7 @@ async function start() {
   for (const [solid, edges] of softHair) solid.parent.add(edges);
   scene.add(gltf.scene);
   scene.updateMatrixWorld(true);
-  const blinkers = lids.map(mesh => prepareBlink(mesh, eyes));
+  for (const mesh of lids) prepareBlink(mesh, eyes);
 
   let frame = 0;
   let lastTime = 0;
@@ -176,7 +175,7 @@ async function start() {
     }
     // The upper lid rides the globe: it follows a downward glance part way.
     const follow = 0.6 * (pitchSum / eyes.length) / LID_TRAVEL;
-    for (const blinker of blinkers) blinker(blink + follow);
+    lid.value = blink + follow;
 
     renderer.render(scene, camera);
     canvas.classList.add('is-ready');
@@ -267,6 +266,22 @@ function studioProbe(renderer) {
   return probe;
 }
 
+// The face, with the blink handled on the GPU. The lid vertices carry a fixed
+// shift each and a single uniform scales it, so a blink costs one number rather
+// than rewriting and reuploading the whole 73k-vertex position buffer per frame.
+function skinMaterial(source) {
+  const material = new THREE.MeshStandardMaterial({
+    map: source.map, roughnessMap: source.roughnessMap, roughness: 1, metalness: 0, alphaTest: 0.5,
+  });
+  material.onBeforeCompile = shader => {
+    shader.uniforms.lid = lid;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float lid;\nattribute vec2 lidShift;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n            transformed.yz += lidShift * lid;');
+  };
+  return material;
+}
+
 // Hair shell material with the sway shear: hanging hair lags behind head
 // turns, growing below the ears and dying out again at the collar.
 function hairMaterial(source, options) {
@@ -286,17 +301,16 @@ function hairMaterial(source, options) {
   return material;
 }
 
-// Finds the eyelid vertices around each eyeball and returns a function that
-// closes the lids by that amount: the lid below the crease swings as one
-// piece around the sphere, the skin above the crease eases off towards the
-// brow, and both pivot at the eye corners. Negative amounts lift the lid.
+// Finds the eyelid vertices around each eyeball and gives each one the shift
+// that closes it: the lid below the crease swings as one piece around the
+// sphere, the skin above the crease eases off towards the brow, and both pivot
+// at the eye corners. The shifts go in as an attribute and the lid uniform
+// scales them, so closing the eye costs nothing per frame. Negative lifts.
 function prepareBlink(mesh, eyes) {
   const position = mesh.geometry.attributes.position;
   const centres = eyes.map(eye => mesh.worldToLocal(eye.getWorldPosition(new THREE.Vector3())));
   const smoothstep = THREE.MathUtils.smoothstep;
-  const index = [];
-  const rest = [];
-  const delta = [];
+  const shift = new Float32Array(position.count * 2);
   for (let i = 0; i < position.count; i++) {
     const x = position.getX(i);
     const y = position.getY(i);
@@ -316,22 +330,12 @@ function prepareBlink(mesh, eyes) {
       const sin = Math.sin(angle);
       const newOut = (out * cos + up * sin) * scale;
       const newUp = (-out * sin + up * cos) * scale;
-      index.push(i);
-      rest.push(y, z);
-      delta.push(c.y + newUp - y, c.z + newOut - z);
+      shift[2 * i] = c.y + newUp - y;
+      shift[2 * i + 1] = c.z + newOut - z;
       break;
     }
   }
-  let current = -1;
-  return amount => {
-    if (amount === current) return;
-    current = amount;
-    for (let k = 0; k < index.length; k++) {
-      position.setY(index[k], rest[2 * k] + delta[2 * k] * amount);
-      position.setZ(index[k], rest[2 * k + 1] + delta[2 * k + 1] * amount);
-    }
-    position.needsUpdate = true;
-  };
+  mesh.geometry.setAttribute('lidShift', new THREE.BufferAttribute(shift, 2));
 }
 
 start().catch(error => {

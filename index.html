@@ -4,20 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maram Aashna</title>
+  <meta name="description" content="Maram Aashna. Web and mobile development, from internal operations portals to the apps that go with them.">
+  <meta name="theme-color" content="#e8e5df">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        "three": "./assets/vendor/three/three.module.min.js",
+        "three/addons/": "./assets/vendor/three/addons/"
       }
     }
   </script>
 </head>
 <body>
-  <header class="hero">
-    <canvas id="face" aria-hidden="true"></canvas>
-    <h1></h1>
+  <a class="skip-link" href="#about">Skip to content</a>
+  <header class="hero" id="top">
+    <div class="portrait" aria-hidden="true">
+      <canvas id="face"></canvas>
+    </div>
+    <nav class="hero-nav" aria-label="Main navigation">
+      <a class="monogram" href="#top" aria-label="Maram Aashna, home">ma.</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#experience">Work</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+    <div class="hero-copy">
+      <p class="eyebrow">Web &amp; mobile developer</p>
+      <h1>Maram<br> Aashna<span>.</span></h1>
+      <p class="intro">The systems behind<br> the everyday work.</p>
+      <a class="work-link" href="#experience">Explore my work <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="hero-footer">
+      <a href="#about">A little about me <span aria-hidden="true">↓</span></a>
+    </div>
   </header>
 
   <main>
@@ -34,7 +56,7 @@
       <h2>Experience</h2>
       <article>
         <h3>Prime Supermarket</h3>
-        <p></p>
+        <p class="role">Software development internship · Six months</p>
         <ul>
           <li>Logistics platform, web: multi-company fleet management in plain PHP 7.4, MySQL and vanilla JS. Leaflet map with OSRM route optimisation, public delivery tracking page, Excel order import that geocodes addresses and assigns trucks.</li>
           <li>Logistics, mobile: Flutter driver app pulling routes over a bearer-token REST API, turn-by-turn stops in flutter_map, live GPS reporting back to admins.</li>

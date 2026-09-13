@@ -1,0 +1,8 @@
+Character mesh, source skin, hair, eyes, brows, lashes and clothing:
+MakeHuman Community system assets, CC0.
+https://static.makehumancommunity.org/assets/assetpacks/makehuman_system_assets.html
+
+Head proportions, materials, bust crop and separate eye pivots adapted for this site.
+
+Three.js 0.170.0: MIT. License included in vendor/three/LICENSE.
+Draco decoder: Apache 2.0. License included in vendor/three/draco/LICENSE.

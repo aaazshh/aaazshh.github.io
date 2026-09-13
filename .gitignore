@@ -1,6 +1,11 @@
-# Local tooling, not part of the site
 .claude/
 CLAUDE.md
+.Codex/
+.codex/
+AGENTS.md
+GANENTS.md
 
 node_modules/
 .DS_Store
+*.blend1
+*.blend2

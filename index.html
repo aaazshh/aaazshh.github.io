@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maram Aashna</title>
   <meta name="description" content="Maram Aashna. Web and mobile development, from internal operations portals to the apps that go with them.">
-  <meta name="theme-color" content="#e8e5df">
+  <meta name="theme-color" content="#e0ddd7">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
@@ -18,68 +18,221 @@
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#about">Skip to content</a>
-  <header class="hero" id="top">
-    <div class="portrait" aria-hidden="true">
-      <img src="assets/image.png" alt="">
-      <!-- The Three.js portrait draws into this canvas. It is parked, not
-           removed: uncomment the module at the foot of this file to bring the
-           whole thing back, cursor tracking, blink and all. -->
-      <canvas id="face"></canvas>
-    </div>
-    <nav class="hero-nav" aria-label="Main navigation">
-      <a class="monogram" href="#top" aria-label="Maram Aashna, home">MA</a>
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#experience">Work</a>
-        <a href="#contact">Contact</a>
-      </div>
+  <a class="skip-link" href="#items">Skip to the desktop items</a>
+
+  <div class="desktop" id="desktop">
+    <img class="wallpaper" src="assets/image.png" alt="Maram Aashna, looking straight at the camera">
+
+    <header class="menubar">
+      <span class="who">Maram Aashna</span>
+      <span class="what">Web and mobile developer</span>
+      <button class="tidy" id="tidy" type="button" hidden>Tidy up</button>
+      <time class="clock" id="clock" aria-hidden="true"></time>
+    </header>
+
+    <ul class="items" id="items" tabindex="-1">
+      <li class="item" style="--x: 6%; --y: 16%">
+        <button type="button" class="icon" data-open="experience" aria-haspopup="dialog">
+          <svg class="glyph folder" viewBox="0 0 40 34" aria-hidden="true">
+            <path class="fill" d="M1 6a3 3 0 0 1 3-3h10.5l3.4 4H36a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z"/>
+            <path class="line" d="M1 12.5h38"/>
+          </svg>
+          <span class="label">experience/</span>
+        </button>
+      </li>
+      <li class="item" style="--x: 20%; --y: 30%">
+        <button type="button" class="icon" data-open="readme" aria-haspopup="dialog">
+          <svg class="glyph paper" viewBox="0 0 40 34" aria-hidden="true">
+            <path class="fill" d="M8 1h16l8 8v24H8z"/>
+            <path class="line" d="M24 1v8h8M13 18h14M13 23h14M13 28h9"/>
+          </svg>
+          <span class="label">README.md</span>
+        </button>
+      </li>
+      <li class="item" style="--x: 5%; --y: 47%">
+        <button type="button" class="icon" data-open="stack" aria-haspopup="dialog">
+          <svg class="glyph folder" viewBox="0 0 40 34" aria-hidden="true">
+            <path class="fill" d="M1 6a3 3 0 0 1 3-3h10.5l3.4 4H36a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z"/>
+            <path class="line" d="M1 12.5h38"/>
+          </svg>
+          <span class="label">stack/</span>
+        </button>
+      </li>
+      <li class="item" style="--x: 21%; --y: 61%">
+        <button type="button" class="icon is-hidden-file" data-open="env" aria-haspopup="dialog">
+          <svg class="glyph paper" viewBox="0 0 40 34" aria-hidden="true">
+            <path class="fill" d="M8 1h16l8 8v24H8z"/>
+            <path class="line" d="M24 1v8h8M13 19h13M13 24h8"/>
+          </svg>
+          <span class="label">.env</span>
+        </button>
+      </li>
+      <li class="item" style="--x: 7%; --y: 75%">
+        <button type="button" class="icon is-hidden-file" data-open="trash" aria-haspopup="dialog">
+          <svg class="glyph folder torn" viewBox="0 0 40 34" aria-hidden="true">
+            <path class="fill" d="M1 6a3 3 0 0 1 3-3h10.5l3.4 4H36a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z"/>
+            <path class="line" d="M1 12.5h38"/>
+          </svg>
+          <span class="label">.trash/</span>
+        </button>
+      </li>
+    </ul>
+
+    <nav class="dock" aria-label="Contact">
+      <a href="https://github.com/aaazshh" target="_blank" rel="noopener">
+        <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#github"></use></svg>
+        <span>GitHub</span>
+      </a>
+      <!-- Swap in the real LinkedIn URL before this goes live. -->
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">
+        <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#linkedin"></use></svg>
+        <span>LinkedIn</span>
+      </a>
+      <a href="mailto:maram.aashna44@gmail.com">
+        <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#mail"></use></svg>
+        <span>Email</span>
+      </a>
     </nav>
-    <div class="hero-copy">
-      <p class="eyebrow">Web &amp; mobile developer</p>
-      <h1>Maram<br> Aashna<span>.</span></h1>
-      <p class="intro">The systems behind<br> the everyday work.</p>
-      <a class="work-link" href="#experience">Explore my work <span aria-hidden="true">↗</span></a>
-    </div>
-    <div class="hero-footer">
-      <a href="#about">A little about me <span aria-hidden="true">↓</span></a>
-    </div>
-  </header>
 
-  <main>
-    <section id="about">
-      <h2>About</h2>
-      <p>
-        I build internal systems: admin portals, the mobile apps that go with them,
-        and the auth, tracking and reporting services that tie them together.
-        Mostly PHP, Laravel, Flutter and MySQL.
-      </p>
+    <div class="windows" id="windows"></div>
+  </div>
+
+  <template id="window-frame">
+    <section class="window" role="dialog" aria-modal="false">
+      <header class="titlebar">
+        <h2 class="title"></h2>
+        <button type="button" class="close" aria-label="Close window">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2 10 10 M10 2 2 10"/></svg>
+        </button>
+      </header>
+      <div class="pane" tabindex="-1"></div>
     </section>
+  </template>
 
-    <section id="experience">
-      <h2>Experience</h2>
-      <article>
-        <h3>Prime Supermarket</h3>
-        <p class="role">Software development internship · Six months</p>
-        <ul>
-          <li>Logistics platform, web: multi-company fleet management in plain PHP 7.4, MySQL and vanilla JS. Leaflet map with OSRM route optimisation, public delivery tracking page, Excel order import that geocodes addresses and assigns trucks.</li>
-          <li>Logistics, mobile: Flutter driver app pulling routes over a bearer-token REST API, turn-by-turn stops in flutter_map, live GPS reporting back to admins.</li>
-          <li>Fish farm operations portal, web and mobile: harvest, feed, medicine inventory, environment surveys, net repairs and incident logging. Replaced paper logs. PHP, MySQL, Bootstrap 5, Flutter companion app.</li>
-          <li>IAM / SSO service: single sign-on, role and department mapping, per-portal access control shared across the company's internal systems.</li>
-          <li>Analytics tooling: Elasticsearch indexing, PHPSpreadsheet exports (ABC analysis, vendor commission reports), Puppeteer scraping for sources without an API.</li>
-          <li>HQ platform: Laravel backend with Tailwind and Vite front end, plus a Flutter mobile app for the same workflows.</li>
-        </ul>
-      </article>
-    </section>
+  <!-- Window contents. Screenshots of the portals and the apps come in a later
+       pass, so the panes that need them say so instead of faking it. -->
+  <div class="contents" hidden>
+    <template data-window="experience" data-title="experience/">
+      <p class="lede">Prime Supermarket, software development internship, six months.
+        Five systems. Three of them have a web half and a mobile half that were built
+        to work as one thing, so they are filed as one thing.</p>
+      <ul class="systems">
+        <li>
+          <button type="button" class="row" data-open="logistics" aria-haspopup="dialog">
+            <span class="row-name">Logistics</span>
+            <span class="row-note">Multi company fleet management, route optimisation, driver app</span>
+            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="row" data-open="fishfarm" aria-haspopup="dialog">
+            <span class="row-name">Fish Farm</span>
+            <span class="row-note">Operations portal that replaced the paper logs</span>
+            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="row" data-open="hq" aria-haspopup="dialog">
+            <span class="row-name">HQ</span>
+            <span class="row-note">Laravel backend and a Flutter app over the same workflows</span>
+            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="row" data-open="iam" aria-haspopup="dialog">
+            <span class="row-name">IAM</span>
+            <span class="row-note">Single sign on. The service the others log into</span>
+            <span class="platforms"><span class="chip">web</span></span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="row" data-open="analytics" aria-haspopup="dialog">
+            <span class="row-name">Analytics</span>
+            <span class="row-note">Elasticsearch indexing, spreadsheet exports, scraping</span>
+            <span class="platforms"><span class="chip">web</span></span>
+          </button>
+        </li>
+      </ul>
+    </template>
 
-    <section id="contact">
-      <h2>Contact</h2>
-      <p><a href="https://github.com/aaazshh" target="_blank" rel="noopener">github.com/aaazshh</a></p>
-    </section>
-  </main>
+    <template data-window="logistics" data-title="experience/logistics">
+      <p>Multi company fleet management. Plain PHP 7.4, MySQL and vanilla JS on the
+        web side: a Leaflet map with OSRM route optimisation, a public delivery
+        tracking page, and an Excel order import that geocodes addresses and assigns
+        trucks. The Flutter driver app pulls routes over a bearer token REST API,
+        walks turn by turn stops in flutter_map, reports live GPS back to the admins
+        and sends an FCM push on SOS.</p>
+      <p class="stub">Screenshots of the admin map and the driver app go here.</p>
+    </template>
 
-  <!-- Portrait hero, parked while the desktop rebuild happens. script.js and
-       assets/head.glb are untouched; uncomment this one line to restore it. -->
+    <template data-window="fishfarm" data-title="experience/fish-farm">
+      <p>Operations portal for the farm. Harvest, feed and medicine inventory,
+        environment surveys, net repairs, incident logging. It replaced paper logs.
+        PHP, MySQL and Bootstrap 5, with a Flutter companion app for the work that
+        happens standing on a pontoon.</p>
+      <p class="stub">Screenshots of the portal and the app go here.</p>
+    </template>
+
+    <template data-window="hq" data-title="experience/hq">
+      <p>Laravel backend with a Tailwind and Vite front end, plus a Flutter app
+        covering the same workflows.</p>
+      <p class="stub">Screenshots go here.</p>
+    </template>
+
+    <template data-window="iam" data-title="experience/iam">
+      <p>Single sign on, role and department mapping, per portal access control,
+        shared across the company's internal systems. It is the service the other
+        four log into.</p>
+      <p class="stub">Screenshots go here.</p>
+    </template>
+
+    <template data-window="analytics" data-title="experience/analytics">
+      <p>Elasticsearch indexing, PHPSpreadsheet exports for ABC analysis and vendor
+        commission reports, and Puppeteer scraping for the sources that had no API.</p>
+      <p class="stub">Screenshots go here.</p>
+    </template>
+
+    <template data-window="readme" data-title="README.md">
+      <p class="lede">I build internal systems: admin portals, the mobile apps that go
+        with them, and the auth, tracking and reporting services that tie them
+        together. Mostly PHP, Laravel, Flutter and MySQL.</p>
+      <p class="stub">More of the about copy goes here.</p>
+    </template>
+
+    <template data-window="stack" data-title="stack/">
+      <p class="stub">PHP, Laravel, Flutter, MySQL, Elasticsearch, and what each one
+        was actually used for. Filling this in is the next pass.</p>
+    </template>
+
+    <template data-window="env" data-title=".env">
+      <p class="stub">The off the record things. Still deciding what goes in here.</p>
+    </template>
+
+    <template data-window="trash" data-title=".trash/">
+      <p>Experiments that did not make the cut but are still worth opening.</p>
+      <p class="stub">The Three.js portrait lives here: the photo rebuilt as a 3D head
+        that tracks the cursor, blinks, and lets its hair lag behind a turn. It is
+        parked, not deleted. Wiring it into this window is the next pass.</p>
+    </template>
+  </div>
+
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="github" viewBox="0 0 24 24">
+      <path d="M12 1.5a10.5 10.5 0 0 0-3.3 20.5c.5.1.7-.2.7-.5v-2c-2.9.6-3.5-1.3-3.5-1.3-.5-1.2-1.2-1.5-1.2-1.5-1-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.7-1.4-2.3-.3-4.8-1.2-4.8-5.2 0-1.2.4-2.1 1.1-2.9-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 2.9 1.1a9.9 9.9 0 0 1 5.2 0c2-1.4 2.9-1.1 2.9-1.1.6 1.5.2 2.6.1 2.9.7.8 1.1 1.7 1.1 2.9 0 4-2.5 4.9-4.8 5.2.4.3.7 1 .7 2v3c0 .3.2.6.7.5A10.5 10.5 0 0 0 12 1.5"/>
+    </symbol>
+    <symbol id="linkedin" viewBox="0 0 24 24">
+      <path d="M3.5 8.8h3.8V21H3.5zM5.4 2.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4M9.8 8.8h3.6v1.7c.6-1 1.8-1.9 3.7-1.9 3 0 4.4 1.8 4.4 5.1V21h-3.8v-6.4c0-1.7-.6-2.6-2-2.6-1.4 0-2.2 1-2.2 2.6V21H9.8z"/>
+    </symbol>
+    <symbol id="mail" viewBox="0 0 24 24">
+      <path d="M2.5 5h19a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-19a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1m.7 2L12 13l8.8-6z"/>
+    </symbol>
+  </svg>
+
+  <script src="desktop.js"></script>
+
+  <!-- Portrait hero, parked. script.js and assets/head.glb are untouched. It is
+       headed for the .trash/ window, which is where uncommenting this will put
+       it back. -->
   <!-- <script type="module" src="script.js"></script> -->
 </body>
 </html>

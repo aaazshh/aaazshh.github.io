@@ -21,6 +21,10 @@
   <a class="skip-link" href="#about">Skip to content</a>
   <header class="hero" id="top">
     <div class="portrait" aria-hidden="true">
+      <img src="assets/image.png" alt="">
+      <!-- The Three.js portrait draws into this canvas. It is parked, not
+           removed: uncomment the module at the foot of this file to bring the
+           whole thing back, cursor tracking, blink and all. -->
       <canvas id="face"></canvas>
     </div>
     <nav class="hero-nav" aria-label="Main navigation">
@@ -74,6 +78,8 @@
     </section>
   </main>
 
-  <script type="module" src="script.js"></script>
+  <!-- Portrait hero, parked while the desktop rebuild happens. script.js and
+       assets/head.glb are untouched; uncomment this one line to restore it. -->
+  <!-- <script type="module" src="script.js"></script> -->
 </body>
 </html>

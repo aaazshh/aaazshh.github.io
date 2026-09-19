@@ -43,18 +43,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   isolation: isolate;
 }
 
-/* The photo's own backdrop is --stone, so full bleed and full colour it joins
-   the page invisibly. Cover scales a wide photo to the height of the box and
-   crops the sides, so the figure has to be steered by hand: this value keeps
-   her a little right of centre and leaves the left clear for the icons. The
-   phone layout crops differently and needs its own. */
+/* Cover scales a wide photo to the height of the box and crops the sides, so
+   the figure has to be steered by hand. She sits in the middle of this frame
+   and the icons live on the left, so the crop is taken off the right to push
+   her across. The phone layout crops differently and needs its own. */
 .wallpaper {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 18% 25%;
+  object-position: 0% 40%;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -66,9 +65,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   display: flex;
   align-items: baseline;
   gap: 14px;
-  padding: 14px 20px;
+  padding: 14px 20px 26px;
   font-size: 12px;
-  background: linear-gradient(to bottom, #e0ddd7cc, #e0ddd700);
+  background: linear-gradient(to bottom, #e0ddd7e8 0%, #e0ddd7a6 52%, #e0ddd700 100%);
 }
 .who { font-family: Georgia, serif; font-size: 15px; letter-spacing: -0.01em; }
 .what { color: var(--muted); }
@@ -275,7 +274,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
      half of the photo and tap straight through. Cover crops a wide photo hard
      in a phone shaped box, so the figure needs its own framing here, and the
      scrim under the grid is what keeps the labels readable. */
-  .wallpaper { height: 74%; object-position: 44% 50%; }
+  .wallpaper { height: 74%; object-position: 50% 50%; }
   .desktop::after {
     content: "";
     position: absolute;

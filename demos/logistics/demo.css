@@ -1,16 +1,6 @@
-/* The few things this demo needs that the app stylesheet does not carry: the
-   sample data flag, the note that stands in for the screens not rebuilt here,
-   and the map panels. Everything else comes from app.css, which is the real
-   main.css lifted out of the project. */
-
-.demo-flag {
-  padding: 2px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 3px;
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.85);
-}
+/* The few things this walkthrough needs that the app stylesheet does not carry:
+   the toast, the map panels and a couple of list layouts. Everything else comes
+   from app.css, which is the real main.css lifted out of the project. */
 
 .demo-note {
   position: fixed;

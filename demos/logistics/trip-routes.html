@@ -27,14 +27,14 @@
       <div class="card" style="margin:0;">
         <div class="card-header">
           <div>
-            <div class="card-title" id="tr-title">TR-4402, GBA 4821 X</div>
-            <div class="card-subtitle" id="tr-sub">Rahim, 7 stops, 06:48 to 11:26</div>
+            <div class="card-title" id="tr-title"></div>
+            <div class="card-subtitle" id="tr-sub"></div>
           </div>
         </div>
         <div id="tr-map" class="cc-map"></div>
         <div class="tr-controls">
           <button type="button" class="btn btn-primary btn-sm" id="tr-play">Play</button>
-          <span class="tr-clock" id="tr-clock">06:48:00, stop 1 of 7</span>
+          <span class="tr-clock" id="tr-clock"></span>
           <input type="range" id="tr-scrub" class="tr-scrub" min="0" max="1000" value="0" step="1" aria-label="Scrub the trip">
           <div class="tr-speeds">
             <button type="button" class="tr-speed-btn is-active" data-mult="1">1x</button>
@@ -45,93 +45,67 @@
       </div>
     </div>
 
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">Delivery audit log</div>
+          <div class="card-subtitle">Every stop across every trip, what went out against what the outlet signed for</div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label class="form-label" for="driver">Driver</label>
+          <select id="driver" class="form-control"><option>All drivers</option></select>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr><th>Trip</th><th>Stop</th><th>Driver</th><th>Arrived</th><th>Sent</th><th>Signed for</th><th>Outcome</th></tr>
+          </thead>
+          <tbody id="audit"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
+  <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
   <script>
     'use strict';
 
-    var TRIPS = [
-      {
-        id: 'TR-4402', plate: 'GBA 4821 X', driver: 'Rahim', start: '06:48', end: '11:26',
-        stops: [
-          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '06:48'],
-          ['Clementi Ave 3', 1.3150, 103.7650, '07:14'],
-          ['Queenstown Blk 52', 1.2950, 103.8060, '07:58'],
-          ['Tiong Bahru Plaza', 1.2860, 103.8270, '08:36'],
-          ['Toa Payoh Lor 4', 1.3350, 103.8500, '09:29'],
-          ['Ang Mo Kio Ave 10', 1.3691, 103.8454, '10:22'],
-          ['Yishun Ring Rd', 1.4290, 103.8350, '11:26']
-        ]
-      },
-      {
-        id: 'TR-4403', plate: 'GBM 7734 T', driver: 'Kok Wai', start: '07:02', end: '10:41',
-        stops: [
-          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '07:02'],
-          ['Bedok North St 1', 1.3300, 103.9370, '08:05'],
-          ['Tampines St 81', 1.3496, 103.9390, '08:47'],
-          ['Pasir Ris Dr 6', 1.3720, 103.9490, '09:33'],
-          ['Simei St 3', 1.3430, 103.9530, '10:41']
-        ]
-      },
-      {
-        id: 'TR-4404', plate: 'YN 5512 J', driver: 'Daniel', start: '06:31', end: '12:08',
-        stops: [
-          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '06:31'],
-          ['Bukit Batok St 21', 1.3480, 103.7500, '07:10'],
-          ['Choa Chu Kang Ave 4', 1.3850, 103.7440, '08:02'],
-          ['Bukit Panjang Ring Rd', 1.3800, 103.7630, '08:55'],
-          ['Hillview Ave', 1.3630, 103.7670, '09:44'],
-          ['Teck Whye Lane', 1.3790, 103.7520, '10:38'],
-          ['Yew Tee Sq', 1.3970, 103.7470, '11:20'],
-          ['Marsiling Rise', 1.4420, 103.7780, '12:08']
-        ]
-      }
-    ];
-
     var map = L.map('tr-map').setView([1.3521, 103.8198], 12);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CARTO',
-      maxZoom: 19
+      attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
     }).addTo(map);
 
     var layer = L.layerGroup().addTo(map);
-    var trail = null;
-    var marker = null;
-    var path = [];
-    var trip = TRIPS[0];
-    var playing = false;
-    var mult = 1;
-    var t = 0;              // 0 to 1000 along the trip
-    var last = 0;
+    var trail = null, marker = null, path = [];
+    var trip = DATA.history[0];
+    var playing = false, mult = 1, t = 0, last = 0;
 
     var dot = L.divIcon({
-      className: '',
-      iconSize: [18, 18],
-      iconAnchor: [9, 9],
+      className: '', iconSize: [18, 18], iconAnchor: [9, 9],
       html: '<div style="width:18px;height:18px;border-radius:50%;background:#264653;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>'
     });
 
     function stopIcon(n) {
       return L.divIcon({
-        className: '',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
+        className: '', iconSize: [20, 20], iconAnchor: [10, 10],
         html: '<div style="width:20px;height:20px;border-radius:50%;background:#2a9d8f;color:#fff;font:600 11px/20px Inter,sans-serif;text-align:center">' + n + '</div>'
       });
     }
 
     function load(index) {
-      trip = TRIPS[index];
+      trip = DATA.history[index];
       layer.clearLayers();
-      path = trip.stops.map(function (s) { return [s[1], s[2]]; });
+      path = DATA.coords(trip.stops.map(function (s) { return s[0]; }));
 
       L.polyline(path, { color: '#cbd5e1', weight: 4 }).addTo(layer);
       trail = L.polyline([path[0]], { color: '#2a9d8f', weight: 4 }).addTo(layer);
       trip.stops.forEach(function (s, i) {
-        L.marker([s[1], s[2]], { icon: stopIcon(i + 1) })
-          .bindPopup('<strong>' + s[0] + '</strong><br>Arrived ' + s[3]).addTo(layer);
+        L.marker(path[i], { icon: stopIcon(i + 1) })
+          .bindPopup('<strong>' + s[0] + '</strong><br>Arrived ' + s[1]).addTo(layer);
       });
       marker = L.marker(path[0], { icon: dot, zIndexOffset: 600 }).addTo(layer);
       map.fitBounds(L.polyline(path).getBounds(), { padding: [40, 40] });
@@ -144,7 +118,7 @@
       document.getElementById('tr-scrub').value = 0;
       seek(0);
 
-      Array.prototype.forEach.call(document.querySelectorAll('.cc-vehicle'), function (el, i) {
+      Array.prototype.forEach.call(document.querySelectorAll('#tr-list .cc-vehicle'), function (el, i) {
         el.classList.toggle('is-active', i === index);
       });
     }
@@ -162,8 +136,8 @@
       marker.setLatLng(here);
       trail.setLatLngs(path.slice(0, leg + 1).concat([here]));
 
-      var from = toMinutes(trip.stops[leg][3]);
-      var to = toMinutes(trip.stops[leg + 1][3]);
+      var from = toMinutes(trip.stops[leg][1]);
+      var to = toMinutes(trip.stops[leg + 1][1]);
       var mins = from + (to - from) * f;
       document.getElementById('tr-clock').textContent =
         clock(mins) + ', stop ' + (leg + 1) + ' of ' + trip.stops.length;
@@ -175,10 +149,7 @@
     }
 
     function clock(mins) {
-      var h = Math.floor(mins / 60);
-      var m = Math.floor(mins % 60);
-      var s = Math.floor((mins % 1) * 60);
-      return pad(h) + ':' + pad(m) + ':' + pad(s);
+      return pad(Math.floor(mins / 60)) + ':' + pad(Math.floor(mins % 60)) + ':' + pad(Math.floor((mins % 1) * 60));
     }
 
     function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -222,8 +193,7 @@
       btn.classList.add('is-active');
     });
 
-    var list = document.getElementById('tr-list');
-    list.innerHTML = TRIPS.map(function (tr, i) {
+    document.getElementById('tr-list').innerHTML = DATA.history.map(function (tr, i) {
       return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
         '<div class="cc-plate">' + tr.id + '</div>' +
         '<div class="cc-driver">' + tr.plate + ', ' + tr.driver + '</div>' +
@@ -231,12 +201,63 @@
         '</button>';
     }).join('');
 
-    list.addEventListener('click', function (event) {
+    document.getElementById('tr-list').addEventListener('click', function (event) {
       var btn = event.target.closest('.cc-vehicle');
       if (!btn) return;
       stop();
       load(Number(btn.dataset.i));
     });
+
+    /* Audit log ------------------------------------------------------------ */
+
+    // Two rows out of the set are short, which is the whole point of keeping
+    // what was sent next to what was signed for.
+    var SHORT = { 'TR-4402|Queenstown Blk 52': 2, 'TR-4405|Geylang Serai': 1 };
+
+    var audit = [];
+    DATA.history.forEach(function (tr) {
+      tr.stops.forEach(function (s, i) {
+        if (i === 0) return;
+        var sent = 8 + ((s[0].length * 3 + i * 5) % 28);
+        var short = SHORT[tr.id + '|' + s[0]] || 0;
+        audit.push({
+          trip: tr.id, stop: s[0], driver: tr.driver, at: s[1],
+          sent: sent, signed: sent - short, short: short
+        });
+      });
+    });
+
+    var drivers = DATA.history.map(function (tr) { return tr.driver; }).filter(function (d, i, a) {
+      return a.indexOf(d) === i;
+    });
+    var select = document.getElementById('driver');
+    drivers.forEach(function (d) {
+      var opt = document.createElement('option');
+      opt.textContent = d;
+      select.appendChild(opt);
+    });
+
+    function paintAudit() {
+      var who = select.value;
+      document.getElementById('audit').innerHTML = audit.filter(function (a) {
+        return who === 'All drivers' || a.driver === who;
+      }).map(function (a) {
+        return '<tr>' +
+          '<td><strong>' + a.trip + '</strong></td>' +
+          '<td>' + a.stop + '</td>' +
+          '<td>' + a.driver + '</td>' +
+          '<td>' + a.at + '</td>' +
+          '<td>' + a.sent + ' cases</td>' +
+          '<td>' + a.signed + ' cases</td>' +
+          '<td>' + (a.short
+            ? '<span class="status-chip status-pending">' + a.short + ' short</span>'
+            : '<span class="status-chip status-completed">Matched</span>') + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    select.addEventListener('change', paintAudit);
+    paintAudit();
 
     load(0);
     requestAnimationFrame(frame);

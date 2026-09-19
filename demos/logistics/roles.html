@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Management, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="roles" data-title="Role Management">
+
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">Roles</div>
+          <div class="card-subtitle">System roles are fixed, custom ones are per company</div>
+        </div>
+        <button type="button" class="btn btn-primary" data-unbuilt="Creating a role">New role</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr><th>Role Name</th><th>Type</th><th>Company</th><th>Users</th><th>Reach</th><th style="text-align:right;">Actions</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">What each role can reach</div>
+          <div class="card-subtitle">The same map the IAM service hands to the other portals</div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr><th>Area</th><th>Super Admin</th><th>Admin</th><th>Ops Manager</th><th>Driver</th></tr>
+          </thead>
+          <tbody id="matrix"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    document.getElementById('rows').innerHTML = DATA.roles.map(function (r) {
+      return '<tr>' +
+        '<td><strong>' + r.name + '</strong></td>' +
+        '<td><span class="status-chip ' + (r.type === 'System' ? 'status-active' : 'status-idle') + '">' + r.type + '</span></td>' +
+        '<td>' + r.company + '</td>' +
+        '<td>' + r.users + '</td>' +
+        '<td style="color:#6b7280;">' + r.note + '</td>' +
+        '<td style="text-align:right;">' +
+          (r.type === 'System'
+            ? '<span style="color:#9ca3af;font-size:12px;">Locked</span>'
+            : '<button type="button" class="btn btn-sm" data-unbuilt="Editing a role">Edit</button>') +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    var AREAS = [
+      ['Dashboard', 1, 1, 1, 0],
+      ['Control Center', 1, 1, 1, 0],
+      ['Assign Orders', 1, 1, 1, 0],
+      ['Incidents', 1, 1, 1, 2],
+      ['Trip Routes', 1, 1, 1, 0],
+      ['My Deliveries', 0, 0, 0, 1],
+      ['Locations', 1, 1, 2, 2],
+      ['Fleet Management', 1, 1, 2, 0],
+      ['User Management', 1, 1, 0, 0],
+      ['Company Management', 1, 0, 0, 0],
+      ['Role Management', 1, 0, 0, 0]
+    ];
+
+    var mark = {
+      0: '<span style="color:#d1d5db;">no</span>',
+      1: '<span style="color:#2a9d8f;font-weight:600;">full</span>',
+      2: '<span style="color:#d97706;">read, or own only</span>'
+    };
+
+    document.getElementById('matrix').innerHTML = AREAS.map(function (a) {
+      return '<tr><td><strong>' + a[0] + '</strong></td><td>' + mark[a[1]] + '</td><td>' + mark[a[2]] +
+        '</td><td>' + mark[a[3]] + '</td><td>' + mark[a[4]] + '</td></tr>';
+    }).join('');
+  </script>
+</body>
+</html>

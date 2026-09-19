@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incidents, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="incidents" data-title="Incidents">
+
+    <div class="cc-layout">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Raised</div>
+            <div class="card-subtitle">Two still open</div>
+          </div>
+        </div>
+        <div id="list"></div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="title">INC-2291, Breakdown</div>
+            <div class="card-subtitle" id="sub">XF 6638 H, Arun Raj</div>
+          </div>
+        </div>
+        <div class="card-body" id="detail"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var chip = { 'Pending': 'status-pending', 'In Progress': 'status-in', 'Completed': 'status-completed' };
+
+    document.getElementById('list').innerHTML = DATA.incidents.map(function (inc, i) {
+      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
+        '<div class="cc-plate">' + inc.id + ', ' + inc.type + '</div>' +
+        '<div class="cc-driver">' + inc.plate + ', ' + inc.driver + '</div>' +
+        '<div style="margin-top:6px;"><span class="status-chip ' + chip[inc.status] + '">' + inc.status + '</span>' +
+        '<span class="cc-driver" style="display:inline;margin-left:8px;">' + inc.raised + '</span></div>' +
+        '</button>';
+    }).join('');
+
+    function open(i) {
+      var inc = DATA.incidents[i];
+      document.getElementById('title').textContent = inc.id + ', ' + inc.type;
+      document.getElementById('sub').textContent = inc.plate + ', ' + inc.driver;
+
+      document.getElementById('detail').innerHTML =
+        '<p style="margin-top:0;font-size:15px;line-height:1.7;">' + inc.note + '</p>' +
+        '<div class="table-responsive"><table class="table"><tbody>' +
+          row('Status', '<span class="status-chip ' + chip[inc.status] + '">' + inc.status + '</span>') +
+          row('Raised', inc.raised) +
+          row('Where', inc.where) +
+          row('Stop', inc.stop) +
+          row('Orders held up', inc.orders) +
+          row('Arrived', inc.arrived) +
+          row('Outcome', inc.outcome) +
+        '</tbody></table></div>' +
+        (inc.status === 'Completed' ? '' :
+          '<div style="display:flex;gap:10px;margin-top:16px;">' +
+          '<button type="button" class="btn btn-primary" data-act="close" data-i="' + i + '">Close incident</button>' +
+          '<button type="button" class="btn" data-unbuilt="Reassigning the stop">Reassign stop</button>' +
+          '</div>');
+
+      Array.prototype.forEach.call(document.querySelectorAll('#list .cc-vehicle'), function (el, n) {
+        el.classList.toggle('is-active', n === i);
+      });
+    }
+
+    function row(k, v) {
+      return '<tr><td style="width:170px;color:#6b7280;">' + k + '</td><td>' + v + '</td></tr>';
+    }
+
+    document.getElementById('list').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-i]');
+      if (btn) open(Number(btn.dataset.i));
+    });
+
+    document.getElementById('detail').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-act="close"]');
+      if (!btn) return;
+      var inc = DATA.incidents[Number(btn.dataset.i)];
+      inc.status = 'Completed';
+      inc.outcome = 'Closed by Maram Aashna';
+      inc.arrived = inc.arrived === 'Pending' ? 'Not needed' : inc.arrived;
+      open(Number(btn.dataset.i));
+      window.flash(inc.id + ' closed. The driver gets a push telling them it is cleared.');
+      var el = document.querySelectorAll('#list .cc-vehicle')[Number(btn.dataset.i)];
+      el.querySelector('.status-chip').className = 'status-chip status-completed';
+      el.querySelector('.status-chip').textContent = 'Completed';
+    });
+
+    open(0);
+  </script>
+</body>
+</html>

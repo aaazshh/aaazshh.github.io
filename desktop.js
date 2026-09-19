@@ -1,6 +1,7 @@
-// Desktop behaviour: dragging the icons, opening windows, and remembering where
-// things were put. Nothing here is required to read the site. Every item is a
-// real button, so tab and enter get through the whole thing without a pointer.
+// Desktop behaviour: dragging the icons, opening windows, moving and resizing
+// them, and remembering where things were put. Nothing here is required to read
+// the site. Every item is a real button, so tab and enter get through the whole
+// thing without a pointer.
 
 (function () {
   'use strict';
@@ -12,8 +13,10 @@
   var tidyButton = document.getElementById('tidy');
   var STORE = 'desktop.icons.v1';
   var DRAG_SLOP = 4;      // pointer travel that turns a click into a drag
-  var MENUBAR = 44;       // keep icons clear of the bar and the dock
+  var MENUBAR = 44;       // keep icons and windows clear of the bar and the dock
   var DOCK = 96;
+  var MIN_W = 320;
+  var MIN_H = 220;
   var topWindow = 10;
 
   var phone = window.matchMedia('(max-width: 760px)');
@@ -23,7 +26,7 @@
     defaults[id] = { x: item.style.getPropertyValue('--x'), y: item.style.getPropertyValue('--y') };
   });
 
-  /* Saved positions -------------------------------------------------------- */
+  /* Saved icon positions --------------------------------------------------- */
 
   function readSaved() {
     try {
@@ -150,40 +153,71 @@
     openWindow(opener.dataset.open, opener);
   });
 
+  // Builds the chrome. Everything after this point works in pixels: a window
+  // that can be dragged, resized and zoomed needs one set of numbers, not a
+  // mix of percentages and CSS variables.
+  function build(id, title, opener) {
+    var win = frame.content.firstElementChild.cloneNode(true);
+    var heading = win.querySelector('.title');
+    var headingId = 'title-' + id;
+
+    win.dataset.windowId = id;
+    heading.id = headingId;
+    heading.textContent = title;
+    win.setAttribute('aria-labelledby', headingId);
+    win.querySelector('.close').setAttribute('aria-label', 'Close ' + title);
+    win.querySelector('.zoom').setAttribute('aria-label', 'Maximize ' + title);
+    if (opener) win.returnFocusTo = opener;
+    return win;
+  }
+
+  function place(win, w, h) {
+    var room = desktop.getBoundingClientRect();
+    var width = Math.min(w, room.width - 32);
+    var height = Math.min(h, room.height - MENUBAR - DOCK - 16);
+    var step = windowLayer.children.length % 6 * 26;
+
+    win.style.width = width + 'px';
+    win.style.height = height + 'px';
+    win.style.left = Math.max(16, Math.min(room.width * 0.12 + step, room.width - width - 16)) + 'px';
+    win.style.top = Math.max(MENUBAR + 8, Math.min(room.height * 0.13 + step, room.height - height - DOCK)) + 'px';
+  }
+
+  function existing(id) {
+    var open = windowLayer.querySelector('[data-window-id="' + id + '"]');
+    if (!open) return false;
+    raise(open);
+    open.querySelector('.pane').focus();
+    return true;
+  }
+
+  function openWindow(id, opener) {
+    if (existing(id)) return;
+    var source = document.querySelector('template[data-window="' + id + '"]');
+    if (!source) return;
+
+    var win = build(id, source.dataset.title, opener);
+    win.querySelector('.pane').appendChild(source.content.cloneNode(true));
+    place(win, 620, 460);
+    windowLayer.appendChild(win);
+    raise(win);
+    win.querySelector('.pane').focus();
+  }
+
   /* A demo window holds the project itself in an iframe: the web ones in a
      window shaped like a browser, the app ones inside a phone. */
   function openDemo(src, kind, label, opener) {
     var id = 'demo-' + src.replace(/[^a-z0-9]+/gi, '-');
-    var open = windowLayer.querySelector('[data-window-id="' + id + '"]');
-    if (open) {
-      raise(open);
-      open.querySelector('.pane').focus();
-      return;
-    }
+    if (existing(id)) return;
 
-    var win = frame.content.firstElementChild.cloneNode(true);
-    var heading = win.querySelector('.title');
+    var win = build(id, label, opener);
     var pane = win.querySelector('.pane');
-    var headingId = 'title-' + id;
-
-    win.dataset.windowId = id;
     win.classList.add('window-demo', kind === 'phone' ? 'is-phone' : 'is-web');
-    heading.id = headingId;
-    heading.textContent = label;
-    win.setAttribute('aria-labelledby', headingId);
-    win.querySelector('.close').setAttribute('aria-label', 'Close ' + label);
-
-    var full = document.createElement('a');
-    full.className = 'full-size';
-    full.href = 'demos/' + src;
-    full.target = '_blank';
-    full.rel = 'noopener';
-    full.textContent = 'Full size';
-    win.querySelector('.titlebar').insertBefore(full, win.querySelector('.close'));
-
     pane.classList.add('is-frame');
-    var holder = kind === 'phone' ? document.createElement('div') : pane;
+
+    var holder = pane;
     if (kind === 'phone') {
+      holder = document.createElement('div');
       holder.className = 'phone';
       pane.appendChild(holder);
     }
@@ -193,43 +227,8 @@
     frameEl.title = label;
     holder.appendChild(frameEl);
 
-    if (opener) win.returnFocusTo = opener;
-
-    var count = windowLayer.children.length % 5;
-    win.style.setProperty('--wx', 'calc(8% + ' + count * 24 + 'px)');
-    win.style.setProperty('--wy', 'calc(9% + ' + count * 24 + 'px)');
-
-    windowLayer.appendChild(win);
-    raise(win);
-    pane.focus();
-  }
-
-  function openWindow(id, opener) {
-    var open = windowLayer.querySelector('[data-window-id="' + id + '"]');
-    if (open) {
-      raise(open);
-      open.querySelector('.pane').focus();
-      return;
-    }
-    var source = document.querySelector('template[data-window="' + id + '"]');
-    if (!source) return;
-
-    var win = frame.content.firstElementChild.cloneNode(true);
-    var heading = win.querySelector('.title');
-    var pane = win.querySelector('.pane');
-    var headingId = 'title-' + id;
-
-    win.dataset.windowId = id;
-    heading.id = headingId;
-    heading.textContent = source.dataset.title;
-    win.setAttribute('aria-labelledby', headingId);
-    win.querySelector('.close').setAttribute('aria-label', 'Close ' + source.dataset.title);
-    pane.appendChild(source.content.cloneNode(true));
-    if (opener) win.returnFocusTo = opener;
-
-    var count = windowLayer.children.length % 6;
-    win.style.setProperty('--wx', 'calc(24% + ' + count * 26 + 'px)');
-    win.style.setProperty('--wy', 'calc(14% + ' + count * 26 + 'px)');
+    if (kind === 'phone') place(win, 392, 812);
+    else place(win, 1120, 740);
 
     windowLayer.appendChild(win);
     raise(win);
@@ -241,13 +240,54 @@
     win.style.zIndex = topWindow;
   }
 
+  function closeWindow(win) {
+    var back = win.returnFocusTo;
+    win.remove();
+    if (back && document.contains(back)) back.focus();
+  }
+
+  /* Window controls -------------------------------------------------------- */
+
+  function zoom(win) {
+    var room = desktop.getBoundingClientRect();
+    if (win.classList.contains('is-zoomed')) {
+      var was = win.wasAt;
+      win.style.left = was.left + 'px';
+      win.style.top = was.top + 'px';
+      win.style.width = was.width + 'px';
+      win.style.height = was.height + 'px';
+      win.classList.remove('is-zoomed');
+      win.querySelector('.zoom').setAttribute('aria-label', 'Maximize window');
+      return;
+    }
+    win.wasAt = {
+      left: win.offsetLeft, top: win.offsetTop,
+      width: win.offsetWidth, height: win.offsetHeight
+    };
+    win.style.left = '12px';
+    win.style.top = (MENUBAR + 6) + 'px';
+    win.style.width = (room.width - 24) + 'px';
+    win.style.height = (room.height - MENUBAR - DOCK - 6) + 'px';
+    win.classList.add('is-zoomed');
+    win.querySelector('.zoom').setAttribute('aria-label', 'Restore window');
+  }
+
   windowLayer.addEventListener('pointerdown', function (event) {
     var win = event.target.closest('.window');
     if (win) raise(win);
   });
 
   windowLayer.addEventListener('click', function (event) {
-    if (event.target.closest('.close')) closeWindow(event.target.closest('.window'));
+    var win = event.target.closest('.window');
+    if (!win) return;
+    if (event.target.closest('.close')) closeWindow(win);
+    else if (event.target.closest('.zoom')) zoom(win);
+  });
+
+  windowLayer.addEventListener('dblclick', function (event) {
+    if (event.target.closest('.titlebar') && !event.target.closest('.ctl')) {
+      zoom(event.target.closest('.window'));
+    }
   });
 
   windowLayer.addEventListener('keydown', function (event) {
@@ -256,51 +296,78 @@
     if (win) closeWindow(win);
   });
 
-  function closeWindow(win) {
-    var back = win.returnFocusTo;
-    win.remove();
-    if (back && document.contains(back)) back.focus();
-  }
+  /* Moving and resizing ---------------------------------------------------- */
 
-  /* Dragging a window by its title bar -------------------------------------- */
-
-  var moving = null;
+  var live = null;
 
   windowLayer.addEventListener('pointerdown', function (event) {
     if (phone.matches || event.button !== 0) return;
+
+    var grip = event.target.closest('.grip');
     var bar = event.target.closest('.titlebar');
-    if (!bar || event.target.closest('.close')) return;
-    var win = bar.closest('.window');
-    moving = {
+    if (!grip && (!bar || event.target.closest('.ctl'))) return;
+
+    var win = event.target.closest('.window');
+    if (win.classList.contains('is-zoomed') && !grip) return;
+
+    live = {
       win: win,
+      edge: grip ? grip.dataset.grip : null,
       startX: event.clientX,
       startY: event.clientY,
-      originX: win.offsetLeft,
-      originY: win.offsetTop,
-      maxX: desktop.clientWidth - win.offsetWidth,
-      maxY: desktop.clientHeight - 60
+      left: win.offsetLeft,
+      top: win.offsetTop,
+      width: win.offsetWidth,
+      height: win.offsetHeight,
+      room: desktop.getBoundingClientRect()
     };
-    win.classList.add('is-moving');
-    bar.setPointerCapture(event.pointerId);
+    win.classList.add(grip ? 'is-sizing' : 'is-moving');
+    (grip || bar).setPointerCapture(event.pointerId);
     event.preventDefault();
   });
 
   windowLayer.addEventListener('pointermove', function (event) {
-    if (!moving) return;
-    var x = Math.min(Math.max(moving.originX + event.clientX - moving.startX, 0), moving.maxX);
-    var y = Math.min(Math.max(moving.originY + event.clientY - moving.startY, MENUBAR - 8), moving.maxY);
-    moving.win.style.setProperty('--wx', x + 'px');
-    moving.win.style.setProperty('--wy', y + 'px');
+    if (!live) return;
+    var dx = event.clientX - live.startX;
+    var dy = event.clientY - live.startY;
+    var win = live.win;
+
+    if (!live.edge) {
+      win.style.left = Math.min(Math.max(live.left + dx, -live.width + 90), live.room.width - 90) + 'px';
+      win.style.top = Math.min(Math.max(live.top + dy, MENUBAR - 6), live.room.height - 48) + 'px';
+      return;
+    }
+
+    var left = live.left, top = live.top, width = live.width, height = live.height;
+
+    if (live.edge.indexOf('e') !== -1) width = Math.max(MIN_W, live.width + dx);
+    if (live.edge.indexOf('s') !== -1) height = Math.max(MIN_H, live.height + dy);
+    if (live.edge.indexOf('w') !== -1) {
+      width = Math.max(MIN_W, live.width - dx);
+      left = live.left + (live.width - width);
+    }
+    if (live.edge.indexOf('n') !== -1) {
+      height = Math.max(MIN_H, live.height - dy);
+      top = Math.max(MENUBAR - 6, live.top + (live.height - height));
+      height = live.top + live.height - top;
+    }
+
+    win.style.left = left + 'px';
+    win.style.top = top + 'px';
+    win.style.width = width + 'px';
+    win.style.height = height + 'px';
   });
 
-  function endMove() {
-    if (!moving) return;
-    moving.win.classList.remove('is-moving');
-    moving = null;
+  function release() {
+    if (!live) return;
+    live.win.classList.remove('is-moving', 'is-sizing');
+    // A window that has been moved or resized is no longer the zoomed one.
+    if (live.edge) live.win.classList.remove('is-zoomed');
+    live = null;
   }
 
-  windowLayer.addEventListener('pointerup', endMove);
-  windowLayer.addEventListener('pointercancel', endMove);
+  windowLayer.addEventListener('pointerup', release);
+  windowLayer.addEventListener('pointercancel', release);
 
   /* Menu bar clock ---------------------------------------------------------- */
 

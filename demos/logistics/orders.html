@@ -21,12 +21,7 @@
         <div style="display:flex;align-items:flex-end;gap:10px;">
           <div class="form-group" style="margin:0;">
             <label class="form-label" for="vehicle">Assign to</label>
-            <select id="vehicle" class="form-control">
-              <option>GBA 4821 X, Rahim</option>
-              <option>GBM 7734 T, Kok Wai</option>
-              <option>XE 8842 P, Siti</option>
-              <option>GBD 2290 R, Prakash</option>
-            </select>
+            <select id="vehicle" class="form-control"></select>
           </div>
           <button type="button" class="btn btn-primary" id="assign">Assign selected</button>
         </div>
@@ -52,23 +47,13 @@
 
   </div>
 
+  <script src="data.js"></script>
   <script src="shell.js"></script>
   <script>
     'use strict';
 
-    var ORDERS = [
-      { id: 'PO-88214', outlet: 'Ang Mo Kio Ave 10', cases: 34, kg: 412, win: '06:00 to 09:00' },
-      { id: 'PO-88215', outlet: 'Bedok North St 1', cases: 21, kg: 268, win: '06:00 to 09:00' },
-      { id: 'PO-88216', outlet: 'Jurong West St 52', cases: 47, kg: 590, win: '07:00 to 10:00' },
-      { id: 'PO-88217', outlet: 'Tampines St 81', cases: 12, kg: 143, win: '07:00 to 10:00' },
-      { id: 'PO-88218', outlet: 'Woodlands Dr 50', cases: 38, kg: 470, win: '08:00 to 11:00' },
-      { id: 'PO-88219', outlet: 'Clementi Ave 3', cases: 29, kg: 355, win: '08:00 to 11:00' },
-      { id: 'PO-88220', outlet: 'Toa Payoh Lor 4', cases: 16, kg: 198, win: '09:00 to 12:00' },
-      { id: 'PO-88221', outlet: 'Yishun Ring Rd', cases: 25, kg: 302, win: '09:00 to 12:00' }
-    ];
-
     var body = document.getElementById('rows');
-    body.innerHTML = ORDERS.map(function (o) {
+    body.innerHTML = DATA.orders.map(function (o) {
       return '<tr data-id="' + o.id + '">' +
         '<td><input type="checkbox" class="pick" aria-label="Select ' + o.id + '"></td>' +
         '<td><strong>' + o.id + '</strong></td>' +
@@ -78,6 +63,12 @@
         '<td>' + o.win + '</td>' +
         '<td class="assigned"><span class="status-chip status-idle">Unassigned</span></td>' +
         '</tr>';
+    }).join('');
+
+    document.getElementById('vehicle').innerHTML = DATA.vehicles.filter(function (v) {
+      return v.status === 'Idle';
+    }).map(function (v) {
+      return '<option>' + v.plate + ', ' + v.driver.split(' ')[0] + '</option>';
     }).join('');
 
     document.getElementById('all').addEventListener('change', function (e) {
@@ -99,12 +90,8 @@
       });
       document.getElementById('all').checked = false;
 
-      var note = document.getElementById('demo-note');
-      note.textContent = picked.length + ' order' + (picked.length > 1 ? 's' : '') + ' assigned to ' + vehicle +
-        '. In the real system this builds the trip and the driver app picks it up.';
-      note.classList.add('show');
-      clearTimeout(note.timer);
-      note.timer = setTimeout(function () { note.classList.remove('show'); }, 3600);
+      window.flash(picked.length + ' order' + (picked.length > 1 ? 's' : '') + ' assigned to ' + vehicle +
+        '. That builds the trip, and the driver app picks it up on its next poll.');
     });
   </script>
 </body>

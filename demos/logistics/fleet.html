@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fleet Management, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="fleet" data-title="Fleet Management">
+
+    <div class="stats-grid" style="margin-bottom:18px;">
+      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
+        <p class="stat-label">Fleet size</p><h4 class="stat-value">18</h4><p class="stat-sublabel">Across 3 companies</p>
+      </div></div></div>
+      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
+        <p class="stat-label">On the road</p><h4 class="stat-value">6</h4><p class="stat-sublabel">Right now</p>
+      </div></div></div>
+      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
+        <p class="stat-label">Idle</p><h4 class="stat-value">10</h4><p class="stat-sublabel">Available to assign</p>
+      </div></div></div>
+      <div class="stat-card" style="--stat-accent:#dc2626;"><div class="stat-card-body"><div class="stat-info">
+        <p class="stat-label">In workshop</p><h4 class="stat-value">2</h4><p class="stat-sublabel">Off the roster</p>
+      </div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">Vehicles</div>
+          <div class="card-subtitle">Every truck, who drives it and which company it belongs to</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:10px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="status">Status</label>
+            <select id="status" class="form-control">
+              <option>All statuses</option>
+              <option>In Transit</option>
+              <option>Idle</option>
+              <option>Maintenance</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary" data-unbuilt="Adding a vehicle">Add vehicle</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Plate Number</th><th>Capacity</th><th>Status</th><th>Driver</th>
+              <th>Company</th><th>Registered</th><th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var chip = {
+      'In Transit': 'status-transit',
+      'Idle': 'status-idle',
+      'Maintenance': 'status-unavailable'
+    };
+
+    function paint(filter) {
+      document.getElementById('rows').innerHTML = DATA.vehicles.filter(function (v) {
+        return !filter || filter === 'All statuses' || v.status === filter;
+      }).map(function (v) {
+        return '<tr>' +
+          '<td><strong>' + v.plate + '</strong></td>' +
+          '<td>' + v.cap + '</td>' +
+          '<td><span class="status-chip ' + chip[v.status] + '">' + v.status + '</span></td>' +
+          '<td>' + v.driver + '</td>' +
+          '<td>' + v.company + '</td>' +
+          '<td>' + v.since + '</td>' +
+          '<td style="text-align:right;"><button type="button" class="btn btn-sm" data-unbuilt="Editing a vehicle">Edit</button></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    document.getElementById('status').addEventListener('change', function () { paint(this.value); });
+    paint();
+  </script>
+</body>
+</html>

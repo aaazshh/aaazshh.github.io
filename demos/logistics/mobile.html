@@ -9,73 +9,91 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
   <style>
-    /* The driver app is Flutter, so this view follows Material rather than the
-       admin stylesheet: same teal brand, Roboto, list tiles, a bottom bar. */
+    /* The driver app is Flutter, so this follows Material rather than the admin
+       stylesheet: same teal brand, Roboto, list tiles, a bottom bar. */
     :root {
       --brand: #2a9d8f;
       --brand-dark: #207a6e;
       --navy: #264653;
       --ink: #1f2937;
       --muted: #6b7280;
-      --line: #e5e7eb;
+      --line: #e8eaed;
       --amber: #d97706;
       --red: #dc2626;
+      --bg: #f5f6f7;
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
     body {
       margin: 0;
       font-family: Roboto, "Segoe UI", sans-serif;
       color: var(--ink);
-      background: #f3f4f6;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
+    button { font: inherit; color: inherit; }
 
     .appbar {
+      position: relative;
+      z-index: 5;
       flex: none;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
+      gap: 14px;
+      padding: 14px 14px;
       background: var(--brand);
       color: #fff;
-      box-shadow: 0 2px 4px rgb(0 0 0 / 0.18);
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
     }
-    .appbar h1 { margin: 0; font-size: 17px; font-weight: 500; }
-    .appbar .sub { font-size: 12px; opacity: 0.85; }
-    .appbar button {
-      margin-left: auto;
-      border: 0;
-      background: none;
-      color: #fff;
-      font: 500 13px Roboto, sans-serif;
+    .appbar h1 { margin: 0; font-size: 17px; font-weight: 500; letter-spacing: 0.01em; }
+    .appbar .sub { font-size: 12px; opacity: 0.86; margin-top: 1px; }
+    .iconbtn {
+      flex: none;
+      display: grid; place-items: center;
+      width: 34px; height: 34px;
+      border: 0; border-radius: 50%;
+      background: none; color: #fff;
       cursor: pointer;
-      padding: 6px;
     }
-    .back { margin-left: 0 !important; padding: 0 !important; display: none; }
-    .screen-detail .back { display: block; }
+    .iconbtn:active { background: rgb(255 255 255 / 0.18); }
+    .back { display: none; }
+    .has-back .back { display: grid; }
 
-    .body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .body { position: relative; flex: 1; overflow-y: auto; }
     .view { display: none; }
     .view.is-on { display: block; }
 
-    .banner {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: #fff7ed;
-      border-bottom: 1px solid #fed7aa;
-      font-size: 13px;
-      color: #9a3412;
+    /* Sign in */
+    .signin { min-height: 100%; display: grid; align-content: center; gap: 22px; padding: 32px 26px; background: #fff; }
+    .signin .mark { display: grid; justify-items: center; gap: 10px; }
+    .signin .mark div { font-size: 19px; font-weight: 700; letter-spacing: 0.02em; }
+    .signin .mark span { font-size: 12.5px; color: var(--muted); }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field input {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: 400 15px Roboto, sans-serif;
+      background: #fff;
     }
+    .field input:focus { outline: 2px solid var(--brand); outline-offset: -1px; border-color: transparent; }
+
+    /* Run header */
+    .runcard { margin: 14px; padding: 16px; border-radius: 12px; background: var(--navy); color: #fff; }
+    .runcard .top { display: flex; align-items: baseline; justify-content: space-between; }
+    .runcard .trip { font-size: 18px; font-weight: 700; }
+    .runcard .plate { font-size: 13px; opacity: 0.85; }
+    .runcard .meta { margin-top: 3px; font-size: 13px; opacity: 0.85; }
+    .bar { margin-top: 14px; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.25); overflow: hidden; }
+    .bar span { display: block; height: 100%; background: #6ee7d5; transition: width 260ms ease; }
 
     .tile {
       display: grid;
       grid-template-columns: 34px 1fr auto;
-      gap: 2px 14px;
+      gap: 3px 14px;
       align-items: center;
       width: 100%;
       padding: 14px 16px;
@@ -83,67 +101,112 @@
       border-bottom: 1px solid var(--line);
       background: #fff;
       text-align: left;
-      font: inherit;
       cursor: pointer;
     }
+    .tile:active { background: #f0fdfa; }
     .seq {
       grid-area: 1 / 1 / 3 / 2;
       width: 30px; height: 30px;
       border-radius: 50%;
       display: grid; place-items: center;
       font-size: 13px; font-weight: 700; color: #fff;
-      background: #94a3b8;
+      background: #b6bcc4;
     }
     .tile.done .seq { background: var(--brand); }
     .tile.next .seq { background: var(--amber); }
     .tile .name { grid-area: 1 / 2; font-size: 15px; font-weight: 500; }
     .tile .meta { grid-area: 2 / 2; font-size: 12.5px; color: var(--muted); }
     .tile .when { grid-area: 1 / 3 / 3 / 4; align-self: center; font-size: 12px; color: var(--muted); text-align: right; }
-    .tile.done .name { color: var(--muted); text-decoration: line-through; }
+    .tile.done .name { color: var(--muted); }
+    .tile.next { box-shadow: inset 3px 0 0 var(--amber); }
 
-    .pad { padding: 16px; }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
-      overflow: hidden;
-    }
+    .pad { padding: 14px; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1); overflow: hidden; }
     .card + .card { margin-top: 12px; }
-    .card h2 { margin: 0; padding: 14px 16px 0; font-size: 14px; font-weight: 500; }
-    .card p { margin: 6px 0 0; padding: 0 16px 14px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
-    .rows { padding: 4px 0 8px; }
-    .row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13.5px; }
-    .row span:last-child { color: var(--muted); }
-
-    #map { height: 100%; min-height: 260px; }
-    .map-wrap { height: calc(100dvh - 128px); }
-
-    .fab {
-      position: absolute;
-      right: 16px;
-      bottom: 74px;
-      width: 52px; height: 52px;
-      border: 0; border-radius: 50%;
-      background: var(--red);
-      color: #fff;
-      font: 700 12px Roboto, sans-serif;
-      box-shadow: 0 4px 10px rgb(0 0 0 / 0.3);
-      cursor: pointer;
+    .card h2 {
+      margin: 0; padding: 14px 16px 10px;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
     }
+    .card .text { padding: 0 16px 15px; font-size: 14.5px; line-height: 1.55; }
+    .rows { padding: 0 0 8px; }
+    .row { display: flex; justify-content: space-between; gap: 16px; padding: 9px 16px; font-size: 14px; }
+    .row span:last-child { color: var(--muted); text-align: right; }
+    .row.total { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 12px; font-weight: 500; }
+    .row.total span:last-child { color: var(--ink); }
 
-    .actions { display: grid; gap: 10px; padding: 16px; }
+    .actions { display: grid; gap: 10px; padding: 14px; }
     .btn {
-      padding: 13px 16px;
-      border: 0; border-radius: 6px;
+      padding: 14px 16px;
+      border: 0; border-radius: 8px;
       background: var(--brand);
       color: #fff;
       font: 500 14px Roboto, sans-serif;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       cursor: pointer;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.16);
     }
-    .btn.ghost { background: #fff; color: var(--brand); border: 1px solid var(--brand); }
-    .btn[disabled] { background: #d1d5db; color: #6b7280; cursor: default; }
+    .btn:active { background: var(--brand-dark); }
+    .btn.ghost { background: #fff; color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+    .btn.warn { background: var(--red); }
+    .btn[disabled] { background: #dfe2e6; color: #98a0a8; box-shadow: none; cursor: default; }
+
+    /* Delivery confirmation */
+    .count { display: flex; align-items: center; gap: 12px; padding: 4px 16px 14px; }
+    .count button {
+      width: 40px; height: 40px;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: #fff; font-size: 20px; cursor: pointer;
+    }
+    .count input {
+      width: 70px; padding: 9px;
+      border: 1px solid var(--line); border-radius: 8px;
+      font: 500 17px Roboto, sans-serif; text-align: center;
+    }
+    .count .of { font-size: 13px; color: var(--muted); }
+    .short { margin: 0 16px 14px; padding: 10px 12px; border-radius: 8px; background: #fef3c7; color: #92400e; font-size: 13px; }
+    .sign { margin: 0 16px 14px; border: 1px dashed #c8ccd2; border-radius: 10px; background: #fcfcfd; }
+    .sign canvas { display: block; width: 100%; height: 130px; touch-action: none; border-radius: 10px; }
+    .sign .hint { display: flex; justify-content: space-between; padding: 0 12px 8px; font-size: 12px; color: var(--muted); }
+    .sign .hint button { border: 0; background: none; color: var(--brand); font-size: 12px; cursor: pointer; padding: 0; }
+
+    /* Map */
+    #map { height: 100%; }
+    .map-wrap { position: absolute; inset: 0; }
+    .fab {
+      position: absolute;
+      right: 16px; bottom: 16px;
+      z-index: 500;
+      width: 56px; height: 56px;
+      border: 0; border-radius: 50%;
+      background: var(--red); color: #fff;
+      font: 700 13px Roboto, sans-serif;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.32);
+      cursor: pointer;
+    }
+
+    /* Me */
+    .who { display: grid; justify-items: center; gap: 6px; padding: 26px 16px 18px; background: #fff; }
+    .who .avatar {
+      width: 66px; height: 66px; border-radius: 50%;
+      background: var(--brand); color: #fff;
+      display: grid; place-items: center;
+      font-size: 24px; font-weight: 500;
+    }
+    .who .name { font-size: 17px; font-weight: 500; }
+    .who .role { font-size: 13px; color: var(--muted); }
+
+    /* Done */
+    .done-wrap { display: grid; justify-items: center; gap: 8px; padding: 36px 24px 16px; text-align: center; }
+    .done-wrap .tick {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--brand); color: #fff;
+      display: grid; place-items: center;
+      margin-bottom: 6px;
+    }
+    .done-wrap h2 { margin: 0; font-size: 19px; font-weight: 500; }
+    .done-wrap p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.6; }
 
     .navbar {
       flex: none;
@@ -153,27 +216,46 @@
       background: #fff;
     }
     .navbar button {
-      padding: 9px 0 11px;
+      padding: 9px 0 10px;
       border: 0; background: none;
       color: var(--muted);
       font: 500 11px Roboto, sans-serif;
-      display: grid; justify-items: center; gap: 4px;
+      display: grid; justify-items: center; gap: 3px;
       cursor: pointer;
     }
     .navbar button.is-on { color: var(--brand); }
     .navbar svg { width: 21px; height: 21px; }
+    .navbar[hidden], .appbar[hidden] { display: none; }
+
+    .sheet {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 900;
+      padding: 20px 18px 24px;
+      border-radius: 16px 16px 0 0;
+      background: #fff;
+      box-shadow: 0 -6px 24px rgb(0 0 0 / 0.22);
+      transform: translateY(110%);
+      transition: transform 200ms cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    .sheet.show { transform: none; }
+    .sheet h3 { margin: 0 0 6px; font-size: 16px; font-weight: 500; }
+    .sheet p { margin: 0 0 16px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+    .sheet .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .toast {
       position: fixed;
-      left: 16px; right: 16px; bottom: 76px;
+      left: 14px; right: 14px; bottom: 74px;
+      z-index: 950;
       padding: 12px 14px;
-      border-radius: 6px;
-      background: #1f2937;
+      border-radius: 8px;
+      background: #303438;
       color: #f8fafc;
       font-size: 13px;
+      line-height: 1.45;
       opacity: 0;
       transform: translateY(8px);
-      transition: opacity 140ms ease, transform 140ms ease;
+      transition: opacity 160ms ease, transform 160ms ease;
       pointer-events: none;
     }
     .toast.show { opacity: 1; transform: none; }
@@ -181,39 +263,121 @@
 </head>
 <body>
 
-  <header class="appbar" id="appbar">
-    <button class="back" id="back" aria-label="Back">
+  <header class="appbar" id="appbar" hidden>
+    <button class="iconbtn back" id="back" aria-label="Back">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
     </button>
-    <div>
+    <div style="flex:1;min-width:0;">
       <h1 id="title">Today's run</h1>
-      <div class="sub" id="sub">TR-4417, GBA 4821 X</div>
+      <div class="sub" id="sub"></div>
     </div>
+    <button class="iconbtn" id="refresh" aria-label="Refresh run">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"></path><path d="M21 3v6h-6"></path></svg>
+    </button>
   </header>
 
   <div class="body" id="body">
 
-    <section class="view is-on" id="view-stops">
-      <div class="banner">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
-        Sample data. The real app pulls the run over a bearer token API.
-      </div>
-      <div id="stops"></div>
+    <section class="view is-on" id="view-signin">
+      <form class="signin" id="signin-form">
+        <div class="mark">
+          <img src="logo.png" alt="" width="56" height="56" style="border-radius:12px;">
+          <div>Logistics</div>
+          <span>Driver app</span>
+        </div>
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" type="email" value="rahim.o@primesupermarket.sg" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="pw">Password</label>
+          <input id="pw" type="password" value="............" autocomplete="off">
+        </div>
+        <button type="submit" class="btn">Sign in</button>
+        <p style="margin:0;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.5;">
+          Single sign on through the IAM service. The token it returns is what every request carries.
+        </p>
+      </form>
     </section>
 
-    <section class="view" id="view-detail"></section>
+    <section class="view" id="view-run">
+      <div class="runcard">
+        <div class="top">
+          <span class="trip" id="trip-id">TR-4417</span>
+          <span class="plate" id="trip-plate">GBA 4821 X</span>
+        </div>
+        <div class="meta" id="trip-meta"></div>
+        <div class="bar"><span id="trip-bar"></span></div>
+      </div>
+      <div id="stops"></div>
+      <div class="actions" id="run-actions"></div>
+    </section>
+
+    <section class="view" id="view-stop"></section>
+
+    <section class="view" id="view-deliver"></section>
 
     <section class="view" id="view-map">
       <div class="map-wrap"><div id="map"></div></div>
       <button class="fab" id="sos">SOS</button>
     </section>
 
+    <section class="view" id="view-me">
+      <div class="who">
+        <div class="avatar">RO</div>
+        <div class="name">Rahim Osman</div>
+        <div class="role">Driver, Prime Supermarket</div>
+      </div>
+      <div class="pad">
+        <div class="card">
+          <h2>Today</h2>
+          <div class="rows">
+            <div class="row"><span>Vehicle</span><span>GBA 4821 X, 1.7 t</span></div>
+            <div class="row"><span>Shift started</span><span>06:40</span></div>
+            <div class="row"><span>Stops done</span><span id="me-done">4 of 7</span></div>
+            <div class="row"><span>Distance</span><span>38.4 km</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>This week</h2>
+          <div class="rows">
+            <div class="row"><span>Trips</span><span>11</span></div>
+            <div class="row"><span>Stops</span><span>63</span></div>
+            <div class="row"><span>Short deliveries</span><span>2</span></div>
+            <div class="row"><span>Incidents raised</span><span>1</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn ghost" id="signout">Sign out</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-done">
+      <div class="done-wrap">
+        <div class="tick">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+        </div>
+        <h2>Run complete</h2>
+        <p>Seven stops, all signed for. The admin board has the times and the audit log has the case counts.</p>
+      </div>
+      <div class="pad">
+        <div class="card">
+          <h2>Summary</h2>
+          <div class="rows" id="summary"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="return-depot">Return to depot</button>
+      </div>
+    </section>
+
   </div>
 
-  <nav class="navbar">
-    <button class="is-on" data-go="stops">
+  <nav class="navbar" id="navbar" hidden>
+    <button class="is-on" data-go="run">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-      Stops
+      Run
     </button>
     <button data-go="map">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -225,98 +389,80 @@
     </button>
   </nav>
 
+  <div class="sheet" id="sheet">
+    <h3 id="sheet-title"></h3>
+    <p id="sheet-text"></p>
+    <div class="pair">
+      <button type="button" class="btn ghost" data-sheet="cancel">Cancel</button>
+      <button type="button" class="btn warn" id="sheet-go">Send</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
+  <script src="data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
   <script>
     'use strict';
 
-    var STOPS = [
-      { name: 'Clementi Ave 3', addr: 'Blk 443 Clementi Ave 3, 120443', lat: 1.3150, lng: 103.7650, cases: 29, kg: 355, po: 'PO-88219', state: 'done', when: '07:14' },
-      { name: 'Queenstown Blk 52', addr: 'Blk 52 Stirling Rd, 141052', lat: 1.2950, lng: 103.8060, cases: 18, kg: 221, po: 'PO-88222', state: 'done', when: '07:58' },
-      { name: 'Tiong Bahru Plaza', addr: '302 Tiong Bahru Rd, 168732', lat: 1.2860, lng: 103.8270, cases: 24, kg: 290, po: 'PO-88223', state: 'done', when: '08:36' },
-      { name: 'Toa Payoh Lor 4', addr: 'Blk 79 Lor 4 Toa Payoh, 310079', lat: 1.3350, lng: 103.8500, cases: 16, kg: 198, po: 'PO-88220', state: 'next', when: 'ETA 09:25' },
-      { name: 'Ang Mo Kio Ave 10', addr: 'Blk 452 Ang Mo Kio Ave 10, 560452', lat: 1.3691, lng: 103.8454, cases: 34, kg: 412, po: 'PO-88214', state: 'queued', when: 'ETA 10:20' },
-      { name: 'Yishun Ring Rd', addr: 'Blk 846 Yishun Ring Rd, 760846', lat: 1.4290, lng: 103.8350, cases: 25, kg: 302, po: 'PO-88221', state: 'queued', when: 'ETA 11:15' }
-    ];
+    // The run the admin side assigned to this driver: trip TR-4417 on the
+    // control center, same seven stops, same plate.
+    var TRIP = DATA.live[0];
 
-    var body = document.getElementById('body');
-    var appbar = document.getElementById('appbar');
-    var title = document.getElementById('title');
-    var sub = document.getElementById('sub');
+    var LINES = {
+      'Clementi Ave 3': [['Chilled dairy', 9], ['Dry goods', 12], ['Produce', 8]],
+      'Queenstown Blk 52': [['Chilled dairy', 6], ['Produce', 12]],
+      'Tiong Bahru Plaza': [['Dry goods', 14], ['Frozen', 10]],
+      'Toa Payoh Lor 4': [['Chilled dairy', 7], ['Dry goods', 9]],
+      'Ang Mo Kio Ave 10': [['Dry goods', 18], ['Produce', 11], ['Frozen', 5]],
+      'Yishun Ring Rd': [['Chilled dairy', 10], ['Dry goods', 15]],
+      'Distribution Centre, Pandan Loop': [['Load out', 0]]
+    };
+
+    var TIMES = ['06:48', '07:14', '07:58', '08:36', '', '', ''];
+
+    var stops = TRIP.stops.map(function (name, i) {
+      var o = DATA.outlet(name);
+      var lines = LINES[name] || [['Dry goods', 10]];
+      return {
+        name: name,
+        addr: o.addr,
+        lat: o.lat,
+        lng: o.lng,
+        po: 'PO-88' + (214 + i),
+        lines: lines,
+        cases: lines.reduce(function (n, l) { return n + l[1]; }, 0),
+        state: i < TRIP.done ? 'done' : i === TRIP.done ? 'next' : 'queued',
+        at: TIMES[i] || '',
+        signed: null
+      };
+    });
+
     var map = null;
+    var here = 'signin';
+    var current = 0;
+    var view = {
+      appbar: document.getElementById('appbar'),
+      navbar: document.getElementById('navbar'),
+      title: document.getElementById('title'),
+      sub: document.getElementById('sub')
+    };
 
-    function paintStops() {
-      document.getElementById('stops').innerHTML = STOPS.map(function (s, i) {
-        return '<button type="button" class="tile ' + s.state + '" data-i="' + i + '">' +
-          '<span class="seq">' + (i + 1) + '</span>' +
-          '<span class="name">' + s.name + '</span>' +
-          '<span class="when">' + s.when + '</span>' +
-          '<span class="meta">' + s.cases + ' cases, ' + s.kg + ' kg</span>' +
-          '</button>';
-      }).join('');
-    }
-
-    function show(view) {
+    function show(name, opts) {
+      opts = opts || {};
+      here = name;
       Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
-        v.classList.toggle('is-on', v.id === 'view-' + view);
+        v.classList.toggle('is-on', v.id === 'view-' + name);
       });
-      appbar.classList.toggle('screen-detail', view === 'detail');
-      if (view === 'map') initMap();
-    }
-
-    function openStop(i) {
-      var s = STOPS[i];
-      title.textContent = s.name;
-      sub.textContent = 'Stop ' + (i + 1) + ' of ' + STOPS.length + ', ' + s.po;
-
-      document.getElementById('view-detail').innerHTML =
-        '<div class="pad">' +
-          '<div class="card">' +
-            '<h2>Delivery address</h2>' +
-            '<p>' + s.addr + '</p>' +
-          '</div>' +
-          '<div class="card">' +
-            '<h2>Load</h2>' +
-            '<div class="rows">' +
-              '<div class="row"><span>Order</span><span>' + s.po + '</span></div>' +
-              '<div class="row"><span>Cases</span><span>' + s.cases + '</span></div>' +
-              '<div class="row"><span>Weight</span><span>' + s.kg + ' kg</span></div>' +
-              '<div class="row"><span>Window</span><span>06:00 to 09:00</span></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="actions">' +
-          (s.state === 'done'
-            ? '<button class="btn" disabled>Delivered ' + s.when + '</button>'
-            : '<button class="btn" data-act="deliver" data-i="' + i + '">Mark delivered</button>' +
-              '<button class="btn ghost" data-act="nav">Navigate to stop</button>') +
-        '</div>';
-
-      show('detail');
-    }
-
-    function initMap() {
-      if (map) { map.invalidateSize(); return; }
-      map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 12);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-      }).addTo(map);
-
-      var line = STOPS.map(function (s) { return [s.lat, s.lng]; });
-      L.polyline(line, { color: '#2a9d8f', weight: 4 }).addTo(map);
-      STOPS.forEach(function (s, i) {
-        var fill = s.state === 'done' ? '#2a9d8f' : s.state === 'next' ? '#d97706' : '#94a3b8';
-        L.marker([s.lat, s.lng], {
-          icon: L.divIcon({
-            className: '', iconSize: [22, 22], iconAnchor: [11, 11],
-            html: '<div style="width:22px;height:22px;border-radius:50%;background:' + fill +
-              ';color:#fff;font:700 11px/22px Roboto,sans-serif;text-align:center">' + (i + 1) + '</div>'
-          })
-        }).bindPopup('<strong>' + s.name + '</strong><br>' + s.cases + ' cases').addTo(map);
-      });
-      map.fitBounds(L.polyline(line).getBounds(), { padding: [30, 30] });
-      setTimeout(function () { map.invalidateSize(); }, 60);
+      var chrome = name !== 'signin';
+      view.appbar.hidden = !chrome;
+      view.navbar.hidden = !chrome || name === 'stop' || name === 'deliver' || name === 'done';
+      view.appbar.classList.toggle('has-back', name === 'stop' || name === 'deliver');
+      view.title.textContent = opts.title || 'Today\'s run';
+      view.sub.textContent = opts.sub || (TRIP.trip + ', ' + TRIP.plate);
+      document.getElementById('body').scrollTop = 0;
+      if (name === 'map') drawMap();
+      if (name === 'run') paintRun();
     }
 
     function toast(text) {
@@ -324,59 +470,339 @@
       el.textContent = text;
       el.classList.add('show');
       clearTimeout(el.timer);
-      el.timer = setTimeout(function () { el.classList.remove('show'); }, 3000);
+      el.timer = setTimeout(function () { el.classList.remove('show'); }, 3200);
     }
 
-    body.addEventListener('click', function (event) {
-      var tile = event.target.closest('.tile');
-      if (tile) { openStop(Number(tile.dataset.i)); return; }
+    /* Run ------------------------------------------------------------------ */
+
+    function done() { return stops.filter(function (s) { return s.state === 'done'; }).length; }
+
+    function paintRun() {
+      var d = done();
+      document.getElementById('trip-id').textContent = TRIP.trip;
+      document.getElementById('trip-plate').textContent = TRIP.plate;
+      document.getElementById('trip-meta').textContent =
+        d + ' of ' + stops.length + ' stops done, ' + (stops.length - d) + ' to go';
+      document.getElementById('trip-bar').style.width = (d / stops.length * 100) + '%';
+      document.getElementById('me-done').textContent = d + ' of ' + stops.length;
+
+      document.getElementById('stops').innerHTML = stops.map(function (s, i) {
+        return '<button type="button" class="tile ' + s.state + '" data-stop="' + i + '">' +
+          '<span class="seq">' + (i + 1) + '</span>' +
+          '<span class="name">' + s.name + '</span>' +
+          '<span class="when">' + (s.at || (s.state === 'next' ? 'Next' : '')) + '</span>' +
+          '<span class="meta">' + s.cases + ' cases' +
+            (s.signed !== null && s.signed < s.cases ? ', ' + (s.cases - s.signed) + ' short' : '') + '</span>' +
+          '</button>';
+      }).join('');
+
+      document.getElementById('run-actions').innerHTML = d === stops.length
+        ? '<button type="button" class="btn" data-act="finish">Finish run</button>'
+        : '<button type="button" class="btn" data-act="go-next">Go to stop ' + (d + 1) + '</button>' +
+          '<button type="button" class="btn ghost" data-act="raise">Raise an incident</button>';
+    }
+
+    /* One stop ------------------------------------------------------------- */
+
+    function openStop(i) {
+      current = i;
+      var s = stops[i];
+
+      document.getElementById('view-stop').innerHTML =
+        '<div class="pad">' +
+          '<div class="card">' +
+            '<h2>Delivery address</h2>' +
+            '<div class="text">' + s.addr + '</div>' +
+          '</div>' +
+          '<div class="card">' +
+            '<h2>Manifest, ' + s.po + '</h2>' +
+            '<div class="rows">' +
+              s.lines.map(function (l) {
+                return '<div class="row"><span>' + l[0] + '</span><span>' + l[1] + ' cases</span></div>';
+              }).join('') +
+              '<div class="row total"><span>Total</span><span>' + s.cases + ' cases</span></div>' +
+            '</div>' +
+          '</div>' +
+          (s.state === 'done' ? '<div class="card"><h2>Signed for</h2><div class="rows">' +
+            '<div class="row"><span>Arrived</span><span>' + s.at + '</span></div>' +
+            '<div class="row"><span>Accepted</span><span>' + (s.signed === null ? s.cases : s.signed) + ' cases</span></div>' +
+            '</div></div>' : '') +
+        '</div>' +
+        '<div class="actions">' +
+          (s.state === 'done'
+            ? '<button type="button" class="btn" disabled>Delivered ' + s.at + '</button>'
+            : '<button type="button" class="btn" data-act="arrive" data-i="' + i + '">Arrived at stop</button>' +
+              '<button type="button" class="btn ghost" data-act="navigate">Navigate</button>') +
+        '</div>';
+
+      show('stop', { title: s.name, sub: 'Stop ' + (i + 1) + ' of ' + stops.length });
+    }
+
+    /* Handing over --------------------------------------------------------- */
+
+    function openDeliver(i) {
+      current = i;
+      var s = stops[i];
+
+      document.getElementById('view-deliver').innerHTML =
+        '<div class="pad">' +
+          '<div class="card">' +
+            '<h2>Cases accepted</h2>' +
+            '<div class="count">' +
+              '<button type="button" data-step="-1" aria-label="One less">-</button>' +
+              '<input id="accepted" type="text" inputmode="numeric" value="' + s.cases + '">' +
+              '<button type="button" data-step="1" aria-label="One more">+</button>' +
+              '<span class="of">of ' + s.cases + ' sent</span>' +
+            '</div>' +
+            '<div class="short" id="short" hidden></div>' +
+          '</div>' +
+          '<div class="card">' +
+            '<h2>Outlet signature</h2>' +
+            '<div class="sign">' +
+              '<canvas id="pad" width="600" height="260"></canvas>' +
+              '<div class="hint"><span id="sign-hint">Sign inside the box</span><button type="button" id="clear">Clear</button></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="actions">' +
+          '<button type="button" class="btn" id="confirm" disabled>Confirm delivery</button>' +
+          '<button type="button" class="btn ghost" data-act="back-stop">Back</button>' +
+        '</div>';
+
+      show('deliver', { title: 'Hand over', sub: s.name });
+      wirePad(s);
+    }
+
+    function wirePad(s) {
+      var canvas = document.getElementById('pad');
+      var ctx = canvas.getContext('2d');
+      var drawing = false;
+      var signed = false;
+
+      ctx.strokeStyle = '#1f2937';
+      ctx.lineWidth = 3.2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      function at(event) {
+        var r = canvas.getBoundingClientRect();
+        return [
+          (event.clientX - r.left) * (canvas.width / r.width),
+          (event.clientY - r.top) * (canvas.height / r.height)
+        ];
+      }
+
+      canvas.addEventListener('pointerdown', function (event) {
+        drawing = true;
+        canvas.setPointerCapture(event.pointerId);
+        var p = at(event);
+        ctx.beginPath();
+        ctx.moveTo(p[0], p[1]);
+        event.preventDefault();
+      });
+
+      canvas.addEventListener('pointermove', function (event) {
+        if (!drawing) return;
+        var p = at(event);
+        ctx.lineTo(p[0], p[1]);
+        ctx.stroke();
+        if (!signed) {
+          signed = true;
+          document.getElementById('confirm').disabled = false;
+          document.getElementById('sign-hint').textContent = 'Signed';
+        }
+      });
+
+      canvas.addEventListener('pointerup', function () { drawing = false; });
+      canvas.addEventListener('pointercancel', function () { drawing = false; });
+
+      document.getElementById('clear').addEventListener('click', function () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signed = false;
+        document.getElementById('confirm').disabled = true;
+        document.getElementById('sign-hint').textContent = 'Sign inside the box';
+      });
+
+      var input = document.getElementById('accepted');
+
+      function sync() {
+        var n = Math.max(0, Math.min(s.cases, Number(input.value) || 0));
+        input.value = n;
+        var short = document.getElementById('short');
+        short.hidden = n === s.cases;
+        short.textContent = (s.cases - n) + ' case' + (s.cases - n === 1 ? '' : 's') +
+          ' short. This raises a short delivery against ' + s.po + ' and the outlet signs for what arrived.';
+      }
+
+      input.addEventListener('input', sync);
+      document.querySelector('.count').addEventListener('click', function (event) {
+        var btn = event.target.closest('[data-step]');
+        if (!btn) return;
+        input.value = Number(input.value || 0) + Number(btn.dataset.step);
+        sync();
+      });
+
+      document.getElementById('confirm').addEventListener('click', function () {
+        var accepted = Number(input.value) || 0;
+        s.signed = accepted;
+        s.state = 'done';
+        s.at = clockNow();
+        if (stops[current + 1]) stops[current + 1].state = 'next';
+
+        show('run');
+        if (accepted < s.cases) {
+          toast('Signed for ' + accepted + ' of ' + s.cases + '. Short delivery logged against ' + s.po + '.');
+        } else {
+          toast('Delivered. The control center shows the stop as done straight away.');
+        }
+        if (done() === stops.length) setTimeout(finish, 900);
+      });
+    }
+
+    function clockNow() {
+      var d = new Date();
+      return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+    }
+
+    function finish() {
+      var short = stops.reduce(function (n, s) {
+        return n + (s.signed !== null ? s.cases - s.signed : 0);
+      }, 0);
+      var sent = stops.reduce(function (n, s) { return n + s.cases; }, 0);
+
+      document.getElementById('summary').innerHTML =
+        '<div class="row"><span>Trip</span><span>' + TRIP.trip + '</span></div>' +
+        '<div class="row"><span>Stops</span><span>' + stops.length + '</span></div>' +
+        '<div class="row"><span>Cases out</span><span>' + sent + '</span></div>' +
+        '<div class="row"><span>Signed for</span><span>' + (sent - short) + '</span></div>' +
+        '<div class="row total"><span>Short</span><span>' + short + '</span></div>';
+
+      show('done', { title: 'Run complete', sub: TRIP.trip });
+    }
+
+    /* Map ------------------------------------------------------------------ */
+
+    function drawMap() {
+      if (!map) {
+        map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+        }).addTo(map);
+        map.pins = L.layerGroup().addTo(map);
+      }
+      map.pins.clearLayers();
+
+      var line = stops.map(function (s) { return [s.lat, s.lng]; });
+      L.polyline(line, { color: '#2a9d8f', weight: 4 }).addTo(map.pins);
+      stops.forEach(function (s, i) {
+        var fill = s.state === 'done' ? '#2a9d8f' : s.state === 'next' ? '#d97706' : '#94a3b8';
+        L.marker([s.lat, s.lng], {
+          icon: L.divIcon({
+            className: '', iconSize: [24, 24], iconAnchor: [12, 12],
+            html: '<div style="width:24px;height:24px;border-radius:50%;background:' + fill +
+              ';color:#fff;font:700 12px/24px Roboto,sans-serif;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.35)">' + (i + 1) + '</div>'
+          })
+        }).bindPopup('<strong>' + s.name + '</strong><br>' + s.cases + ' cases').addTo(map.pins);
+      });
+      map.fitBounds(L.polyline(line).getBounds(), { padding: [34, 34] });
+      setTimeout(function () { map.invalidateSize(); }, 60);
+    }
+
+    /* Wiring --------------------------------------------------------------- */
+
+    document.getElementById('signin-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      show('run');
+      toast('Signed in. Today\'s run came down with the token.');
+    });
+
+    document.getElementById('body').addEventListener('click', function (event) {
+      var tile = event.target.closest('[data-stop]');
+      if (tile) { openStop(Number(tile.dataset.stop)); return; }
 
       var act = event.target.closest('[data-act]');
       if (!act) return;
 
-      if (act.dataset.act === 'deliver') {
-        var i = Number(act.dataset.i);
-        STOPS[i].state = 'done';
-        STOPS[i].when = '09:21';
-        if (STOPS[i + 1]) STOPS[i + 1].state = 'next';
-        paintStops();
-        show('stops');
-        title.textContent = "Today's run";
-        sub.textContent = 'TR-4417, GBA 4821 X';
-        toast('Delivery confirmed. The admin board updates straight away.');
-      } else {
-        toast('Opens turn by turn navigation in the real app.');
+      switch (act.dataset.act) {
+        case 'go-next':
+          openStop(done());
+          break;
+        case 'arrive':
+          openDeliver(Number(act.dataset.i));
+          break;
+        case 'navigate':
+          toast('Hands the stop to the phone\'s navigation app.');
+          break;
+        case 'back-stop':
+          openStop(current);
+          break;
+        case 'raise':
+          sheet('Raise an incident', 'Sends the type, the stop and the truck position to the admins. They see it on the incidents board within seconds.', 'Raise', function () {
+            toast('Incident raised against ' + stops[done()].name + '. An admin is on it.');
+          });
+          break;
+        case 'finish':
+          finish();
+          break;
       }
     });
 
     document.getElementById('back').addEventListener('click', function () {
-      show('stops');
-      title.textContent = "Today's run";
-      sub.textContent = 'TR-4417, GBA 4821 X';
+      if (here === 'deliver') openStop(current);
+      else show('run');
     });
 
-    document.querySelector('.navbar').addEventListener('click', function (event) {
+    document.getElementById('refresh').addEventListener('click', function () {
+      toast('Run refreshed. Nothing new from the admin board.');
+    });
+
+    document.getElementById('navbar').addEventListener('click', function (event) {
       var btn = event.target.closest('[data-go]');
       if (!btn) return;
       Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('is-on'); });
       btn.classList.add('is-on');
-
-      if (btn.dataset.go === 'me') {
-        toast('Profile, vehicle check and shift history live here.');
-        btn.classList.remove('is-on');
-        document.querySelector('[data-go="stops"]').classList.add('is-on');
-        return;
-      }
-      show(btn.dataset.go);
-      title.textContent = btn.dataset.go === 'map' ? 'Route' : "Today's run";
-      sub.textContent = 'TR-4417, GBA 4821 X';
+      var where = btn.dataset.go;
+      show(where, {
+        title: where === 'map' ? 'Route' : where === 'me' ? 'Rahim Osman' : 'Today\'s run',
+        sub: where === 'me' ? 'Driver, Prime Supermarket' : TRIP.trip + ', ' + TRIP.plate
+      });
     });
+
+    document.getElementById('return-depot').addEventListener('click', function () {
+      toast('Heading back to Pandan Loop. The trip closes when the truck is back.');
+    });
+
+    document.getElementById('signout').addEventListener('click', function () {
+      show('signin');
+    });
+
+    /* SOS sheet */
+    var sheetEl = document.getElementById('sheet');
+    var sheetGo = null;
+
+    function sheet(title, text, label, go) {
+      document.getElementById('sheet-title').textContent = title;
+      document.getElementById('sheet-text').textContent = text;
+      document.getElementById('sheet-go').textContent = label;
+      sheetGo = go;
+      sheetEl.classList.add('show');
+    }
 
     document.getElementById('sos').addEventListener('click', function () {
-      toast('SOS sent. Admins get a push notification with the truck position.');
+      sheet('Send an SOS', 'Every admin on duty gets a push with your position and the truck. Use it for a breakdown, an accident or anything unsafe.', 'Send SOS', function () {
+        toast('SOS sent. Admins have your position and the trip.');
+      });
     });
 
-    paintStops();
+    sheetEl.addEventListener('click', function (event) {
+      if (event.target.closest('[data-sheet="cancel"]')) sheetEl.classList.remove('show');
+      if (event.target.closest('#sheet-go')) {
+        sheetEl.classList.remove('show');
+        if (sheetGo) sheetGo();
+      }
+    });
+
+    paintRun();
   </script>
 </body>
 </html>

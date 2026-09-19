@@ -18,7 +18,8 @@
     users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
     building: '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line><line x1="8" y1="6" x2="8" y2="6.01"></line><line x1="12" y1="6" x2="12" y2="6.01"></line><line x1="16" y1="6" x2="16" y2="6.01"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path>',
-    menu: '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>'
+    menu: '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>',
+    'log-out': '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>'
   };
 
   var nav = [
@@ -37,9 +38,8 @@
     { page: 'roles', label: 'Role Management', icon: 'shield' }
   ];
 
-  // Pages that exist in this demo. The rest are in the sidebar because the real
-  // app has them, and they say so when clicked rather than pretending.
-  var built = ['index', 'control-center', 'orders', 'trip-routes'];
+  var built = ['index', 'control-center', 'orders', 'incidents', 'trip-routes',
+    'locations', 'fleet', 'users', 'companies', 'roles'];
 
   function svg(name, size) {
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + (size || 18) + '" height="' + (size || 18) +
@@ -69,7 +69,7 @@
       '</div>' +
       '<nav class="sidebar-nav">' + links + '</nav>' +
       '<div class="sidebar-footer"><div class="nav-section-label">Admin</div>' +
-        '<a href="#" class="nav-item" data-unbuilt="Logout"><span class="nav-icon">' + svg('map-pin') + '</span>Logout</a>' +
+        '<a href="#" class="nav-item" data-unbuilt="Logout"><span class="nav-icon">' + svg('log-out') + '</span>Logout</a>' +
       '</div>' +
     '</aside>' +
     '<div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>' +
@@ -84,9 +84,10 @@
           '</nav>' +
         '</div>' +
         '<div class="topbar-right"><div class="topbar-user">' +
-          '<span class="demo-flag">Sample data</span>' +
-          '<span class="topbar-divider" aria-hidden="true">|</span>' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(255,255,255,0.75);flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>' +
           '<strong>Maram Aashna</strong>' +
+          '<span class="topbar-divider" aria-hidden="true">|</span>' +
+          '<a href="#" class="topbar-logout" data-unbuilt="Logout">Log Out</a>' +
         '</div></div>' +
       '</header>' +
       '<main class="page-content" id="page-content" role="main">' + content + '</main>' +
@@ -104,17 +105,20 @@
     backdrop.classList.remove('show');
   });
 
-  // The pages that were not rebuilt for the demo say so instead of dead ending.
   document.addEventListener('click', function (event) {
     var link = event.target.closest('[data-unbuilt]');
     if (!link) return;
     event.preventDefault();
-    var note = document.getElementById('demo-note');
-    note.textContent = link.dataset.unbuilt + ' is part of the real system. This demo rebuilds four of the screens.';
-    note.classList.add('show');
-    clearTimeout(note.timer);
-    note.timer = setTimeout(function () { note.classList.remove('show'); }, 3200);
+    window.flash(link.dataset.unbuilt + ' is wired to the live system, not to this walkthrough.');
   });
+
+  window.flash = function (text) {
+    var el = document.getElementById('demo-note');
+    el.textContent = text;
+    el.classList.add('show');
+    clearTimeout(el.timer);
+    el.timer = setTimeout(function () { el.classList.remove('show'); }, 3400);
+  };
 
   var note = document.createElement('div');
   note.id = 'demo-note';

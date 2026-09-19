@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="users" data-title="User Management">
+
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">People</div>
+          <div class="card-subtitle">Accounts come from the IAM service, roles are set per company here</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:10px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="role">Role</label>
+            <select id="role" class="form-control">
+              <option>All roles</option>
+              <option>Super Admin</option>
+              <option>Admin</option>
+              <option>Ops Manager</option>
+              <option>Driver</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="q">Search</label>
+            <input id="q" class="form-control" type="search" placeholder="Name or email">
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Company</th><th>Status</th><th>Created</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    function paint() {
+      var role = document.getElementById('role').value;
+      var q = document.getElementById('q').value.trim().toLowerCase();
+
+      var rows = DATA.users.filter(function (u) {
+        if (role !== 'All roles' && u.role !== role) return false;
+        if (q && (u.name + ' ' + u.email).toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      });
+
+      document.getElementById('rows').innerHTML = rows.length ? rows.map(function (u) {
+        return '<tr>' +
+          '<td><strong>' + u.name + '</strong></td>' +
+          '<td>' + u.email + '</td>' +
+          '<td>' + u.role + '</td>' +
+          '<td>' + u.company + '</td>' +
+          '<td><span class="status-chip ' + (u.status === 'Active' ? 'status-active' : 'status-unavailable') + '">' + u.status + '</span></td>' +
+          '<td>' + u.created + '</td>' +
+          '</tr>';
+      }).join('') : '<tr><td colspan="6" style="padding:28px;text-align:center;color:#6b7280;">Nobody matches that.</td></tr>';
+    }
+
+    document.getElementById('role').addEventListener('change', paint);
+    document.getElementById('q').addEventListener('input', paint);
+    paint();
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Management, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="companies" data-title="Company Management">
+
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">Companies</div>
+          <div class="card-subtitle">Each one brings its own outlets, trucks and order source. A super admin switches between them.</div>
+        </div>
+        <button type="button" class="btn btn-primary" data-unbuilt="Adding a company">Add company</button>
+      </div>
+      <div class="card-body">
+        <div class="co-board" id="board"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    document.getElementById('board').innerHTML = DATA.companies.map(function (c) {
+      var trucks = DATA.vehicles.filter(function (v) { return v.company === c.name; });
+      var people = DATA.users.filter(function (u) { return u.company === c.name; });
+
+      return '<div class="co-col">' +
+        '<div class="co-col-head">' +
+          '<div><div class="co-col-title">' + c.name + '</div>' +
+          '<span class="co-code">' + c.code + '</span></div>' +
+        '</div>' +
+        '<div class="co-meta">' +
+          '<div>' + c.outlets + ' outlets</div>' +
+          '<div>' + trucks.length + ' vehicles</div>' +
+          '<div>' + people.length + ' users</div>' +
+          '<div>Orders from: ' + c.source + '</div>' +
+        '</div>' +
+        '<div class="co-roles">' +
+          people.slice(0, 4).map(function (p) {
+            return '<span class="co-role-chip">' + p.name + ', ' + p.role + '</span>';
+          }).join('') +
+          (people.length > 4 ? '<span class="co-role-chip">and ' + (people.length - 4) + ' more</span>' : '') +
+        '</div>' +
+        '<div class="co-drop">' +
+          trucks.map(function (t) {
+            return '<div class="co-veh"><span class="co-veh-plate">' + t.plate + '</span>' +
+              '<span class="co-veh-meta">' + t.cap + ', ' + t.driver + '</span></div>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  </script>
+</body>
+</html>

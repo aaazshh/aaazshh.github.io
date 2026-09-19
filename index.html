@@ -103,11 +103,25 @@
     <section class="window" role="dialog" aria-modal="false">
       <header class="titlebar">
         <h2 class="title"></h2>
-        <button type="button" class="close" aria-label="Close window">
-          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2 10 10 M10 2 2 10"/></svg>
-        </button>
+        <div class="controls">
+          <button type="button" class="ctl zoom" aria-label="Maximize window">
+            <svg viewBox="0 0 12 12" aria-hidden="true" class="ico-max"><rect x="2.5" y="2.5" width="7" height="7" rx="1"/></svg>
+            <svg viewBox="0 0 12 12" aria-hidden="true" class="ico-restore"><rect x="1.5" y="3.5" width="6.5" height="6.5" rx="1"/><path d="M4 3.5V2.5a1 1 0 0 1 1-1h4.5a1 1 0 0 1 1 1V7a1 1 0 0 1-1 1h-1"/></svg>
+          </button>
+          <button type="button" class="ctl close" aria-label="Close window">
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.6 2.6 9.4 9.4M9.4 2.6 2.6 9.4"/></svg>
+          </button>
+        </div>
       </header>
       <div class="pane" tabindex="-1"></div>
+      <div class="grip grip-n" data-grip="n"></div>
+      <div class="grip grip-s" data-grip="s"></div>
+      <div class="grip grip-e" data-grip="e"></div>
+      <div class="grip grip-w" data-grip="w"></div>
+      <div class="grip grip-ne" data-grip="ne"></div>
+      <div class="grip grip-nw" data-grip="nw"></div>
+      <div class="grip grip-se" data-grip="se"></div>
+      <div class="grip grip-sw" data-grip="sw"></div>
     </section>
   </template>
 

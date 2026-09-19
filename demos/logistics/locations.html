@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locations, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="locations" data-title="Locations">
+
+    <div class="cc-layout">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Outlets</div>
+            <div class="card-subtitle">Addresses are geocoded once, on import</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0;padding:0 14px 12px;">
+          <input id="q" class="form-control" type="search" placeholder="Search outlets">
+        </div>
+        <div id="list" style="max-height:430px;overflow-y:auto;"></div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="title">18 outlets across the island</div>
+            <div class="card-subtitle" id="sub">The depot in the west, everything else on the delivery round</div>
+          </div>
+        </div>
+        <div id="map" class="cc-map"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script>
+    'use strict';
+
+    var map = L.map('map').setView([1.3521, 103.8198], 11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+    }).addTo(map);
+
+    var pins = {};
+
+    function pin(o) {
+      return L.divIcon({
+        className: '', iconSize: [16, 16], iconAnchor: [8, 8],
+        html: '<div style="width:16px;height:16px;border-radius:50%;background:' +
+          (o.hub ? '#264653' : '#2a9d8f') + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>'
+      });
+    }
+
+    DATA.outlets.forEach(function (o) {
+      pins[o.name] = L.marker([o.lat, o.lng], { icon: pin(o) })
+        .bindPopup('<strong>' + o.name + '</strong><br>' + o.addr + '<br>' + o.company)
+        .addTo(map);
+    });
+
+    var ZONES = ['West', 'Central', 'North', 'East'];
+
+    function paint() {
+      var q = document.getElementById('q').value.trim().toLowerCase();
+      var html = '';
+
+      ZONES.forEach(function (zone) {
+        var here = DATA.outlets.filter(function (o) {
+          return o.zone === zone && (!q || (o.name + ' ' + o.addr).toLowerCase().indexOf(q) !== -1);
+        });
+        if (!here.length) return;
+
+        html += '<div class="location-section-header">' +
+          '<span class="location-section-title">' + zone + '</span>' +
+          '<span class="location-count">' + here.length + '</span></div>';
+
+        html += here.map(function (o) {
+          return '<button type="button" class="cc-vehicle" data-name="' + o.name + '">' +
+            '<div class="cc-plate">' + o.name + (o.hub ? ' <span class="status-chip status-active">depot</span>' : '') + '</div>' +
+            '<div class="cc-driver">' + o.addr + '</div>' +
+            '<div class="cc-driver">' + o.company + '</div>' +
+            '</button>';
+        }).join('');
+      });
+
+      document.getElementById('list').innerHTML = html ||
+        '<div class="location-empty" style="padding:24px;text-align:center;color:#6b7280;">No outlet matches that.</div>';
+    }
+
+    document.getElementById('q').addEventListener('input', paint);
+
+    document.getElementById('list').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-name]');
+      if (!btn) return;
+      var o = DATA.outlet(btn.dataset.name);
+      map.setView([o.lat, o.lng], 15);
+      pins[o.name].openPopup();
+      document.getElementById('title').textContent = o.name;
+      document.getElementById('sub').textContent = o.addr + ', ' + o.zone + ' round';
+      Array.prototype.forEach.call(this.querySelectorAll('.cc-vehicle'), function (el) {
+        el.classList.toggle('is-active', el === btn);
+      });
+    });
+
+    paint();
+  </script>
+</body>
+</html>

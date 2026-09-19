@@ -114,45 +114,12 @@
               <th>Trip</th>
               <th>Vehicle</th>
               <th>Driver</th>
+              <th>Progress</th>
               <th>Stops</th>
-              <th>Started</th>
               <th>Status</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td><strong>TR-4417</strong></td>
-              <td>GBA 4821 X</td>
-              <td>Rahim</td>
-              <td>4 of 7 done</td>
-              <td>07:12</td>
-              <td><span class="status-chip status-transit">In Transit</span></td>
-            </tr>
-            <tr>
-              <td><strong>TR-4418</strong></td>
-              <td>GBM 7734 T</td>
-              <td>Kok Wai</td>
-              <td>2 of 5 done</td>
-              <td>07:40</td>
-              <td><span class="status-chip status-transit">In Transit</span></td>
-            </tr>
-            <tr>
-              <td><strong>TR-4419</strong></td>
-              <td>XE 8842 P</td>
-              <td>Siti</td>
-              <td>6 of 6 done</td>
-              <td>06:55</td>
-              <td><span class="status-chip status-idle">Returning</span></td>
-            </tr>
-            <tr>
-              <td><strong>TR-4420</strong></td>
-              <td>GBD 2290 R</td>
-              <td>Prakash</td>
-              <td>1 of 8 done</td>
-              <td>08:05</td>
-              <td><span class="status-chip status-transit">In Transit</span></td>
-            </tr>
-          </tbody>
+          <tbody id="running"></tbody>
         </table>
       </div>
     </div>
@@ -180,8 +147,24 @@
       }
     };
   </script>
+  <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="dashboard.js"></script>
+  <script>
+    document.getElementById('running').innerHTML = DATA.live.map(function (t) {
+      var last = t.done >= t.total;
+      return '<tr>' +
+        '<td><strong>' + t.trip + '</strong></td>' +
+        '<td>' + t.plate + '</td>' +
+        '<td>' + t.driver + '</td>' +
+        '<td>' + t.done + ' of ' + t.total + ' done</td>' +
+        '<td>' + t.stops.length + '</td>' +
+        '<td>' + (last
+          ? '<span class="status-chip status-idle">Returning</span>'
+          : '<span class="status-chip status-transit">In Transit</span>') + '</td>' +
+        '</tr>';
+    }).join('');
+  </script>
 </body>
 </html>

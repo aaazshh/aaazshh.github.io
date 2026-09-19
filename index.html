@@ -21,10 +21,9 @@
   <a class="skip-link" href="#items">Skip to the desktop items</a>
 
   <div class="desktop" id="desktop">
-    <!-- The photo is parked while the crop gets another look. assets/me.png and
-         the .wallpaper rules are both still there, so uncommenting this line
-         brings it back. Until then the desktop wears a plain gradient. -->
-    <!-- <img class="wallpaper" src="assets/me.png" alt="Maram Aashna, looking straight at the camera"> -->
+    <!-- Wallpaper, decorative, so the alt stays empty. The portrait photo is
+         parked at assets/me.png until its crop gets another look. -->
+    <img class="wallpaper" src="assets/wallpaper.webp" alt="">
 
     <header class="menubar">
       <span class="who">Maram Aashna</span>
@@ -120,40 +119,43 @@
         Five systems. Three of them have a web half and a mobile half that were built
         to work as one thing, so they are filed as one thing.</p>
       <ul class="systems">
-        <li>
+        <li class="system">
           <button type="button" class="row" data-open="logistics" aria-haspopup="dialog">
             <span class="row-name">Logistics</span>
             <span class="row-note">Multi company fleet management, route optimisation, driver app</span>
-            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
           </button>
+          <span class="platforms">
+            <button type="button" class="chip is-live" data-demo="logistics/index.html" data-kind="web" data-label="Logistics, admin portal">web</button>
+            <button type="button" class="chip is-live" data-demo="logistics/mobile.html" data-kind="phone" data-label="Logistics, driver app">mobile</button>
+          </span>
         </li>
-        <li>
+        <li class="system">
           <button type="button" class="row" data-open="fishfarm" aria-haspopup="dialog">
             <span class="row-name">Fish Farm</span>
             <span class="row-note">Operations portal that replaced the paper logs</span>
-            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
           </button>
+          <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
         </li>
-        <li>
+        <li class="system">
           <button type="button" class="row" data-open="hq" aria-haspopup="dialog">
             <span class="row-name">HQ</span>
             <span class="row-note">Laravel backend and a Flutter app over the same workflows</span>
-            <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
           </button>
+          <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
         </li>
-        <li>
+        <li class="system">
           <button type="button" class="row" data-open="iam" aria-haspopup="dialog">
             <span class="row-name">IAM</span>
             <span class="row-note">Single sign on. The service the others log into</span>
-            <span class="platforms"><span class="chip">web</span></span>
           </button>
+          <span class="platforms"><span class="chip">web</span></span>
         </li>
-        <li>
+        <li class="system">
           <button type="button" class="row" data-open="analytics" aria-haspopup="dialog">
             <span class="row-name">Analytics</span>
             <span class="row-note">Elasticsearch indexing, spreadsheet exports, scraping</span>
-            <span class="platforms"><span class="chip">web</span></span>
           </button>
+          <span class="platforms"><span class="chip">web</span></span>
         </li>
       </ul>
     </template>
@@ -165,7 +167,9 @@
         trucks. The Flutter driver app pulls routes over a bearer token REST API,
         walks turn by turn stops in flutter_map, reports live GPS back to the admins
         and sends an FCM push on SOS.</p>
-      <p class="stub">Screenshots of the admin map and the driver app go here.</p>
+      <p class="demo-open">Open the <button type="button" class="link" data-demo="logistics/index.html" data-kind="web" data-label="Logistics, admin portal">admin portal</button>
+        or the <button type="button" class="link" data-demo="logistics/mobile.html" data-kind="phone" data-label="Logistics, driver app">driver app</button>.
+        Both run on sample data, with the portal built on the stylesheet the real one uses.</p>
     </template>
 
     <template data-window="fishfarm" data-title="experience/fish-farm">

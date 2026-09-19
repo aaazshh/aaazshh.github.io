@@ -40,26 +40,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 100dvh;
   overflow: hidden;
   isolation: isolate;
-  /* Stand in for the photo: a plain desktop gradient, no file to load. Goes
-     back to var(--stone) when the wallpaper comes off the bench. */
-  background:
-    radial-gradient(120% 90% at 58% 30%, #dceaf4 0%, #9dbdd4 44%, #4d7695 78%, #33556e 100%);
+  background: var(--stone);
 }
 
-/* The face sits at the middle of this frame, so laying the photo out at twice
-   the width of the screen and letting the right half run off it cuts her down
-   the centre line at the right edge, whatever the window is doing. The left of
-   the frame is the window behind her, which is where the icons go. How much of
-   her height fits is what is left over: tall windows reach her chin, wide ones
-   stop around the mouth. */
+/* Full bleed. Cover crops to whatever shape the window is, so the subject is
+   steered by hand to keep it clear of the icons on the left. */
 .wallpaper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
+  inset: 0;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 32%;
+  object-position: 62% 50%;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -73,9 +65,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   gap: 14px;
   padding: 14px 20px 26px;
   font-size: 12px;
-  /* The scrim is there to lift the name and clock off dark hair. Back when the
-     photo is. */
-  /* background: linear-gradient(to bottom, #e0ddd7e8 0%, #e0ddd7a6 52%, #e0ddd700 100%); */
+  /* Lifts the name and the clock off whatever the wallpaper is doing up there. */
+  background: linear-gradient(to bottom, #e0ddd7e8 0%, #e0ddd7a6 52%, #e0ddd700 100%);
 }
 .who { font-family: Georgia, serif; font-size: 15px; letter-spacing: -0.01em; }
 .what { color: var(--muted); }
@@ -251,22 +242,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
    two halves of one thing, so they are two chips on one row, not two rows. */
 .systems { margin: 4px 0 0; padding: 0; list-style: none; }
 .systems li + li { border-top: 1px solid var(--edge); }
-.row {
+.system {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2px 16px;
-  width: 100%;
-  padding: 13px 12px 13px 10px;
-  border: 0;
+  align-items: center;
+  gap: 12px;
   border-left: 2px solid transparent;
+}
+.system:hover { background: #e6e2da; border-left-color: var(--accent); }
+.row {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 13px 4px 13px 10px;
+  border: 0;
   background: none;
   text-align: left;
   cursor: pointer;
 }
-.row:hover { background: #e6e2da; border-left-color: var(--accent); }
-.row-name { grid-area: 1 / 1; font-size: 15px; }
-.row-note { grid-area: 2 / 1; font-size: 13px; color: var(--muted); }
-.platforms { grid-area: 1 / 2 / 3 / 3; align-self: center; display: flex; gap: 6px; }
+.row-name { font-size: 15px; }
+.row-note { font-size: 13px; color: var(--muted); }
+.platforms { display: flex; gap: 6px; padding-right: 12px; }
 .chip {
   padding: 3px 9px;
   border: 1px solid var(--edge);
@@ -274,23 +270,70 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 11px;
   letter-spacing: 0.04em;
   color: var(--muted);
+  background: none;
 }
-.row:hover .chip { border-color: #bdb8ac; }
+.system:hover .chip { border-color: #bdb8ac; }
+/* A chip you can press opens the thing itself, so it looks pressable. */
+.chip.is-live {
+  border-color: var(--accent);
+  color: var(--accent);
+  cursor: pointer;
+}
+.chip.is-live:hover { background: var(--accent); color: var(--panel); }
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.demo-open { font-size: 14px !important; }
+
+/* Demo windows: the project running inside the desktop. */
+/* These windows get a real height so the pane, which is a flex child, has
+   something to fill. Left to itself a flex child with the iframe in it
+   collapses to the iframe's default 150px. */
+.window-demo { max-height: none; }
+.window-demo.is-web { --w: 1080px; height: min(720px, calc(100dvh - 110px)); }
+.window-demo.is-phone { --w: 392px; height: min(812px, calc(100dvh - 110px)); }
+.pane.is-frame { padding: 0; overflow: hidden; display: flex; flex: 1; min-height: 0; }
+.demo-frame { flex: 1; width: 100%; border: 0; background: #f3f4f6; }
+.phone {
+  flex: 1;
+  display: flex;
+  padding: 10px;
+  background: #d9d5cc;
+}
+.phone .demo-frame {
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgb(38 38 35 / 0.3);
+  background: #fff;
+}
+.full-size {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--edge);
+}
+.full-size:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.full-size + .close { margin-left: 12px; }
 
 @media (max-width: 760px) {
   /* No dragging on small screens. The icons sit in a fixed grid over the lower
      half of the photo and tap straight through. Cover crops a wide photo hard
      in a phone shaped box, so the figure needs its own framing here, and the
      scrim under the grid is what keeps the labels readable. */
-  .wallpaper { width: 100%; height: 74%; object-position: 50% 50%; }
-  /* The scrim under the icon grid belongs to the photo, so it waits with it.
+  .wallpaper { height: 74%; object-position: 55% 45%; }
   .desktop::after {
     content: "";
     position: absolute;
     inset: 40% 0 0;
     background: linear-gradient(to bottom, #e0ddd700 0%, #e0ddd7e0 44%, var(--stone) 64%);
     pointer-events: none;
-  } */
+  }
   .menubar { padding: 12px 16px; }
   .tidy { display: none; }
   .what { display: none; }
@@ -314,7 +357,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   .titlebar { cursor: default; }
   .pane { padding: 18px 18px 22px; }
-  .platforms { grid-area: 3 / 1; margin-top: 6px; }
+  .system { grid-template-columns: 1fr; }
+  .platforms { padding: 0 12px 12px 12px; }
+  .window-demo.is-web, .window-demo.is-phone { height: calc(100dvh - 150px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

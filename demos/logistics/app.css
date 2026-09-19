@@ -1,0 +1,3973 @@
+/* ============================================================
+   Logistics — Main Stylesheet
+   Font: Inter (Google Fonts)
+   Palette: Verdigris #2a9d8f · Navy #264653 — flat corporate style
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ----------------------------------------------------------
+   CSS Custom Properties
+   ---------------------------------------------------------- */
+:root {
+    /* Sidebar — white/clean */
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e5e7eb;
+    --sidebar-text: #6b7280;
+    --sidebar-text-hov: #1f2937;
+    --sidebar-active: #2a9d8f;
+    --sidebar-active-bg: rgba(42, 157, 143, 0.08);
+    --sidebar-hover-bg: rgba(42, 157, 143, 0.05);
+    --sidebar-width: 240px;
+
+    /* Brand — Verdigris teal */
+    --primary: #2a9d8f;
+    --primary-dark: #207a6e;
+    --primary-light: rgba(42, 157, 143, 0.08);
+    --primary-border: rgba(42, 157, 143, 0.25);
+
+    /* Accent colours (flat, no gradients) */
+    --secondary: #264653;
+    --accent-green: #16a34a;
+    --accent-red:   #dc2626;
+    --accent-amber: #d97706;
+    --accent-navy:  #264653;
+
+    /* Flat colour aliases */
+    --grad-primary:    #2a9d8f;
+    --grad-warm:       #dc2626;
+    --grad-blush:      #d97706;
+    --grad-accent-bar: #264653;
+
+    /* Content area */
+    --bg: #f3f4f6;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --border-light: #f0f1f3;
+
+    /* Text */
+    --text: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+
+    /* Status */
+    --success: #16a34a;
+    --success-bg: rgba(22, 163, 74, 0.08);
+    --warning: #d97706;
+    --warning-bg: rgba(217, 119, 6, 0.10);
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --info: #2a9d8f;
+    --info-bg: rgba(42, 157, 143, 0.08);
+
+    --topbar-height: 60px;
+    --radius: 8px;
+    --radius-sm: 4px;
+    --radius-lg: 8px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow:    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.10);
+
+    --transition: 150ms ease;
+}
+
+/* ----------------------------------------------------------
+   Reset & Base
+   ---------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    cursor: default;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea {
+    cursor: text;
+}
+
+select {
+    cursor: pointer;
+}
+
+a {
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+/* ----------------------------------------------------------
+   App Layout
+   ---------------------------------------------------------- */
+.app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+    padding: 0;
+    gap: 0;
+}
+
+/* ----------------------------------------------------------
+   Sidebar — floating rounded card matching IPS sidenav branding
+   ---------------------------------------------------------- */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    flex-shrink: 0;
+    /* Detached, rounded card with breathing room around it */
+    margin: 16px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid var(--sidebar-border);
+}
+
+.logo-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    background: #264653;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.sidebar-logo-img {
+    width: 36px;
+    height: auto;
+    min-width: 36px;
+    object-fit: contain;
+}
+
+.logo-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logo-sub {
+    font-size: 10px;
+    color: var(--sidebar-text);
+    font-weight: 400;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Company switcher (super admin) */
+.company-switcher {
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--sidebar-border);
+}
+
+.company-switcher label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sidebar-text);
+    margin-bottom: 5px;
+}
+
+.company-switcher select {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--sidebar-border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    padding: 6px 28px 6px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}
+
+.company-switcher select:focus {
+    border-color: var(--primary);
+}
+
+/* Nav */
+.sidebar-nav {
+    flex: 1;
+    padding: 8px 0;
+}
+
+.nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 14px 18px 4px;
+}
+
+/* Rounded pill items with icon-shape boxes — matches IPS sidenav style */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    margin: 2px 12px;
+    color: var(--sidebar-text);
+    font-size: 13px;
+    font-weight: 500;
+    transition: color var(--transition), background var(--transition),
+                box-shadow var(--transition);
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.nav-item:hover {
+    color: var(--sidebar-text-hov);
+    background: var(--sidebar-hover-bg);
+    text-decoration: none;
+}
+
+.nav-item.active {
+    color: #fff;
+    font-weight: 600;
+    background-image: linear-gradient(310deg, var(--primary-dark) 0%, var(--primary) 100%);
+    box-shadow: 0 3px 8px rgba(42, 157, 143, 0.35);
+}
+
+/* Icon sits in a rounded-square "shape" box (IPS icon-shape) */
+.nav-icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: color var(--transition);
+}
+
+/* Icon box stays white with a teal glyph even when the pill is active */
+.nav-item.active .nav-icon {
+    color: var(--primary);
+    background: #fff;
+}
+
+.nav-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.sidebar-footer {
+    border-top: 1px solid var(--sidebar-border);
+    padding: 6px 0;
+}
+
+.sidebar-footer .nav-section-label {
+    display: none;
+}
+
+/* ----------------------------------------------------------
+   Main Content
+   ---------------------------------------------------------- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    border-radius: 0;
+    margin-left: 0;
+    background: var(--bg);
+}
+
+/* Top accent bar — hidden, topbar carries the colour now */
+.content-accent-bar {
+    display: none;
+}
+
+/* ----------------------------------------------------------
+   Top Bar
+   ---------------------------------------------------------- */
+.topbar {
+    height: var(--topbar-height);
+    min-height: var(--topbar-height);
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    gap: 16px;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.topbar-left h1 {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.topbar-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    color: rgba(255,255,255,0.90);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.topbar-breadcrumb .bc-home {
+    color: rgba(255,255,255,0.80);
+    text-decoration: none;
+}
+
+.topbar-breadcrumb .bc-home:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.topbar-breadcrumb .bc-sep {
+    margin: 0 6px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+}
+
+.topbar-breadcrumb .bc-current {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* .topbar-left h1 styling is defined with .topbar above */
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.topbar-user strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.topbar-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.topbar-divider {
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.topbar-logout {
+    color: rgba(255, 255, 255, 0.80);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.topbar-logout:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.badge-admin {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--primary);
+    border: none;
+    font-weight: 700;
+}
+
+.badge-driver {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--accent-navy);
+    border: none;
+    font-weight: 700;
+}
+
+.badge-success {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.badge-danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+
+/* ----------------------------------------------------------
+   Page Content Area
+   ---------------------------------------------------------- */
+.page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+    background: var(--bg);
+    position: relative;
+    z-index: 1;
+}
+
+/* ----------------------------------------------------------
+   Cards
+   ---------------------------------------------------------- */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Compact dropdowns that sit in a card header (Fleet / User Management filters). */
+.filter-select {
+    font-size: 12px;
+    padding: 4px 24px 4px 8px;
+    width: auto;
+    min-width: 140px;
+}
+
+/* ---------------------------------------------------------------
+   Filter bar (Fleet / User Management)
+   A row of labelled fields under the card header. Each field stacks its
+   label above its control, so a header full of unlabelled "All …"
+   dropdowns reads as named columns instead of a run-on line.
+   --------------------------------------------------------------- */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-field-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.filter-bar .filter-select {
+    min-width: 165px;
+    padding: 6px 26px 6px 10px;
+}
+
+/* Clear + result count sit apart from the fields, hard right. */
+.filter-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+@media (max-width: 720px) {
+    .filter-bar {
+        gap: 10px;
+    }
+
+    .filter-field {
+        flex: 1 1 100%;
+    }
+
+    .filter-bar .filter-select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-bar-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.1px;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.card-body {
+    padding: 20px;
+    overflow: visible;
+}
+
+/* ----------------------------------------------------------
+   Stat Cards
+   ---------------------------------------------------------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* IPS two-column stat card layout: text left, icon right */
+.stat-card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.stat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.stat-sublabel {
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Gradient icon shapes (IPS-pattern) */
+.icon-shape {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.icon-shape svg {
+    width: 22px;
+    height: 22px;
+    color: #fff;
+}
+
+.icon-shape.bg-gradient-primary {
+    background: #2a9d8f;
+    color: #fff;
+}
+
+.icon-shape.bg-gradient-warm {
+    background: #dc2626;
+    color: #fff;
+}
+
+.icon-shape.bg-gradient-blush {
+    background: #d97706;
+    color: #fff;
+}
+
+.icon-shape.bg-gradient-success {
+    background: #16a34a;
+    color: #fff;
+}
+
+/* stat-value, stat-label, stat-sublabel defined above with stat-card-body */
+
+.stat-change {
+    margin-top: 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.stat-change.up {
+    color: var(--success);
+}
+
+.stat-change.down {
+    color: var(--danger);
+}
+
+/* ----------------------------------------------------------
+   Charts Grid
+   ---------------------------------------------------------- */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+}
+
+.chart-container {
+    position: relative;
+    padding: 16px 20px 20px;
+}
+
+.chart-container canvas {
+    max-height: 260px;
+}
+
+/* ----------------------------------------------------------
+   Buttons
+   ---------------------------------------------------------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
+    white-space: nowrap;
+    outline: none;
+    line-height: 1;
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #2a9d8f;
+    color: #fff;
+    border-color: #2a9d8f;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #207a6e;
+    border-color: #207a6e;
+}
+
+.btn-secondary {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--primary-light);
+    border-color: var(--primary-border);
+    color: var(--primary);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.btn-sm {
+    padding: 5px 11px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+.btn-icon {
+    padding: 6px;
+    border-radius: var(--radius-sm);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* ----------------------------------------------------------
+   Forms
+   ---------------------------------------------------------- */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.form-label .required {
+    color: var(--danger);
+    margin-left: 2px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+    line-height: 1.4;
+}
+
+.form-control::placeholder {
+    color: var(--text-light);
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.form-control:disabled {
+    background: var(--bg);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-row-3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 10px;
+}
+
+.form-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.form-error {
+    font-size: 11.5px;
+    color: var(--danger);
+    margin-top: 4px;
+}
+
+/* Password input wrapper */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .form-control {
+    padding-right: 42px;
+}
+
+.btn-toggle-pw {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition);
+    padding: 0;
+}
+
+.btn-toggle-pw:hover {
+    color: var(--text);
+}
+
+/* ----------------------------------------------------------
+   Alerts
+   ---------------------------------------------------------- */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    margin-bottom: 16px;
+    border: 1px solid transparent;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: rgba(239, 68, 68, 0.30);
+}
+
+.alert-success {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: rgba(34, 197, 94, 0.30);
+}
+
+.alert-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+/* ----------------------------------------------------------
+   Login Page — IPS-matched split layout
+   ---------------------------------------------------------- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.login-page {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* Left: 50% column — same proportion as IPS col-6 left half */
+.login-form-panel {
+    position: relative;
+    z-index: 2;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    overflow-y: auto;
+}
+
+/* Inner content container — constrained width, centered (IPS col-xl-4 inside col-6) */
+.login-form-inner {
+    width: 100%;
+    max-width: 380px;
+    padding: 0 16px;
+}
+
+.login-logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+}
+
+.login-logo-avatar {
+    width: 36px;
+    height: 36px;
+    background: #264653;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.login-logo-img {
+    width: 64px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.login-logo-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+}
+
+.login-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.login-sub {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+/* Taller inputs matching IPS Bootstrap form-control */
+.login-input {
+    height: 46px;
+    font-size: 14px;
+    border-color: #d2d6da;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.login-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15);
+}
+
+.login-btn {
+    height: 46px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+    border-radius: 8px;
+}
+
+/* OR divider */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 16px;
+}
+
+.login-divider hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #e9ecef;
+    margin: 0;
+}
+
+.login-divider span {
+    font-size: 12px;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+/* Microsoft SSO — IPS style */
+.ms-sign-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 42px;
+    background: #fff;
+    border: 1px solid #8c8c8c;
+    border-radius: 4px;
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5e5e5e;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ms-sign-in:hover {
+    background: #f5f5f5;
+}
+
+.login-copyright {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 11.5px;
+    color: var(--text-light);
+}
+
+/* Right: absolutely positioned floating rounded rectangle — IPS col-6 position-absolute end-0 pattern */
+.login-image-panel {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    left: 50%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--grad-accent-bar);
+    z-index: 1;
+}
+
+.login-image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;   /* subject (loading docks) is centered */
+    display: block;
+}
+
+.login-image-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Green wash to tie the panel into the team theme (#19633e) */
+    background: linear-gradient(150deg,
+        rgba(25, 99, 62, 0.52) 0%,
+        rgba(21, 80, 50, 0.30) 50%,
+        rgba(16, 60, 38, 0.55) 100%);
+    opacity: 1;
+}
+
+@media (max-width: 991px) {
+    .login-image-panel {
+        display: none;
+    }
+
+    .login-form-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-form-inner {
+        padding: 0 8px;
+    }
+}
+
+/* ----------------------------------------------------------
+   Welcome Banner (Dashboard)
+   ---------------------------------------------------------- */
+.welcome-banner {
+    background: var(--grad-primary);
+    border-radius: var(--radius-lg);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 18px rgba(42, 157, 143, 0.28);
+}
+
+.welcome-greeting {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.welcome-greeting strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+.welcome-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.welcome-stats span {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 11.5px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.16);
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .welcome-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* ----------------------------------------------------------
+   Locations Page
+   ---------------------------------------------------------- */
+.locations-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+#location-map {
+    width: 100%;
+    height: 220px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    margin-top: 14px;
+    z-index: 1;
+}
+
+.address-suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-light);
+    transition: background var(--transition);
+    line-height: 1.35;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.suggestion-item strong {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+}
+
+.address-wrapper {
+    position: relative;
+}
+
+.location-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.location-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.location-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.location-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.location-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.location-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.location-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-border);
+}
+
+.location-item-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-item-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.location-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.location-item-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location-item-address {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location-item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.location-empty {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-light);
+    font-size: 13px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+/* ----------------------------------------------------------
+   Fleet / Table styles
+   ---------------------------------------------------------- */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: 0 0 2rem 0 rgba(45, 26, 34, 0.08), 0 2px 4px 0 rgba(45, 26, 34, 0.04);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+thead th {
+    background: #f0f4f6;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 10px 16px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+    opacity: 0.85;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border-light);
+    transition: background var(--transition);
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f0f6f5;
+}
+
+tbody td {
+    padding: 12px 16px;
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.status-idle {
+    background: var(--border-light);
+    color: var(--text-muted);
+}
+
+.status-in_transit {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.status-unavailable {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* Incidents page filter toggle */
+.incident-filter {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.incident-filter .btn.is-active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.status-delivering {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.status-pending {
+    background: var(--border-light);
+    color: var(--text-muted);
+}
+
+.status-active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.status-completed {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.status-delivered {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.status-standard {
+    background: var(--border-light);
+    color: var(--text-muted);
+}
+
+.status-express {
+    background: var(--info-bg);
+    color: var(--info);
+}
+
+.status-same_day {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* ----------------------------------------------------------
+   Modal
+   ---------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 440px;
+    padding: 28px;
+    transform: translateY(12px);
+    transition: transform 200ms ease;
+}
+
+.modal-overlay.open .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: var(--bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition);
+    flex-shrink: 0;
+}
+
+.modal-close:hover {
+    background: var(--border);
+}
+
+.modal-body {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* ----------------------------------------------------------
+   Loading spinner
+   ---------------------------------------------------------- */
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.spinner-dark {
+    border-color: rgba(42, 157, 143, 0.25);
+    border-top-color: var(--primary);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Page-level loading */
+.page-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--text-muted);
+    font-size: 13px;
+    gap: 10px;
+}
+
+/* ----------------------------------------------------------
+   Utilities
+   ---------------------------------------------------------- */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+.gap-3 {
+    gap: 12px;
+}
+
+.gap-4 {
+    gap: 16px;
+}
+
+.mt-1 {
+    margin-top: 4px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mt-3 {
+    margin-top: 12px;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mb-5 {
+    margin-bottom: 20px;
+}
+
+.mb-6 {
+    margin-bottom: 24px;
+}
+
+.text-sm {
+    font-size: 12px;
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Page header row */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+}
+
+.page-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Kept for backwards compatibility */
+.page-header--over-bar h2 {
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(45, 26, 34, 0.15);
+}
+
+.page-header--over-bar p {
+    color: rgba(255, 255, 255, 0.80);
+}
+
+/* ----------------------------------------------------------
+   Responsive
+   ---------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .locations-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .app {
+        padding: 0;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: calc(-1 * var(--sidebar-width));
+        top: 0;
+        bottom: 0;
+        margin: 0;
+        border-radius: 0;
+        transition: left 250ms ease;
+        z-index: 200;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        border-radius: 0;
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .page-content {
+        padding: 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .form-row,
+    .form-row-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .modal {
+        padding: 20px;
+    }
+
+    .topbar-divider,
+    .topbar-logout {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile sidebar toggle button */
+.sidebar-toggle {
+    display: none;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: flex;
+    }
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 190;
+}
+
+.sidebar-backdrop.show {
+    display: block;
+}
+
+/* ----------------------------------------------------------
+   Route Planner
+   ---------------------------------------------------------- */
+.route-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+}
+
+.route-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.route-map-wrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #e8edf2;
+}
+
+#rp-map {
+    width: 100%;
+    height: 100%;
+}
+
+/* GPS status bar */
+.route-gps-bar {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.85);
+    color: #f8fafc;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    z-index: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: background .3s;
+}
+
+.route-gps-bar.acquired {
+    background: rgba(34, 197, 94, 0.85);
+}
+
+/* Numbered stop markers on the map */
+.rp-stop-marker {
+    width: 28px;
+    height: 28px;
+    background: var(--primary);
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    cursor: default;
+}
+
+.rp-stop-marker.visited {
+    background: #22c55e;
+}
+
+/* Pulsing GPS dot */
+.rp-gps-dot {
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border: 2.5px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.30);
+    animation: rp-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rp-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.25);
+    }
+
+    50% {
+        box-shadow: 0 0 0 9px rgba(42, 157, 143, 0.08);
+    }
+}
+
+/* Planning stop list items */
+.rp-plan-stop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.rp-plan-stop:last-child {
+    border-bottom: none;
+}
+
+/* Navigation stop list items */
+.rp-nav-stop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+    transition: opacity .2s;
+}
+
+.rp-nav-stop:last-child {
+    border-bottom: none;
+}
+
+.rp-nav-stop.visited {
+    opacity: 0.5;
+}
+
+/* Shared stop number bubble */
+.rp-stop-num {
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.rp-stop-num.visited {
+    background: #22c55e;
+}
+
+.rp-stop-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rp-stop-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rp-stop-addr {
+    font-size: 11px;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Turn-by-turn instruction rows */
+.rp-instruction {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.rp-instruction:last-child {
+    border-bottom: none;
+}
+
+.rp-instruction.last {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.rp-instr-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    line-height: 1.5;
+}
+
+.rp-instr-dist {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-left: 4px;
+}
+
+/* Admin route cards in sidebar */
+.route-admin-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.route-admin-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.route-admin-card.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+    background: var(--primary-light);
+}
+
+/* Status chip for active routes */
+.status-chip.status-active {
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+@media (max-width: 1100px) {
+    .route-layout {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .route-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .route-map-wrap {
+        height: 350px;
+    }
+}
+
+/* ----------------------------------------------------------
+   Control Center (DispatchOS-style ops dashboard)
+   ---------------------------------------------------------- */
+.cc-updated {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* SOS / incident banner */
+.cc-incident-banner {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+    border-left: 4px solid var(--danger);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+}
+
+.cc-incident-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.cc-incident-badge {
+    font-weight: 700;
+    color: var(--danger);
+    font-size: 13.5px;
+}
+
+.cc-incident-link {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--danger);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.cc-incident-link:hover { text-decoration: underline; }
+
+.cc-incident-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cc-incident-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    padding: 6px 8px;
+    background: var(--card-bg, #fff);
+    border-radius: 6px;
+}
+
+.cc-incident-row.is-open {
+    box-shadow: inset 0 0 0 1px var(--danger);
+}
+
+.cc-incident-plate {
+    font-family: monospace;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    min-width: 72px;
+}
+
+.cc-incident-what { flex: 1; color: var(--text-secondary); }
+.cc-incident-note { font-style: italic; color: var(--text-muted); }
+
+.cc-incident-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.cc-incident-loc { font-size: 12px; color: var(--primary); text-decoration: none; }
+.cc-incident-loc:hover { text-decoration: underline; }
+
+.cc-incident-ack {
+    border: 0;
+    background: var(--danger);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cc-incident-ack:hover { filter: brightness(0.94); }
+.cc-incident-ack:disabled { opacity: 0.6; cursor: default; }
+.cc-incident-ackd { font-size: 12px; color: var(--success); font-weight: 600; }
+
+/* Incident map pin (pulses while still open) */
+/* Breakdown pin: a wobbling warning triangle with cartoon blast puffs popping off
+   around it. Reassigned incidents switch to the calmer 🛟 "rescue underway" look
+   until the replacement route finishes, at which point the API drops the pin. */
+.cc-incident-pin {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cc-incident-tri {
+    font-size: 26px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+    animation: ccIncidentWobble 0.9s ease-in-out infinite;
+    z-index: 2;
+}
+
+.cc-incident-pin.is-rescued .cc-incident-tri {
+    animation: ccRescueBob 2.4s ease-in-out infinite;
+}
+
+@keyframes ccIncidentWobble {
+    0%, 100% { transform: rotate(-7deg) scale(1); }
+    50%      { transform: rotate(7deg) scale(1.12); }
+}
+
+@keyframes ccRescueBob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%      { transform: translateY(-3px) rotate(4deg); }
+}
+
+/* The blast puffs — each corner fires on its own offset so it never looks looped. */
+.cc-boom {
+    position: absolute;
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0;
+    animation: ccBoomPop 1.6s ease-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cc-boom--1 { top: -2px;    left: -2px;   animation-delay: 0s; }
+.cc-boom--2 { top: -2px;    right: -2px;  animation-delay: 0.4s; }
+.cc-boom--3 { bottom: -2px; left: -1px;   animation-delay: 0.8s; }
+.cc-boom--4 { bottom: -2px; right: -1px;  animation-delay: 1.2s; }
+
+@keyframes ccBoomPop {
+    0%   { opacity: 0; transform: scale(0.3); }
+    25%  { opacity: 1; transform: scale(1.25); }
+    60%  { opacity: 0.85; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Rescue sparkles drift instead of detonating. */
+.cc-incident-pin.is-rescued .cc-boom {
+    font-size: 13px;
+    animation: ccSparkleDrift 2.8s ease-in-out infinite;
+}
+
+@keyframes ccSparkleDrift {
+    0%   { opacity: 0; transform: translateY(2px) scale(0.6); }
+    40%  { opacity: 0.95; transform: translateY(-2px) scale(1); }
+    100% { opacity: 0; transform: translateY(-5px) scale(0.7); }
+}
+
+/* Unacknowledged breakdowns also throw a red shockwave ring. */
+.cc-incident-pin.is-open::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    animation: ccIncidentPulse 1.4s ease-out infinite;
+}
+
+@keyframes ccIncidentPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    70%  { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Respect a reduced-motion preference: keep the pin, drop the theatrics. */
+@media (prefers-reduced-motion: reduce) {
+    .cc-incident-tri,
+    .cc-boom,
+    .cc-incident-pin.is-open::before,
+    .cc-rescue-badge {
+        animation: none;
+    }
+    .cc-boom { opacity: 0.9; }
+}
+
+/* Incidents page — Details drawer (SOS post-mortem) */
+.incident-detail-verdict {
+    margin-bottom: 4px;
+}
+
+.incident-detail-h {
+    margin: 16px 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+}
+
+.incident-detail-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+.incident-detail-row > span {
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.incident-detail-row > strong {
+    text-align: right;
+    font-weight: 600;
+}
+
+/* Inline map in the Details drawer — replaces the old "View on map" link out to Google
+   Maps, which dumped the operator on bare coordinates with no context. Needs an explicit
+   height: Leaflet renders into a zero-height box otherwise. */
+.incident-detail-map {
+    height: 220px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 0;   /* keep tiles/panes under the modal chrome */
+}
+
+/* The stranded driver's avatar disc, sitting on top of the warning triangle. Mirrors
+   .cc-driver-disc (same art, same colour) but smaller, and overflows the 44px icon box
+   upward so the triangle itself stays on the incident's coordinates. */
+.cc-incident-avatar {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    z-index: 3;
+}
+
+.cc-incident-avatar img {
+    width: 19px;
+    height: 19px;
+    object-fit: contain;
+}
+
+/* Map key: dashed-line swatches matching the two incident overlays. */
+.cc-key-dash {
+    width: 16px;
+    height: 0;
+    flex-shrink: 0;
+}
+
+.cc-key-dash--stranded { border-top: 3px dashed #b91c1c; }
+.cc-key-dash--rescue   { border-top: 3px dotted var(--success); }
+
+.cc-map-key-title--sub { margin-top: 8px; }
+
+/* Incident route overlays — the stranded (ghost) path and the pending rescue run. */
+.cc-stop-stranded,
+.cc-stop-rescue {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.cc-stop-stranded { background: #b91c1c; }
+.cc-stop-rescue   { background: var(--success); }
+
+/* The rescue truck idles at its last known position until the driver starts. */
+.cc-rescue-truck {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+    animation: ccTruckIdle 1.8s ease-in-out infinite;
+}
+
+@keyframes ccTruckIdle {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    50%      { transform: translateX(1.5px) rotate(-2deg); }
+}
+
+/* Marching ants on the rescue line: it's a plan, not a driven path. */
+.cc-rescue-line {
+    animation: ccAntsMarch 1s linear infinite;
+}
+
+@keyframes ccAntsMarch {
+    to { stroke-dashoffset: -10; }
+}
+
+.cc-muted-pop {
+    color: var(--text-muted);
+    font-size: 11.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-rescue-truck,
+    .cc-rescue-line {
+        animation: none;
+    }
+}
+
+/* Rescue callouts — banner row + route-list cape. */
+.cc-incident-row.is-rescued {
+    box-shadow: inset 0 0 0 1px var(--success);
+}
+
+.cc-incident-rescue {
+    display: block;
+    margin-top: 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.cc-rescue-pop {
+    display: inline-block;
+    margin-top: 4px;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.cc-rescue-badge {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--success);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    animation: ccCapeFlutter 2.2s ease-in-out infinite;
+}
+
+@keyframes ccCapeFlutter {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(-1.5px) rotate(-1.5deg); }
+}
+
+.cc-route-card.is-rescue {
+    border-left: 3px solid var(--success);
+}
+
+/* KPI strip */
+.cc-kpis {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cc-kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cc-kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+}
+
+.cc-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* 3-column grid */
+.cc-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 340px;
+    gap: 16px;
+    height: calc(100vh - 380px);
+    min-height: 420px;
+    margin-bottom: 16px;
+}
+
+.cc-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cc-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+
+.cc-panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text);
+    text-transform: uppercase;
+}
+
+.cc-panel-body {
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cc-map-panel {
+    padding: 0;
+}
+
+#cc-map {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background: #e8edf2;
+}
+
+.cc-empty {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 24px 8px;
+}
+
+.cc-plate {
+    font-family: monospace;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text);
+    font-size: 13px;
+}
+
+/* Route cards (left) */
+.cc-route-card,
+.cc-fleet-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.cc-route-card:hover,
+.cc-fleet-card:hover {
+    border-color: var(--primary-border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Trip-history: clickable route cards + the panel-head toggle */
+.cc-panel-title {
+    margin-right: auto; /* keep button + badge grouped on the right */
+}
+
+.cc-route-card--clickable {
+    cursor: pointer;
+}
+
+.cc-route-card.is-active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary) inset;
+}
+
+.cc-trail-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.cc-trail-btn:hover {
+    border-color: var(--primary-border);
+}
+
+.cc-trail-btn.is-on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Legend marker for the actual-path overlay */
+.cc-key-trail {
+    width: 16px;
+    height: 0;
+    border-top: 3px solid var(--text-secondary);
+    flex-shrink: 0;
+}
+
+/* Direction arrow drawn along the actual GPS trail */
+.cc-trail-arrow {
+    width: 16px;
+    height: 16px;
+    transform-origin: 50% 50%;
+    display: block;
+}
+
+.cc-route-top,
+.cc-fleet-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.cc-route-prog {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.cc-route-driver,
+.cc-fleet-driver {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.cc-route-dest,
+.cc-fleet-dest {
+    font-size: 12px;
+    color: var(--text);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-progress {
+    margin-top: 8px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border-light);
+    overflow: hidden;
+}
+
+/* Admin force-complete button on a route card (testing / stuck-route recovery) */
+.cc-end-route-btn {
+    margin-top: 8px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--danger);
+    background: transparent;
+    border: 1px solid var(--danger);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cc-end-route-btn:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+.cc-end-route-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* Manual stop reordering on a route card -------------------------------- */
+
+.cc-reorder-btn {
+    margin-top: 8px;
+    margin-left: 8px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    background: transparent;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cc-reorder-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.cc-reorder {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid var(--primary-border);
+    border-radius: var(--radius-sm);
+    background: var(--primary-light);
+    cursor: default;
+}
+
+.cc-reorder-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.cc-reorder-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--text-secondary);
+}
+
+.cc-reorder-flag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--warning);
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0 6px;
+}
+
+.cc-reorder-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.cc-reorder-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: grab;
+}
+
+.cc-reorder-item.is-dragging {
+    opacity: .4;
+}
+
+.cc-reorder-item.is-visited {
+    cursor: default;
+    opacity: .6;
+}
+
+.cc-reorder-grip {
+    color: var(--text-light);
+    font-size: 13px;
+    line-height: 1;
+}
+
+.cc-reorder-num {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.cc-reorder-item.is-visited .cc-reorder-num {
+    background: var(--success);
+}
+
+.cc-reorder-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-reorder-done {
+    font-size: 10px;
+    color: var(--success);
+    font-weight: 600;
+}
+
+.cc-reorder-moves {
+    display: flex;
+    gap: 2px;
+}
+
+.cc-reorder-moves button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cc-reorder-moves button:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.cc-reorder-moves button:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+}
+
+.cc-reorder-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.cc-reorder-save,
+.cc-reorder-cancel {
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cc-reorder-save {
+    color: #fff;
+    background: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.cc-reorder-save:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.cc-reorder-cancel {
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.cc-progress span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width .3s;
+}
+
+/* Fleet cards (right) */
+.cc-fleet-cap {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+}
+
+.cc-fleet-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+/* Driver marker on map — vehicle disc stacked above the plate badge */
+.cc-driver-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transform: translate(-50%, -50%);
+}
+
+.cc-driver-disc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.cc-driver-disc img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+.cc-driver-pin {
+    display: inline-block;
+    width: max-content;
+    color: #fff;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+}
+
+/* Numbered stop markers (outlets/warehouses) on the Control Center map */
+.cc-stop-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.cc-stop-marker.is-visited {
+    opacity: 0.45;
+}
+
+/* The stop the truck is driving to right now: bigger pin, a slow pulsing halo and
+   the outlet name pinned beside it, so "where is this driver going" is answerable
+   without clicking anything. */
+.cc-stop-wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.cc-stop-wrap.is-next .cc-stop-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    transform: translate(-50%, -50%);
+    border-width: 3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.cc-stop-halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border-radius: 50%;
+    opacity: 0.45;
+    animation: cc-stop-pulse 2s ease-out infinite;
+}
+
+@keyframes cc-stop-pulse {
+    0%   { transform: scale(1);   opacity: 0.45; }
+    70%  { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+.cc-stop-label {
+    position: absolute;
+    top: 50%;
+    left: 22px;
+    max-width: 150px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Chevron along the active leg — same idea as the GPS trail arrows, but pointing
+   the way the driver is about to go rather than the way they came. */
+.cc-leg-chevron {
+    display: block;
+    width: 14px;
+    height: 14px;
+    transform-origin: 50% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-stop-halo { animation: none; }
+}
+
+.cc-stop-next {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.cc-stop-done {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.cc-stop-route {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+/* Map key / legend (bottom-left of the Control Center map) */
+.cc-map-key {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.cc-key-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.cc-map-key-empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.cc-map-key-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+.cc-map-key-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.cc-key-line {
+    width: 16px;
+    height: 0;
+    border-top: 3px solid var(--primary);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* The three states a route line can be in on the map key. */
+.cc-key-line--leg {
+    width: 18px;
+    border-top: 5px solid var(--text-secondary);
+    border-radius: 3px;
+}
+
+.cc-key-line--later {
+    width: 18px;
+    border-top: 3px dashed var(--text-secondary);
+    opacity: 0.5;
+}
+
+.cc-key-line--driven {
+    width: 18px;
+    border-top: 3px dotted #94a3b8;
+}
+
+/* "→ Outlet name" after a driver's swatch in the map key. */
+.cc-key-dest {
+    margin-left: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.cc-key-pin {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background: var(--primary);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    flex-shrink: 0;
+}
+
+.cc-key-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #111827;
+    flex-shrink: 0;
+}
+
+/* Gantt schedule (bottom) */
+.cc-schedule {
+    margin-bottom: 8px;
+}
+
+.cc-legend {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.cc-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cc-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.cc-dot-active {
+    background: var(--primary);
+}
+
+.cc-dot-completed {
+    background: var(--success);
+}
+
+.cc-gantt {
+    padding: 12px 16px 16px;
+    overflow-x: auto;
+}
+
+.cc-gantt-row,
+.cc-gantt-ruler {
+    display: flex;
+    align-items: stretch;
+    min-width: 600px;
+}
+
+.cc-gantt-label {
+    width: 90px;
+    flex-shrink: 0;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+}
+
+.cc-gantt-track {
+    position: relative;
+    flex: 1;
+    height: 30px;
+    border-left: 1px solid var(--border-light);
+}
+
+.cc-gantt-row .cc-gantt-track {
+    border-bottom: 1px solid var(--border-light);
+}
+
+.cc-gantt-ticks {
+    height: 20px;
+}
+
+.cc-gantt-tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-muted);
+    border-left: 1px solid var(--border-light);
+    padding-left: 3px;
+    height: 100%;
+}
+
+.cc-gantt-now {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--danger);
+    z-index: 3;
+}
+
+.cc-bar {
+    position: absolute;
+    top: 4px;
+    height: 22px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+}
+
+.cc-bar span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-bar-active {
+    background: var(--primary);
+}
+
+.cc-bar-completed {
+    background: var(--success);
+}
+
+@media (max-width: 1100px) {
+    .cc-kpis {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cc-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .cc-left,
+    .cc-right {
+        max-height: 320px;
+    }
+
+    .cc-map-panel {
+        height: 360px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cc-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================================
+   Trip Routes (history replay + performance)
+   ============================================================ */
+.tr-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 16px;
+    height: calc(100vh - 240px);
+    min-height: 480px;
+}
+
+.tr-list-panel,
+.tr-detail-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.tr-detail-panel {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+}
+
+.tr-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Tabs */
+.tr-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 8px 0;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.tr-tab {
+    border: none;
+    background: none;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tr-tab.is-active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tr-tabpane {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.tr-map {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    background: #e8edf2;
+}
+
+/* Map legend (planned vs actual path) */
+.tr-map-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 600;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    display: flex;
+    gap: 12px;
+    pointer-events: none;
+}
+.tr-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tr-legend-line {
+    display: inline-block;
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+}
+.tr-legend-planned {
+    background-color: transparent;
+    border-top: 3px dashed #7c3aed;
+    height: 0;
+}
+.tr-legend-actual { background: #3b82f6; }
+.tr-legend-arrow {
+    color: #1d4ed8;
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* Direction arrowhead placed at each GPS ping along the actual path */
+.tr-dir-arrow {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    font-size: 11px;
+    color: #1d4ed8;
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    transform-origin: center center;
+}
+
+/* Playback overlay (time + speed) */
+.tr-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 600;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    gap: 8px;
+}
+
+/* Playback controls */
+.tr-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+}
+
+.tr-scrub {
+    flex: 1;
+    accent-color: var(--primary);
+}
+
+.tr-speeds {
+    display: flex;
+    gap: 4px;
+}
+
+.tr-speed-btn {
+    border: 1px solid var(--border);
+    background: none;
+    border-radius: 14px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.tr-speed-btn.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Performance pane */
+.tr-performance {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.tr-perf-card {
+    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    color: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.tr-perf-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.tr-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tr-pill {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 6px 12px;
+}
+
+.tr-pill-val {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.tr-pill-label {
+    font-size: 11px;
+    opacity: 0.85;
+}
+
+.tr-perf-stops-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.tr-stop-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+
+.tr-stop-row.is-visited {
+    border-color: rgba(34, 197, 94, 0.45);
+    background: rgba(34, 197, 94, 0.06);
+}
+
+.tr-stop-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tr-stop-num.is-visited {
+    background: var(--success);
+}
+
+.tr-stop-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.tr-stop-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tr-stop-metrics {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.tr-stop-check {
+    color: var(--success);
+    font-weight: 700;
+}
+
+.tr-detail-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    z-index: 700;
+}
+
+@media (max-width: 900px) {
+    .tr-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .tr-detail-panel {
+        min-height: 520px;
+    }
+}
+
+/* ── Trip Routes: Deliveries tab ──────────────────────────────────────────── */
+/* Per stop, what the driver handed over set against what the outlet confirmed. */
+
+.tr-deliveries {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.tr-del-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    background: var(--surface);
+}
+
+.tr-del-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.tr-del-head-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.tr-del-order {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.tr-del-order:last-of-type {
+    border-bottom: 0;
+}
+
+.tr-del-order-main {
+    min-width: 0;
+}
+
+.tr-del-order-ref {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.tr-del-order-qty {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Spans both columns so a long note wraps under the chip instead of squeezing it. */
+.tr-del-issue {
+    grid-column: 1 / -1;
+    font-size: 11.5px;
+    color: var(--danger);
+    background: var(--danger-bg);
+    border-radius: var(--radius-sm);
+    padding: 5px 8px;
+}
+
+.tr-del-receipt {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-light);
+}
+
+.tr-del-receipt--pending {
+    color: var(--warning);
+}
+
+.tr-order-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+    background: var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    vertical-align: middle;
+}
+
+/* Status chips. Five outcomes, not one verdict — a driver marking an order delivered while
+   the outlet reports it short is the finding, so both readings stay visible. */
+.tr-status {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 3px 9px;
+}
+
+.tr-status--confirmed             { color: var(--success); background: var(--success-bg); }
+.tr-status--disputed              { color: var(--danger);  background: var(--danger-bg); }
+.tr-status--awaiting_confirmation { color: var(--warning); background: var(--warning-bg); }
+.tr-status--not_delivered         { color: var(--danger);  background: var(--danger-bg); }
+.tr-status--not_reached           { color: var(--text-muted); background: var(--border-light); }
+
+/* ── Trip Routes: Delivery Audit Log ──────────────────────────────────────── */
+/* Full width below the trip grid: the same question asked across every trip. */
+
+.tr-audit-panel {
+    margin-top: 20px;
+}
+
+.tr-audit-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tr-audit-filters .form-group {
+    margin: 0;
+    min-width: 150px;
+    flex: 0 1 auto;
+}
+
+.tr-audit-filter-actions {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* The table is wide by design (11 columns); it scrolls inside the panel so the page never does. */
+.tr-audit-scroll {
+    overflow-x: auto;
+}
+
+.tr-audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.tr-audit-table th,
+.tr-audit-table td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+}
+
+.tr-audit-table th {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.tr-audit-table tbody tr:hover {
+    background: var(--border-light);
+}
+
+/* The issue column is the one that legitimately needs to wrap. */
+.tr-audit-table td:last-child {
+    white-space: normal;
+    min-width: 200px;
+}
+
+.tr-muted {
+    color: var(--text-light);
+}
+
+/* ── Receipt photo evidence ───────────────────────────────────────────────── */
+/* Files live on the retail server and are referenced by URL, never copied here. */
+
+.tr-del-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.tr-del-photo {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    background: var(--border-light);
+}
+
+.tr-del-photo:hover {
+    border-color: var(--primary);
+}
+
+.tr-photo-count {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.tr-audit-row {
+    cursor: pointer;
+}
+
+/* Detail modal: label/value pairs, values allowed to wrap (notes can be long). */
+.tr-detail-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 13px;
+}
+
+.tr-detail-row:last-child {
+    border-bottom: 0;
+}
+
+.tr-detail-label {
+    color: var(--text-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding-top: 1px;
+}
+
+.tr-detail-value {
+    color: var(--text);
+    word-break: break-word;
+}
+
+.tr-lightbox-modal {
+    max-width: 860px;
+    width: 92vw;
+}
+
+.tr-lightbox-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.tr-lightbox-body img {
+    max-width: 100%;
+    /* Leaves room for the modal chrome so a portrait photo doesn't push the close button
+       off-screen on a laptop display. */
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+}
+
+/* Trip date / trip number inside an audit row: navigates to the trip rather than opening the
+   order detail the rest of the row does, so it needs to look like a distinct target. */
+.tr-trip-link {
+    color: var(--primary);
+    cursor: pointer;
+    border-bottom: 1px dotted currentColor;
+}
+
+.tr-trip-link:hover {
+    border-bottom-style: solid;
+}
+
+/* A photo whose URL fails to load: shown as a placeholder linking to the URL it tried, rather
+   than hidden. "Retail unreachable" and "no photo taken" must not look the same. */
+.tr-del-photo-wrap {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+}
+
+.tr-del-photo.is-broken {
+    visibility: hidden;
+}
+
+.tr-del-photo-broken {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 10px;
+    line-height: 1.1;
+    text-align: center;
+    text-decoration: none;
+    color: var(--warning);
+    background: var(--warning-bg);
+    border: 1px dashed var(--warning);
+    border-radius: var(--radius-sm);
+}

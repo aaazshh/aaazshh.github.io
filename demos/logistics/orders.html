@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assign Orders, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="orders" data-title="Assign Orders">
+
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">Tomorrow's orders</div>
+          <div class="card-subtitle">Imported from the outlet spreadsheet, addresses geocoded on upload</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:10px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="vehicle">Assign to</label>
+            <select id="vehicle" class="form-control">
+              <option>GBA 4821 X, Rahim</option>
+              <option>GBM 7734 T, Kok Wai</option>
+              <option>XE 8842 P, Siti</option>
+              <option>GBD 2290 R, Prakash</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary" id="assign">Assign selected</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" id="all" aria-label="Select all"></th>
+              <th>Order</th>
+              <th>Outlet</th>
+              <th>Cases</th>
+              <th>Weight</th>
+              <th>Window</th>
+              <th>Vehicle</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var ORDERS = [
+      { id: 'PO-88214', outlet: 'Ang Mo Kio Ave 10', cases: 34, kg: 412, win: '06:00 to 09:00' },
+      { id: 'PO-88215', outlet: 'Bedok North St 1', cases: 21, kg: 268, win: '06:00 to 09:00' },
+      { id: 'PO-88216', outlet: 'Jurong West St 52', cases: 47, kg: 590, win: '07:00 to 10:00' },
+      { id: 'PO-88217', outlet: 'Tampines St 81', cases: 12, kg: 143, win: '07:00 to 10:00' },
+      { id: 'PO-88218', outlet: 'Woodlands Dr 50', cases: 38, kg: 470, win: '08:00 to 11:00' },
+      { id: 'PO-88219', outlet: 'Clementi Ave 3', cases: 29, kg: 355, win: '08:00 to 11:00' },
+      { id: 'PO-88220', outlet: 'Toa Payoh Lor 4', cases: 16, kg: 198, win: '09:00 to 12:00' },
+      { id: 'PO-88221', outlet: 'Yishun Ring Rd', cases: 25, kg: 302, win: '09:00 to 12:00' }
+    ];
+
+    var body = document.getElementById('rows');
+    body.innerHTML = ORDERS.map(function (o) {
+      return '<tr data-id="' + o.id + '">' +
+        '<td><input type="checkbox" class="pick" aria-label="Select ' + o.id + '"></td>' +
+        '<td><strong>' + o.id + '</strong></td>' +
+        '<td>' + o.outlet + '</td>' +
+        '<td>' + o.cases + '</td>' +
+        '<td>' + o.kg + ' kg</td>' +
+        '<td>' + o.win + '</td>' +
+        '<td class="assigned"><span class="status-chip status-idle">Unassigned</span></td>' +
+        '</tr>';
+    }).join('');
+
+    document.getElementById('all').addEventListener('change', function (e) {
+      Array.prototype.forEach.call(document.querySelectorAll('.pick'), function (box) {
+        box.checked = e.target.checked;
+      });
+    });
+
+    document.getElementById('assign').addEventListener('click', function () {
+      var vehicle = document.getElementById('vehicle').value.split(',')[0];
+      var picked = document.querySelectorAll('.pick:checked');
+      if (!picked.length) return;
+
+      Array.prototype.forEach.call(picked, function (box) {
+        var row = box.closest('tr');
+        row.querySelector('.assigned').innerHTML =
+          '<span class="status-chip status-transit">' + vehicle + '</span>';
+        box.checked = false;
+      });
+      document.getElementById('all').checked = false;
+
+      var note = document.getElementById('demo-note');
+      note.textContent = picked.length + ' order' + (picked.length > 1 ? 's' : '') + ' assigned to ' + vehicle +
+        '. In the real system this builds the trip and the driver app picks it up.';
+      note.classList.add('show');
+      clearTimeout(note.timer);
+      note.timer = setTimeout(function () { note.classList.remove('show'); }, 3600);
+    });
+  </script>
+</body>
+</html>

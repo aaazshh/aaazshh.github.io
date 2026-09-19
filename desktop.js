@@ -136,6 +136,11 @@
   /* Opening ---------------------------------------------------------------- */
 
   document.addEventListener('click', function (event) {
+    var demo = event.target.closest('[data-demo]');
+    if (demo) {
+      openDemo(demo.dataset.demo, demo.dataset.kind, demo.dataset.label, demo);
+      return;
+    }
     var opener = event.target.closest('[data-open]');
     if (!opener) return;
     if (suppressClick) {
@@ -144,6 +149,60 @@
     }
     openWindow(opener.dataset.open, opener);
   });
+
+  /* A demo window holds the project itself in an iframe: the web ones in a
+     window shaped like a browser, the app ones inside a phone. */
+  function openDemo(src, kind, label, opener) {
+    var id = 'demo-' + src.replace(/[^a-z0-9]+/gi, '-');
+    var open = windowLayer.querySelector('[data-window-id="' + id + '"]');
+    if (open) {
+      raise(open);
+      open.querySelector('.pane').focus();
+      return;
+    }
+
+    var win = frame.content.firstElementChild.cloneNode(true);
+    var heading = win.querySelector('.title');
+    var pane = win.querySelector('.pane');
+    var headingId = 'title-' + id;
+
+    win.dataset.windowId = id;
+    win.classList.add('window-demo', kind === 'phone' ? 'is-phone' : 'is-web');
+    heading.id = headingId;
+    heading.textContent = label;
+    win.setAttribute('aria-labelledby', headingId);
+    win.querySelector('.close').setAttribute('aria-label', 'Close ' + label);
+
+    var full = document.createElement('a');
+    full.className = 'full-size';
+    full.href = 'demos/' + src;
+    full.target = '_blank';
+    full.rel = 'noopener';
+    full.textContent = 'Full size';
+    win.querySelector('.titlebar').insertBefore(full, win.querySelector('.close'));
+
+    pane.classList.add('is-frame');
+    var holder = kind === 'phone' ? document.createElement('div') : pane;
+    if (kind === 'phone') {
+      holder.className = 'phone';
+      pane.appendChild(holder);
+    }
+    var frameEl = document.createElement('iframe');
+    frameEl.className = 'demo-frame';
+    frameEl.src = 'demos/' + src;
+    frameEl.title = label;
+    holder.appendChild(frameEl);
+
+    if (opener) win.returnFocusTo = opener;
+
+    var count = windowLayer.children.length % 5;
+    win.style.setProperty('--wx', 'calc(8% + ' + count * 24 + 'px)');
+    win.style.setProperty('--wy', 'calc(9% + ' + count * 24 + 'px)');
+
+    windowLayer.appendChild(win);
+    raise(win);
+    pane.focus();
+  }
 
   function openWindow(id, opener) {
     var open = windowLayer.querySelector('[data-window-id="' + id + '"]');

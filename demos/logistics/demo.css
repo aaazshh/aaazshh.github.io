@@ -1,0 +1,84 @@
+/* The few things this demo needs that the app stylesheet does not carry: the
+   sample data flag, the note that stands in for the screens not rebuilt here,
+   and the map panels. Everything else comes from app.css, which is the real
+   main.css lifted out of the project. */
+
+.demo-flag {
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.demo-note {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 12px);
+  max-width: 460px;
+  padding: 11px 16px;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 900;
+}
+.demo-note.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Control Center: map beside the vehicle list, same split as the real page. */
+.cc-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.cc-map { height: 520px; border-radius: 8px; }
+.cc-vehicle {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+  border-left: 3px solid transparent;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.cc-vehicle:hover { background: var(--primary-light); }
+.cc-vehicle.is-active { background: var(--primary-light); border-left-color: var(--primary); }
+.cc-plate { font-weight: 600; font-size: 14px; color: var(--text); }
+.cc-driver { font-size: 12px; color: var(--text-muted, #6b7280); margin-top: 2px; }
+.cc-progress { margin-top: 8px; height: 4px; border-radius: 2px; background: #e5e7eb; overflow: hidden; }
+.cc-progress span { display: block; height: 100%; background: var(--primary); }
+
+/* Trip Routes: the playback strip under the map. */
+.tr-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+.tr-scrub { flex: 1; accent-color: var(--primary); }
+.tr-clock { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-secondary); min-width: 132px; }
+.tr-speeds { display: flex; gap: 4px; }
+.tr-speed-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+.tr-speed-btn.is-active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+@media (max-width: 900px) {
+  .cc-layout { grid-template-columns: 1fr; }
+  .cc-map { height: 360px; }
+}

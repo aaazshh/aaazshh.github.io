@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Center, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="control-center" data-title="Control Center">
+
+    <div class="cc-layout">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">On the road</div>
+            <div class="card-subtitle">6 of 18 vehicles</div>
+          </div>
+        </div>
+        <div id="cc-list"></div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="cc-title">GBA 4821 X</div>
+            <div class="card-subtitle" id="cc-sub">Rahim, trip TR-4417, 4 of 7 stops done</div>
+          </div>
+        </div>
+        <div id="cc-map" class="cc-map"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="shell.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script>
+    'use strict';
+
+    // Six trips around the island. Stops are the outlets the run drops at, the
+    // path is the line the truck is following between them.
+    var TRIPS = [
+      {
+        plate: 'GBA 4821 X', driver: 'Rahim', trip: 'TR-4417', done: 4, total: 7,
+        at: [1.3521, 103.8298],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Clementi Ave 3', 1.3150, 103.7650, 'done'],
+          ['Queenstown Blk 52', 1.2950, 103.8060, 'done'],
+          ['Tiong Bahru Plaza', 1.2860, 103.8270, 'done'],
+          ['Toa Payoh Lor 4', 1.3350, 103.8500, 'next'],
+          ['Ang Mo Kio Ave 10', 1.3691, 103.8454, 'queued'],
+          ['Yishun Ring Rd', 1.4290, 103.8350, 'queued']
+        ]
+      },
+      {
+        plate: 'GBM 7734 T', driver: 'Kok Wai', trip: 'TR-4418', done: 2, total: 5,
+        at: [1.3400, 103.9200],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Bedok North St 1', 1.3300, 103.9370, 'done'],
+          ['Tampines St 81', 1.3496, 103.9390, 'next'],
+          ['Pasir Ris Dr 6', 1.3720, 103.9490, 'queued'],
+          ['Simei St 3', 1.3430, 103.9530, 'queued']
+        ]
+      },
+      {
+        plate: 'XE 8842 P', driver: 'Siti', trip: 'TR-4419', done: 6, total: 6,
+        at: [1.3260, 103.7600],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Jurong West St 52', 1.3480, 103.7200, 'done'],
+          ['Boon Lay Way', 1.3380, 103.7060, 'done'],
+          ['Clementi Ave 3', 1.3150, 103.7650, 'done'],
+          ['Bukit Batok St 21', 1.3480, 103.7500, 'done'],
+          ['Back to depot', 1.3180, 103.7490, 'done']
+        ]
+      },
+      {
+        plate: 'GBD 2290 R', driver: 'Prakash', trip: 'TR-4420', done: 1, total: 8,
+        at: [1.4100, 103.8200],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Woodlands Dr 50', 1.4360, 103.8000, 'next'],
+          ['Admiralty Link', 1.4560, 103.8180, 'queued'],
+          ['Sembawang Way', 1.4490, 103.8200, 'queued'],
+          ['Yishun Ring Rd', 1.4290, 103.8350, 'queued'],
+          ['Khatib Ctr', 1.4170, 103.8330, 'queued'],
+          ['Ang Mo Kio Ave 10', 1.3691, 103.8454, 'queued'],
+          ['Bishan St 22', 1.3560, 103.8480, 'queued']
+        ]
+      },
+      {
+        plate: 'GBA 6610 M', driver: 'Aisyah', trip: 'TR-4421', done: 3, total: 6,
+        at: [1.3050, 103.9000],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Geylang Serai', 1.3160, 103.8980, 'done'],
+          ['Marine Parade Ctr', 1.3030, 103.9050, 'done'],
+          ['Kembangan Blk 108', 1.3210, 103.9130, 'next'],
+          ['Eunos Cres', 1.3190, 103.9030, 'queued'],
+          ['Paya Lebar Rd', 1.3180, 103.8930, 'queued']
+        ]
+      },
+      {
+        plate: 'YN 5512 J', driver: 'Daniel', trip: 'TR-4422', done: 5, total: 9,
+        at: [1.3800, 103.7600],
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, 'done'],
+          ['Bukit Batok St 21', 1.3480, 103.7500, 'done'],
+          ['Choa Chu Kang Ave 4', 1.3850, 103.7440, 'done'],
+          ['Bukit Panjang Ring Rd', 1.3800, 103.7630, 'done'],
+          ['Hillview Ave', 1.3630, 103.7670, 'done'],
+          ['Teck Whye Lane', 1.3790, 103.7520, 'next'],
+          ['Yew Tee Sq', 1.3970, 103.7470, 'queued'],
+          ['Woodlands Dr 50', 1.4360, 103.8000, 'queued'],
+          ['Marsiling Rise', 1.4420, 103.7780, 'queued']
+        ]
+      }
+    ];
+
+    var map = L.map('cc-map', { zoomControl: true }).setView([1.3521, 103.8198], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap, &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    var layer = L.layerGroup().addTo(map);
+    var active = 0;
+    var truckMarker = null;
+
+    function stopIcon(state, n) {
+      var fill = state === 'done' ? '#2a9d8f' : state === 'next' ? '#d97706' : '#94a3b8';
+      return L.divIcon({
+        className: '',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+        html: '<div style="width:22px;height:22px;border-radius:50%;background:' + fill +
+          ';color:#fff;font:600 11px/22px Inter,sans-serif;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.3)">' + n + '</div>'
+      });
+    }
+
+    var truckIcon = L.divIcon({
+      className: '',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      html: '<div style="width:30px;height:30px;border-radius:50%;background:#264653;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);display:grid;place-items:center">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>'
+    });
+
+    function draw(index) {
+      active = index;
+      layer.clearLayers();
+      var t = TRIPS[index];
+
+      var line = t.stops.map(function (s) { return [s[1], s[2]]; });
+      L.polyline(line, { color: '#2a9d8f', weight: 4, opacity: 0.75 }).addTo(layer);
+
+      t.stops.forEach(function (s, i) {
+        L.marker([s[1], s[2]], { icon: stopIcon(s[3], i + 1) })
+          .bindPopup('<strong>' + s[0] + '</strong><br>Stop ' + (i + 1) + ' of ' + t.stops.length)
+          .addTo(layer);
+      });
+
+      truckMarker = L.marker(t.at, { icon: truckIcon, zIndexOffset: 500 })
+        .bindPopup('<strong>' + t.plate + '</strong><br>' + t.driver)
+        .addTo(layer);
+
+      map.fitBounds(L.polyline(line).getBounds(), { padding: [40, 40] });
+
+      document.getElementById('cc-title').textContent = t.plate;
+      document.getElementById('cc-sub').textContent =
+        t.driver + ', trip ' + t.trip + ', ' + t.done + ' of ' + t.total + ' stops done';
+
+      Array.prototype.forEach.call(document.querySelectorAll('.cc-vehicle'), function (el, i) {
+        el.classList.toggle('is-active', i === index);
+      });
+    }
+
+    var list = document.getElementById('cc-list');
+    list.innerHTML = TRIPS.map(function (t, i) {
+      var pct = Math.round(t.done / t.total * 100);
+      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
+        '<div class="cc-plate">' + t.plate + '</div>' +
+        '<div class="cc-driver">' + t.driver + ', ' + t.done + '/' + t.total + ' stops</div>' +
+        '<div class="cc-progress"><span style="width:' + pct + '%"></span></div>' +
+        '</button>';
+    }).join('');
+
+    list.addEventListener('click', function (event) {
+      var btn = event.target.closest('.cc-vehicle');
+      if (btn) draw(Number(btn.dataset.i));
+    });
+
+    draw(0);
+
+    // The real page moves these markers from GPS pings the driver app sends in.
+    // Here they wander a little so the map is not a still picture.
+    setInterval(function () {
+      if (!truckMarker) return;
+      var p = truckMarker.getLatLng();
+      truckMarker.setLatLng([p.lat + (Math.random() - 0.5) * 0.002, p.lng + (Math.random() - 0.5) * 0.002]);
+    }, 2000);
+  </script>
+</body>
+</html>

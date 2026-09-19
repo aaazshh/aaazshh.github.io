@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Routes, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="app" data-page="trip-routes" data-title="Trip Routes">
+
+    <div class="cc-layout">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Finished trips</div>
+            <div class="card-subtitle">Yesterday</div>
+          </div>
+        </div>
+        <div id="tr-list"></div>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="tr-title">TR-4402, GBA 4821 X</div>
+            <div class="card-subtitle" id="tr-sub">Rahim, 7 stops, 06:48 to 11:26</div>
+          </div>
+        </div>
+        <div id="tr-map" class="cc-map"></div>
+        <div class="tr-controls">
+          <button type="button" class="btn btn-primary btn-sm" id="tr-play">Play</button>
+          <span class="tr-clock" id="tr-clock">06:48:00, stop 1 of 7</span>
+          <input type="range" id="tr-scrub" class="tr-scrub" min="0" max="1000" value="0" step="1" aria-label="Scrub the trip">
+          <div class="tr-speeds">
+            <button type="button" class="tr-speed-btn is-active" data-mult="1">1x</button>
+            <button type="button" class="tr-speed-btn" data-mult="2">2x</button>
+            <button type="button" class="tr-speed-btn" data-mult="4">4x</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="shell.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script>
+    'use strict';
+
+    var TRIPS = [
+      {
+        id: 'TR-4402', plate: 'GBA 4821 X', driver: 'Rahim', start: '06:48', end: '11:26',
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '06:48'],
+          ['Clementi Ave 3', 1.3150, 103.7650, '07:14'],
+          ['Queenstown Blk 52', 1.2950, 103.8060, '07:58'],
+          ['Tiong Bahru Plaza', 1.2860, 103.8270, '08:36'],
+          ['Toa Payoh Lor 4', 1.3350, 103.8500, '09:29'],
+          ['Ang Mo Kio Ave 10', 1.3691, 103.8454, '10:22'],
+          ['Yishun Ring Rd', 1.4290, 103.8350, '11:26']
+        ]
+      },
+      {
+        id: 'TR-4403', plate: 'GBM 7734 T', driver: 'Kok Wai', start: '07:02', end: '10:41',
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '07:02'],
+          ['Bedok North St 1', 1.3300, 103.9370, '08:05'],
+          ['Tampines St 81', 1.3496, 103.9390, '08:47'],
+          ['Pasir Ris Dr 6', 1.3720, 103.9490, '09:33'],
+          ['Simei St 3', 1.3430, 103.9530, '10:41']
+        ]
+      },
+      {
+        id: 'TR-4404', plate: 'YN 5512 J', driver: 'Daniel', start: '06:31', end: '12:08',
+        stops: [
+          ['Distribution Centre, Pandan Loop', 1.3180, 103.7490, '06:31'],
+          ['Bukit Batok St 21', 1.3480, 103.7500, '07:10'],
+          ['Choa Chu Kang Ave 4', 1.3850, 103.7440, '08:02'],
+          ['Bukit Panjang Ring Rd', 1.3800, 103.7630, '08:55'],
+          ['Hillview Ave', 1.3630, 103.7670, '09:44'],
+          ['Teck Whye Lane', 1.3790, 103.7520, '10:38'],
+          ['Yew Tee Sq', 1.3970, 103.7470, '11:20'],
+          ['Marsiling Rise', 1.4420, 103.7780, '12:08']
+        ]
+      }
+    ];
+
+    var map = L.map('tr-map').setView([1.3521, 103.8198], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap, &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    var layer = L.layerGroup().addTo(map);
+    var trail = null;
+    var marker = null;
+    var path = [];
+    var trip = TRIPS[0];
+    var playing = false;
+    var mult = 1;
+    var t = 0;              // 0 to 1000 along the trip
+    var last = 0;
+
+    var dot = L.divIcon({
+      className: '',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      html: '<div style="width:18px;height:18px;border-radius:50%;background:#264653;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>'
+    });
+
+    function stopIcon(n) {
+      return L.divIcon({
+        className: '',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        html: '<div style="width:20px;height:20px;border-radius:50%;background:#2a9d8f;color:#fff;font:600 11px/20px Inter,sans-serif;text-align:center">' + n + '</div>'
+      });
+    }
+
+    function load(index) {
+      trip = TRIPS[index];
+      layer.clearLayers();
+      path = trip.stops.map(function (s) { return [s[1], s[2]]; });
+
+      L.polyline(path, { color: '#cbd5e1', weight: 4 }).addTo(layer);
+      trail = L.polyline([path[0]], { color: '#2a9d8f', weight: 4 }).addTo(layer);
+      trip.stops.forEach(function (s, i) {
+        L.marker([s[1], s[2]], { icon: stopIcon(i + 1) })
+          .bindPopup('<strong>' + s[0] + '</strong><br>Arrived ' + s[3]).addTo(layer);
+      });
+      marker = L.marker(path[0], { icon: dot, zIndexOffset: 600 }).addTo(layer);
+      map.fitBounds(L.polyline(path).getBounds(), { padding: [40, 40] });
+
+      document.getElementById('tr-title').textContent = trip.id + ', ' + trip.plate;
+      document.getElementById('tr-sub').textContent =
+        trip.driver + ', ' + trip.stops.length + ' stops, ' + trip.start + ' to ' + trip.end;
+
+      t = 0;
+      document.getElementById('tr-scrub').value = 0;
+      seek(0);
+
+      Array.prototype.forEach.call(document.querySelectorAll('.cc-vehicle'), function (el, i) {
+        el.classList.toggle('is-active', i === index);
+      });
+    }
+
+    // Walks the position along the leg the scrub value falls in, and reports the
+    // time the way the playback on the real page does.
+    function seek(value) {
+      var legs = path.length - 1;
+      var pos = value / 1000 * legs;
+      var leg = Math.min(Math.floor(pos), legs - 1);
+      var f = pos - leg;
+
+      var a = path[leg], b = path[leg + 1];
+      var here = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+      marker.setLatLng(here);
+      trail.setLatLngs(path.slice(0, leg + 1).concat([here]));
+
+      var from = toMinutes(trip.stops[leg][3]);
+      var to = toMinutes(trip.stops[leg + 1][3]);
+      var mins = from + (to - from) * f;
+      document.getElementById('tr-clock').textContent =
+        clock(mins) + ', stop ' + (leg + 1) + ' of ' + trip.stops.length;
+    }
+
+    function toMinutes(hhmm) {
+      var p = hhmm.split(':');
+      return Number(p[0]) * 60 + Number(p[1]);
+    }
+
+    function clock(mins) {
+      var h = Math.floor(mins / 60);
+      var m = Math.floor(mins % 60);
+      var s = Math.floor((mins % 1) * 60);
+      return pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    function frame(now) {
+      if (playing) {
+        if (last) {
+          t += (now - last) * 0.03 * mult;
+          if (t >= 1000) { t = 1000; stop(); }
+          document.getElementById('tr-scrub').value = t;
+          seek(t);
+        }
+        last = now;
+      } else {
+        last = 0;
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      playing = false;
+      document.getElementById('tr-play').textContent = 'Play';
+    }
+
+    document.getElementById('tr-play').addEventListener('click', function () {
+      if (t >= 1000) { t = 0; document.getElementById('tr-scrub').value = 0; seek(0); }
+      playing = !playing;
+      this.textContent = playing ? 'Pause' : 'Play';
+    });
+
+    document.getElementById('tr-scrub').addEventListener('input', function () {
+      t = Number(this.value);
+      seek(t);
+    });
+
+    document.querySelector('.tr-speeds').addEventListener('click', function (event) {
+      var btn = event.target.closest('.tr-speed-btn');
+      if (!btn) return;
+      mult = Number(btn.dataset.mult);
+      Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+    });
+
+    var list = document.getElementById('tr-list');
+    list.innerHTML = TRIPS.map(function (tr, i) {
+      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
+        '<div class="cc-plate">' + tr.id + '</div>' +
+        '<div class="cc-driver">' + tr.plate + ', ' + tr.driver + '</div>' +
+        '<div class="cc-driver">' + tr.stops.length + ' stops, ' + tr.start + ' to ' + tr.end + '</div>' +
+        '</button>';
+    }).join('');
+
+    list.addEventListener('click', function (event) {
+      var btn = event.target.closest('.cc-vehicle');
+      if (!btn) return;
+      stop();
+      load(Number(btn.dataset.i));
+    });
+
+    load(0);
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver app, Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <style>
+    /* The driver app is Flutter, so this view follows Material rather than the
+       admin stylesheet: same teal brand, Roboto, list tiles, a bottom bar. */
+    :root {
+      --brand: #2a9d8f;
+      --brand-dark: #207a6e;
+      --navy: #264653;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --amber: #d97706;
+      --red: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Roboto, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .appbar {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 2px 4px rgb(0 0 0 / 0.18);
+    }
+    .appbar h1 { margin: 0; font-size: 17px; font-weight: 500; }
+    .appbar .sub { font-size: 12px; opacity: 0.85; }
+    .appbar button {
+      margin-left: auto;
+      border: 0;
+      background: none;
+      color: #fff;
+      font: 500 13px Roboto, sans-serif;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .back { margin-left: 0 !important; padding: 0 !important; display: none; }
+    .screen-detail .back { display: block; }
+
+    .body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .view { display: none; }
+    .view.is-on { display: block; }
+
+    .banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #fff7ed;
+      border-bottom: 1px solid #fed7aa;
+      font-size: 13px;
+      color: #9a3412;
+    }
+
+    .tile {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 2px 14px;
+      align-items: center;
+      width: 100%;
+      padding: 14px 16px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+    .seq {
+      grid-area: 1 / 1 / 3 / 2;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+      background: #94a3b8;
+    }
+    .tile.done .seq { background: var(--brand); }
+    .tile.next .seq { background: var(--amber); }
+    .tile .name { grid-area: 1 / 2; font-size: 15px; font-weight: 500; }
+    .tile .meta { grid-area: 2 / 2; font-size: 12.5px; color: var(--muted); }
+    .tile .when { grid-area: 1 / 3 / 3 / 4; align-self: center; font-size: 12px; color: var(--muted); text-align: right; }
+    .tile.done .name { color: var(--muted); text-decoration: line-through; }
+
+    .pad { padding: 16px; }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+      overflow: hidden;
+    }
+    .card + .card { margin-top: 12px; }
+    .card h2 { margin: 0; padding: 14px 16px 0; font-size: 14px; font-weight: 500; }
+    .card p { margin: 6px 0 0; padding: 0 16px 14px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+    .rows { padding: 4px 0 8px; }
+    .row { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 13.5px; }
+    .row span:last-child { color: var(--muted); }
+
+    #map { height: 100%; min-height: 260px; }
+    .map-wrap { height: calc(100dvh - 128px); }
+
+    .fab {
+      position: absolute;
+      right: 16px;
+      bottom: 74px;
+      width: 52px; height: 52px;
+      border: 0; border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      font: 700 12px Roboto, sans-serif;
+      box-shadow: 0 4px 10px rgb(0 0 0 / 0.3);
+      cursor: pointer;
+    }
+
+    .actions { display: grid; gap: 10px; padding: 16px; }
+    .btn {
+      padding: 13px 16px;
+      border: 0; border-radius: 6px;
+      background: var(--brand);
+      color: #fff;
+      font: 500 14px Roboto, sans-serif;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .btn.ghost { background: #fff; color: var(--brand); border: 1px solid var(--brand); }
+    .btn[disabled] { background: #d1d5db; color: #6b7280; cursor: default; }
+
+    .navbar {
+      flex: none;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .navbar button {
+      padding: 9px 0 11px;
+      border: 0; background: none;
+      color: var(--muted);
+      font: 500 11px Roboto, sans-serif;
+      display: grid; justify-items: center; gap: 4px;
+      cursor: pointer;
+    }
+    .navbar button.is-on { color: var(--brand); }
+    .navbar svg { width: 21px; height: 21px; }
+
+    .toast {
+      position: fixed;
+      left: 16px; right: 16px; bottom: 76px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      background: #1f2937;
+      color: #f8fafc;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 140ms ease, transform 140ms ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+  <header class="appbar" id="appbar">
+    <button class="back" id="back" aria-label="Back">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+    </button>
+    <div>
+      <h1 id="title">Today's run</h1>
+      <div class="sub" id="sub">TR-4417, GBA 4821 X</div>
+    </div>
+  </header>
+
+  <div class="body" id="body">
+
+    <section class="view is-on" id="view-stops">
+      <div class="banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+        Sample data. The real app pulls the run over a bearer token API.
+      </div>
+      <div id="stops"></div>
+    </section>
+
+    <section class="view" id="view-detail"></section>
+
+    <section class="view" id="view-map">
+      <div class="map-wrap"><div id="map"></div></div>
+      <button class="fab" id="sos">SOS</button>
+    </section>
+
+  </div>
+
+  <nav class="navbar">
+    <button class="is-on" data-go="stops">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      Stops
+    </button>
+    <button data-go="map">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      Map
+    </button>
+    <button data-go="me">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      Me
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script>
+    'use strict';
+
+    var STOPS = [
+      { name: 'Clementi Ave 3', addr: 'Blk 443 Clementi Ave 3, 120443', lat: 1.3150, lng: 103.7650, cases: 29, kg: 355, po: 'PO-88219', state: 'done', when: '07:14' },
+      { name: 'Queenstown Blk 52', addr: 'Blk 52 Stirling Rd, 141052', lat: 1.2950, lng: 103.8060, cases: 18, kg: 221, po: 'PO-88222', state: 'done', when: '07:58' },
+      { name: 'Tiong Bahru Plaza', addr: '302 Tiong Bahru Rd, 168732', lat: 1.2860, lng: 103.8270, cases: 24, kg: 290, po: 'PO-88223', state: 'done', when: '08:36' },
+      { name: 'Toa Payoh Lor 4', addr: 'Blk 79 Lor 4 Toa Payoh, 310079', lat: 1.3350, lng: 103.8500, cases: 16, kg: 198, po: 'PO-88220', state: 'next', when: 'ETA 09:25' },
+      { name: 'Ang Mo Kio Ave 10', addr: 'Blk 452 Ang Mo Kio Ave 10, 560452', lat: 1.3691, lng: 103.8454, cases: 34, kg: 412, po: 'PO-88214', state: 'queued', when: 'ETA 10:20' },
+      { name: 'Yishun Ring Rd', addr: 'Blk 846 Yishun Ring Rd, 760846', lat: 1.4290, lng: 103.8350, cases: 25, kg: 302, po: 'PO-88221', state: 'queued', when: 'ETA 11:15' }
+    ];
+
+    var body = document.getElementById('body');
+    var appbar = document.getElementById('appbar');
+    var title = document.getElementById('title');
+    var sub = document.getElementById('sub');
+    var map = null;
+
+    function paintStops() {
+      document.getElementById('stops').innerHTML = STOPS.map(function (s, i) {
+        return '<button type="button" class="tile ' + s.state + '" data-i="' + i + '">' +
+          '<span class="seq">' + (i + 1) + '</span>' +
+          '<span class="name">' + s.name + '</span>' +
+          '<span class="when">' + s.when + '</span>' +
+          '<span class="meta">' + s.cases + ' cases, ' + s.kg + ' kg</span>' +
+          '</button>';
+      }).join('');
+    }
+
+    function show(view) {
+      Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
+        v.classList.toggle('is-on', v.id === 'view-' + view);
+      });
+      appbar.classList.toggle('screen-detail', view === 'detail');
+      if (view === 'map') initMap();
+    }
+
+    function openStop(i) {
+      var s = STOPS[i];
+      title.textContent = s.name;
+      sub.textContent = 'Stop ' + (i + 1) + ' of ' + STOPS.length + ', ' + s.po;
+
+      document.getElementById('view-detail').innerHTML =
+        '<div class="pad">' +
+          '<div class="card">' +
+            '<h2>Delivery address</h2>' +
+            '<p>' + s.addr + '</p>' +
+          '</div>' +
+          '<div class="card">' +
+            '<h2>Load</h2>' +
+            '<div class="rows">' +
+              '<div class="row"><span>Order</span><span>' + s.po + '</span></div>' +
+              '<div class="row"><span>Cases</span><span>' + s.cases + '</span></div>' +
+              '<div class="row"><span>Weight</span><span>' + s.kg + ' kg</span></div>' +
+              '<div class="row"><span>Window</span><span>06:00 to 09:00</span></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="actions">' +
+          (s.state === 'done'
+            ? '<button class="btn" disabled>Delivered ' + s.when + '</button>'
+            : '<button class="btn" data-act="deliver" data-i="' + i + '">Mark delivered</button>' +
+              '<button class="btn ghost" data-act="nav">Navigate to stop</button>') +
+        '</div>';
+
+      show('detail');
+    }
+
+    function initMap() {
+      if (map) { map.invalidateSize(); return; }
+      map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 12);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+      }).addTo(map);
+
+      var line = STOPS.map(function (s) { return [s.lat, s.lng]; });
+      L.polyline(line, { color: '#2a9d8f', weight: 4 }).addTo(map);
+      STOPS.forEach(function (s, i) {
+        var fill = s.state === 'done' ? '#2a9d8f' : s.state === 'next' ? '#d97706' : '#94a3b8';
+        L.marker([s.lat, s.lng], {
+          icon: L.divIcon({
+            className: '', iconSize: [22, 22], iconAnchor: [11, 11],
+            html: '<div style="width:22px;height:22px;border-radius:50%;background:' + fill +
+              ';color:#fff;font:700 11px/22px Roboto,sans-serif;text-align:center">' + (i + 1) + '</div>'
+          })
+        }).bindPopup('<strong>' + s.name + '</strong><br>' + s.cases + ' cases').addTo(map);
+      });
+      map.fitBounds(L.polyline(line).getBounds(), { padding: [30, 30] });
+      setTimeout(function () { map.invalidateSize(); }, 60);
+    }
+
+    function toast(text) {
+      var el = document.getElementById('toast');
+      el.textContent = text;
+      el.classList.add('show');
+      clearTimeout(el.timer);
+      el.timer = setTimeout(function () { el.classList.remove('show'); }, 3000);
+    }
+
+    body.addEventListener('click', function (event) {
+      var tile = event.target.closest('.tile');
+      if (tile) { openStop(Number(tile.dataset.i)); return; }
+
+      var act = event.target.closest('[data-act]');
+      if (!act) return;
+
+      if (act.dataset.act === 'deliver') {
+        var i = Number(act.dataset.i);
+        STOPS[i].state = 'done';
+        STOPS[i].when = '09:21';
+        if (STOPS[i + 1]) STOPS[i + 1].state = 'next';
+        paintStops();
+        show('stops');
+        title.textContent = "Today's run";
+        sub.textContent = 'TR-4417, GBA 4821 X';
+        toast('Delivery confirmed. The admin board updates straight away.');
+      } else {
+        toast('Opens turn by turn navigation in the real app.');
+      }
+    });
+
+    document.getElementById('back').addEventListener('click', function () {
+      show('stops');
+      title.textContent = "Today's run";
+      sub.textContent = 'TR-4417, GBA 4821 X';
+    });
+
+    document.querySelector('.navbar').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-go]');
+      if (!btn) return;
+      Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('is-on'); });
+      btn.classList.add('is-on');
+
+      if (btn.dataset.go === 'me') {
+        toast('Profile, vehicle check and shift history live here.');
+        btn.classList.remove('is-on');
+        document.querySelector('[data-go="stops"]').classList.add('is-on');
+        return;
+      }
+      show(btn.dataset.go);
+      title.textContent = btn.dataset.go === 'map' ? 'Route' : "Today's run";
+      sub.textContent = 'TR-4417, GBA 4821 X';
+    });
+
+    document.getElementById('sos').addEventListener('click', function () {
+      toast('SOS sent. Admins get a push notification with the truck position.');
+    });
+
+    paintStops();
+  </script>
+</body>
+</html>

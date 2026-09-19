@@ -200,8 +200,17 @@
     win.querySelector('.pane').appendChild(source.content.cloneNode(true));
     place(win, 620, 460);
     windowLayer.appendChild(win);
+    settle(win);
     raise(win);
     win.querySelector('.pane').focus();
+  }
+
+  // The opening animation plays once and is then taken off the element, so
+  // nothing later can bring it back and replay it mid use.
+  function settle(win) {
+    win.addEventListener('animationend', function () {
+      win.style.animation = 'none';
+    }, { once: true });
   }
 
   /* A demo window holds the project itself in an iframe: the web ones in a
@@ -231,6 +240,7 @@
     else place(win, 1120, 740);
 
     windowLayer.appendChild(win);
+    settle(win);
     raise(win);
     pane.focus();
   }
@@ -285,6 +295,9 @@
   });
 
   windowLayer.addEventListener('dblclick', function (event) {
+    // Two quick drags in a row also land as a double click, and zooming then is
+    // not what anyone meant.
+    if (Date.now() - dragEndedAt < 360) return;
     if (event.target.closest('.titlebar') && !event.target.closest('.ctl')) {
       zoom(event.target.closest('.window'));
     }
@@ -299,6 +312,7 @@
   /* Moving and resizing ---------------------------------------------------- */
 
   var live = null;
+  var dragEndedAt = 0;
 
   windowLayer.addEventListener('pointerdown', function (event) {
     if (phone.matches || event.button !== 0) return;
@@ -322,6 +336,7 @@
       room: desktop.getBoundingClientRect()
     };
     win.classList.add(grip ? 'is-sizing' : 'is-moving');
+    windowLayer.classList.add('is-busy');
     (grip || bar).setPointerCapture(event.pointerId);
     event.preventDefault();
   });
@@ -331,6 +346,7 @@
     var dx = event.clientX - live.startX;
     var dy = event.clientY - live.startY;
     var win = live.win;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) live.moved = true;
 
     if (!live.edge) {
       win.style.left = Math.min(Math.max(live.left + dx, -live.width + 90), live.room.width - 90) + 'px';
@@ -361,8 +377,10 @@
   function release() {
     if (!live) return;
     live.win.classList.remove('is-moving', 'is-sizing');
+    windowLayer.classList.remove('is-busy');
     // A window that has been moved or resized is no longer the zoomed one.
     if (live.edge) live.win.classList.remove('is-zoomed');
+    if (live.moved) dragEndedAt = Date.now();
     live = null;
   }
 

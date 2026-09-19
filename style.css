@@ -207,7 +207,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes open {
   from { opacity: 0; transform: translateY(8px) scale(0.985); }
 }
-.window.is-moving, .window.is-sizing { animation: none; }
 
 .titlebar {
   position: relative;
@@ -338,6 +337,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   padding: 12px;
   background: rgb(38 38 35 / 0.06);
 }
+/* While a window is being moved or resized the pointer must not fall into an
+   iframe, or the drag dies the moment it crosses one. */
+.windows.is-busy .demo-frame { pointer-events: none; }
 .phone .demo-frame {
   border-radius: 20px;
   box-shadow: 0 3px 14px rgb(38 38 35 / 0.28);

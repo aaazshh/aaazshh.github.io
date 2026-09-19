@@ -43,17 +43,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
   isolation: isolate;
 }
 
-/* Cover scales a wide photo to the height of the box and crops the sides, so
-   the figure has to be steered by hand. She sits in the middle of this frame
-   and the icons live on the left, so the crop is taken off the right to push
-   her across. The phone layout crops differently and needs its own. */
+/* The face sits at the middle of this frame, so laying the photo out at twice
+   the width of the screen and letting the right half run off it cuts her down
+   the centre line at the right edge, whatever the window is doing. The left of
+   the frame is the window behind her, which is where the icons go. How much of
+   her height fits is what is left over: tall windows reach her chin, wide ones
+   stop around the mouth. */
 .wallpaper {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  top: 0;
+  left: 0;
+  width: 200%;
   height: 100%;
   object-fit: cover;
-  object-position: 0% 40%;
+  object-position: 50% 32%;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -274,7 +277,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
      half of the photo and tap straight through. Cover crops a wide photo hard
      in a phone shaped box, so the figure needs its own framing here, and the
      scrim under the grid is what keeps the labels readable. */
-  .wallpaper { height: 74%; object-position: 50% 50%; }
+  .wallpaper { width: 100%; height: 74%; object-position: 50% 50%; }
   .desktop::after {
     content: "";
     position: absolute;

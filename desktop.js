@@ -11,6 +11,7 @@
   var windowLayer = document.getElementById('windows');
   var frame = document.getElementById('window-frame');
   var tidyButton = document.getElementById('tidy');
+  var dockMin = document.getElementById('dock-min');
   var STORE = 'desktop.icons.v1';
   var DRAG_SLOP = 4;      // pointer travel that turns a click into a drag
   var MENUBAR = 44;       // keep icons and windows clear of the bar and the dock
@@ -20,6 +21,7 @@
   var topWindow = 10;
 
   var phone = window.matchMedia('(max-width: 760px)');
+  var stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
   var defaults = {};
   Array.prototype.forEach.call(itemList.children, function (item) {
     var id = item.querySelector('.icon').dataset.open;
@@ -162,11 +164,13 @@
     var headingId = 'title-' + id;
 
     win.dataset.windowId = id;
+    win.windowTitle = title;
     heading.id = headingId;
     heading.textContent = title;
     win.setAttribute('aria-labelledby', headingId);
     win.querySelector('.close').setAttribute('aria-label', 'Close ' + title);
     win.querySelector('.zoom').setAttribute('aria-label', 'Maximize ' + title);
+    win.querySelector('.min').setAttribute('aria-label', 'Minimize ' + title);
     if (opener) win.returnFocusTo = opener;
     return win;
   }
@@ -186,8 +190,11 @@
   function existing(id) {
     var open = windowLayer.querySelector('[data-window-id="' + id + '"]');
     if (!open) return false;
-    raise(open);
-    open.querySelector('.pane').focus();
+    if (open.classList.contains('is-min')) restore(open);
+    else {
+      raise(open);
+      open.querySelector('.pane').focus();
+    }
     return true;
   }
 
@@ -197,8 +204,9 @@
     if (!source) return;
 
     var win = build(id, source.dataset.title, opener);
+    win.dataset.icon = source.dataset.icon || 'doc';
     win.querySelector('.pane').appendChild(source.content.cloneNode(true));
-    place(win, 620, 460);
+    place(win, Number(source.dataset.w) || 620, Number(source.dataset.h) || 460);
     windowLayer.appendChild(win);
     settle(win);
     raise(win);
@@ -220,6 +228,7 @@
     if (existing(id)) return;
 
     var win = build(id, label, opener);
+    win.dataset.icon = kind === 'phone' ? 'phone' : 'web';
     var pane = win.querySelector('.pane');
     win.classList.add('window-demo', kind === 'phone' ? 'is-phone' : 'is-web');
     pane.classList.add('is-frame');
@@ -252,8 +261,116 @@
 
   function closeWindow(win) {
     var back = win.returnFocusTo;
+    if (win.dockTile) win.dockTile.remove();
     win.remove();
     if (back && document.contains(back)) back.focus();
+  }
+
+  /* Minimizing ------------------------------------------------------------- */
+
+  /* A minimized window is not closed, it is parked: it keeps its size, its
+     scroll position and, for a demo, the iframe it had already loaded. The
+     tile in the dock is the way back to it. */
+
+  var DOCK_GLYPH = { folder: '#dock-folder', doc: '#dock-doc', web: '#pf-web', phone: '#pf-phone' };
+
+  function dockTile(win) {
+    var slot = document.createElement('li');
+    var button = document.createElement('button');
+    var glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    var name = document.createElement('span');
+
+    button.type = 'button';
+    button.className = 'dock-win';
+    button.setAttribute('aria-label', 'Restore ' + win.windowTitle);
+    glyph.setAttribute('class', 'glyph');
+    glyph.setAttribute('viewBox', '0 0 24 24');
+    glyph.setAttribute('aria-hidden', 'true');
+    use.setAttribute('href', DOCK_GLYPH[win.dataset.icon] || DOCK_GLYPH.doc);
+    name.textContent = win.windowTitle;
+
+    glyph.appendChild(use);
+    button.appendChild(glyph);
+    button.appendChild(name);
+    button.addEventListener('click', function () { restore(win); });
+    slot.appendChild(button);
+    return slot;
+  }
+
+  // Points the window at its dock tile, so the fold runs between the two.
+  function aim(win, tile) {
+    var from = win.getBoundingClientRect();
+    var to = tile.getBoundingClientRect();
+    if (!from.width || !to.width) return false;
+    win.style.setProperty('--fold-x', (to.left - from.left) + 'px');
+    win.style.setProperty('--fold-y', (to.top - from.top) + 'px');
+    win.style.setProperty('--fold-sx', (to.width / from.width).toFixed(4));
+    win.style.setProperty('--fold-sy', (to.height / from.height).toFixed(4));
+    return true;
+  }
+
+  // Transitions can be dropped mid flight, so the timer is the backstop.
+  function afterFold(win, done) {
+    var fired = false;
+    function end(event) {
+      if (event && event.target !== win) return;
+      if (fired) return;
+      fired = true;
+      clearTimeout(timer);
+      win.removeEventListener('transitionend', end);
+      done();
+    }
+    var timer = setTimeout(end, 420);
+    win.addEventListener('transitionend', end);
+  }
+
+  function minimize(win) {
+    if (win.classList.contains('is-min') || win.classList.contains('is-folding')) return;
+    var tile = dockTile(win);
+    dockMin.appendChild(tile);
+    win.dockTile = tile;
+
+    var back = win.returnFocusTo;
+    if (back && document.contains(back)) back.focus();
+
+    if (stillness.matches || !aim(win, tile)) {
+      win.classList.add('is-min');
+      return;
+    }
+    win.classList.add('is-folding', 'is-folded');
+    afterFold(win, function () {
+      win.classList.remove('is-folding', 'is-folded');
+      win.classList.add('is-min');
+    });
+  }
+
+  function restore(win) {
+    if (!win.classList.contains('is-min')) {
+      raise(win);
+      win.querySelector('.pane').focus();
+      return;
+    }
+    if (win.dockTile) {
+      aim(win, win.dockTile);
+      win.dockTile.remove();
+      win.dockTile = null;
+    }
+    win.classList.remove('is-min');
+    raise(win);
+
+    if (stillness.matches) {
+      win.querySelector('.pane').focus();
+      return;
+    }
+    win.classList.add('is-folded');
+    void win.offsetWidth;                 // settle at the dock before unfolding
+    win.classList.add('is-folding');
+    win.classList.remove('is-folded');
+    afterFold(win, function () {
+      win.classList.remove('is-folding');
+      win.querySelector('.pane').focus();
+    });
   }
 
   /* Window controls -------------------------------------------------------- */
@@ -291,6 +408,7 @@
     var win = event.target.closest('.window');
     if (!win) return;
     if (event.target.closest('.close')) closeWindow(win);
+    else if (event.target.closest('.min')) minimize(win);
     else if (event.target.closest('.zoom')) zoom(win);
   });
 
@@ -333,7 +451,12 @@
       top: win.offsetTop,
       width: win.offsetWidth,
       height: win.offsetHeight,
-      room: desktop.getBoundingClientRect()
+      room: desktop.getBoundingClientRect(),
+      lastX: event.clientX,
+      lastY: event.clientY,
+      shiftX: 0,
+      shiftY: 0,
+      raf: 0
     };
     win.classList.add(grip ? 'is-sizing' : 'is-moving');
     windowLayer.classList.add('is-busy');
@@ -341,16 +464,23 @@
     event.preventDefault();
   });
 
-  windowLayer.addEventListener('pointermove', function (event) {
-    if (!live) return;
-    var dx = event.clientX - live.startX;
-    var dy = event.clientY - live.startY;
+  /* A move only ever changes where the window sits, so it is a transform, not
+     new left/top. Writing left/top relaid out the whole window every pointer
+     move, iframe and all, which is what made dragging a demo window feel
+     sticky. A resize genuinely changes the box, so that still writes the
+     geometry. Either way the work happens once per frame, not once per event. */
+  function moveFrame() {
+    live.raf = 0;
+    var dx = live.lastX - live.startX;
+    var dy = live.lastY - live.startY;
     var win = live.win;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) live.moved = true;
 
     if (!live.edge) {
-      win.style.left = Math.min(Math.max(live.left + dx, -live.width + 90), live.room.width - 90) + 'px';
-      win.style.top = Math.min(Math.max(live.top + dy, MENUBAR - 6), live.room.height - 48) + 'px';
+      var x = Math.min(Math.max(live.left + dx, -live.width + 90), live.room.width - 90) - live.left;
+      var y = Math.min(Math.max(live.top + dy, MENUBAR - 6), live.room.height - 48) - live.top;
+      live.shiftX = x;
+      live.shiftY = y;
+      win.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
       return;
     }
 
@@ -372,10 +502,28 @@
     win.style.top = top + 'px';
     win.style.width = width + 'px';
     win.style.height = height + 'px';
+  }
+
+  windowLayer.addEventListener('pointermove', function (event) {
+    if (!live) return;
+    live.lastX = event.clientX;
+    live.lastY = event.clientY;
+    if (Math.abs(event.clientX - live.startX) > 3 || Math.abs(event.clientY - live.startY) > 3) {
+      live.moved = true;
+    }
+    if (!live.raf) live.raf = requestAnimationFrame(moveFrame);
   });
 
   function release() {
     if (!live) return;
+    if (live.raf) { cancelAnimationFrame(live.raf); moveFrame(); }
+    // Bake the drag's transform back into left/top, so the next drag and the
+    // fold-to-dock animation both start from a window with no transform on it.
+    if (!live.edge) {
+      live.win.style.transform = '';
+      live.win.style.left = (live.left + live.shiftX) + 'px';
+      live.win.style.top = (live.top + live.shiftY) + 'px';
+    }
     live.win.classList.remove('is-moving', 'is-sizing');
     windowLayer.classList.remove('is-busy');
     // A window that has been moved or resized is no longer the zoomed one.

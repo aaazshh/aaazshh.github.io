@@ -26,6 +26,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 [hidden] { display: none !important; }
 .sprite { position: absolute; width: 0; height: 0; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 .skip-link {
   position: fixed;
@@ -157,21 +165,60 @@ button, a { -webkit-tap-highlight-color: transparent; }
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   box-shadow: 0 12px 34px -16px rgb(38 38 35 / 0.55);
 }
-.dock a {
+.dock a, .dock-win {
   position: relative;
   display: grid;
   place-items: center;
   width: 46px;
   height: 46px;
   border-radius: 14px;
+  border: 0;
+  padding: 0;
+  background: none;
   text-decoration: none;
+  cursor: pointer;
   transition: transform 160ms cubic-bezier(0.2, 0.9, 0.3, 1.2), background 140ms ease;
 }
 .dock .glyph { width: 21px; height: 21px; fill: var(--ink); }
-.dock a:hover, .dock a:focus-visible { background: var(--ink); transform: translateY(-3px); }
-.dock a:hover .glyph, .dock a:focus-visible .glyph { fill: var(--panel); }
-.dock a:active { transform: translateY(-1px) scale(0.96); }
-.dock span {
+.dock a:hover, .dock a:focus-visible,
+.dock-win:hover, .dock-win:focus-visible { background: var(--ink); transform: translateY(-3px); }
+.dock a:hover .glyph, .dock a:focus-visible .glyph,
+.dock-win:hover .glyph, .dock-win:focus-visible .glyph { fill: var(--panel); }
+.dock a:active, .dock-win:active { transform: translateY(-1px) scale(0.96); }
+
+/* The parked windows. The divider only exists once there is one, which is
+   what :empty is for. */
+.dock-min {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dock-min:not(:empty) {
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid rgb(38 38 35 / 0.16);
+}
+/* The dot under a tile is the same tell a dock gives you anywhere else: this
+   one is still running, it was only put down. */
+.dock-win::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.dock-win:hover::after, .dock-win:focus-visible::after { background: var(--stone); }
+.dock-min li { animation: land 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+@keyframes land {
+  from { opacity: 0; transform: translateY(10px) scale(0.6); }
+}
+.dock span, .dock-win span {
   position: absolute;
   bottom: calc(100% + 10px);
   padding: 5px 10px;
@@ -186,7 +233,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: opacity 110ms ease, transform 110ms ease;
   pointer-events: none;
 }
-.dock a:hover span, .dock a:focus-visible span { opacity: 1; transform: none; }
+.dock a:hover span, .dock a:focus-visible span,
+.dock-win:hover span, .dock-win:focus-visible span { opacity: 1; transform: none; }
 
 /* Windows */
 .windows { position: absolute; z-index: 4; inset: 0; pointer-events: none; }
@@ -208,6 +256,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
   from { opacity: 0; transform: translateY(8px) scale(0.985); }
 }
 
+/* Minimize. The window is not torn down, it is folded into its dock tile and
+   parked there, so its scroll position and any loaded demo survive. */
+.window.is-min { display: none; }
+.window.is-folding {
+  transition: transform 240ms cubic-bezier(0.34, 0.02, 0.5, 0.86), opacity 220ms ease;
+  pointer-events: none;
+}
+.window.is-folded {
+  transform-origin: top left;
+  transform: translate(var(--fold-x), var(--fold-y)) scale(var(--fold-sx), var(--fold-sy));
+  opacity: 0;
+  pointer-events: none;
+}
+
 .titlebar {
   position: relative;
   flex: none;
@@ -222,7 +284,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 60%;
+  /* Centred, but never far enough to run under the three controls. */
+  max-width: min(60%, calc(100% - 220px));
   margin: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -275,6 +338,49 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .grip-ne { top: -3px; right: -3px; width: 16px; height: 16px; cursor: nesw-resize; }
 .grip-sw { bottom: -3px; left: -3px; width: 16px; height: 16px; cursor: nesw-resize; }
 
+/* A folder window holds items, the same way the desktop does, so opening one
+   looks like opening a folder rather than reading a page about one. */
+.folder-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.file {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-width: 104px;
+  max-width: 200px;
+  padding: 10px 6px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+}
+.file .glyph {
+  width: 52px;
+  height: 44px;
+  overflow: visible;
+  filter: drop-shadow(0 3px 6px rgb(38 38 35 / 0.18));
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.file:hover .glyph { transform: translateY(-2px) scale(1.04); }
+.file:active .glyph { transform: scale(0.96); }
+/* A folder name is one token, so it gets one line rather than a break at
+   whatever hyphen happens to be in the middle of it. */
+.file .label { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.file:hover .label { background: var(--ink); color: var(--stone); }
+.folder-foot {
+  margin-top: 18px !important;
+  padding-top: 14px;
+  border-top: 1px solid rgb(38 38 35 / 0.08);
+  color: var(--muted);
+  font-size: 13px !important;
+}
+
 /* The five systems inside experience/, grouped by product. Web and mobile are
    two halves of one thing, so they are two chips on one row, not two rows. */
 .systems { margin: 4px 0 0; padding: 0; list-style: none; }
@@ -300,23 +406,34 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .row-name { font-size: 15px; font-weight: 500; }
 .row-note { font-size: 13px; color: var(--muted); }
 .platforms { display: flex; gap: 6px; padding-right: 12px; }
+/* A screen and a phone say web and mobile faster than the words did. */
 .chip {
-  padding: 4px 11px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 27px;
+  padding: 0;
   border: 0;
-  border-radius: 20px;
-  background: rgb(38 38 35 / 0.07);
-  font-size: 11.5px;
-  letter-spacing: 0.01em;
-  color: var(--muted);
+  border-radius: 9px;
+  background: rgb(38 38 35 / 0.055);
+  color: rgb(38 38 35 / 0.34);
 }
+.chip .pico { width: 15px; height: 15px; fill: currentColor; }
 /* A chip you can press opens the thing itself, so it looks pressable. */
 .chip.is-live {
-  background: rgb(114 89 66 / 0.14);
+  background: rgb(114 89 66 / 0.15);
+  box-shadow: inset 0 0 0 1px rgb(114 89 66 / 0.24);
   color: var(--accent);
-  font-weight: 500;
   cursor: pointer;
+  transition: transform 140ms cubic-bezier(0.2, 0.9, 0.3, 1.2), background 140ms ease;
 }
-.chip.is-live:hover { background: var(--accent); color: var(--panel); }
+.chip.is-live:hover {
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--panel);
+  transform: translateY(-1px);
+}
+.chip.is-live:active { transform: scale(0.94); }
 .link {
   padding: 0;
   border: 0;
@@ -340,6 +457,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* While a window is being moved or resized the pointer must not fall into an
    iframe, or the drag dies the moment it crosses one. */
 .windows.is-busy .demo-frame { pointer-events: none; }
+
+/* Dragging is the one moment the frosted background costs more than it is
+   worth: the blur is recomputed against whatever is behind the window on every
+   frame. Drop it for the window in hand and promote it to its own layer, so a
+   drag stays smooth even with a demo running inside. */
+.window.is-moving,
+.window.is-sizing {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgb(244 242 237 / 0.97);
+  will-change: transform;
+}
 .phone .demo-frame {
   border-radius: 20px;
   box-shadow: 0 3px 14px rgb(38 38 35 / 0.28);
@@ -372,7 +501,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   .item { position: static; }
   .icon { width: 100%; cursor: pointer; }
-  .dock { bottom: 18px; gap: 4px; }
+  .dock { bottom: 18px; gap: 4px; max-width: calc(100vw - 20px); overflow-x: auto; }
+  .dock-win span { display: none; }
+  .folder-grid { justify-items: center; }
   .window {
     left: 10px !important;
     top: 48px !important;
@@ -388,5 +519,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 @media (prefers-reduced-motion: reduce) {
   .window { animation: none; }
-  .icon .glyph, .dock a { transition: none; }
+  .icon .glyph, .file .glyph, .dock a, .dock-win, .chip.is-live { transition: none; }
+  .dock-min li { animation: none; }
 }

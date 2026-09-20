@@ -80,7 +80,7 @@
       </li>
     </ul>
 
-    <nav class="dock" aria-label="Contact">
+    <nav class="dock" aria-label="Contact and minimized windows">
       <a href="https://github.com/aaazshh" target="_blank" rel="noopener">
         <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#github"></use></svg>
         <span>GitHub</span>
@@ -94,6 +94,8 @@
         <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#mail"></use></svg>
         <span>Email</span>
       </a>
+      <!-- Minimized windows land here, to the right of the contact links. -->
+      <ul class="dock-min" id="dock-min" aria-label="Minimized windows"></ul>
     </nav>
 
     <div class="windows" id="windows"></div>
@@ -104,6 +106,9 @@
       <header class="titlebar">
         <h2 class="title"></h2>
         <div class="controls">
+          <button type="button" class="ctl min" aria-label="Minimize window">
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.6 6.5h6.8"/></svg>
+          </button>
           <button type="button" class="ctl zoom" aria-label="Maximize window">
             <svg viewBox="0 0 12 12" aria-hidden="true" class="ico-max"><rect x="2.5" y="2.5" width="7" height="7" rx="1"/></svg>
             <svg viewBox="0 0 12 12" aria-hidden="true" class="ico-restore"><rect x="1.5" y="3.5" width="6.5" height="6.5" rx="1"/><path d="M4 3.5V2.5a1 1 0 0 1 1-1h4.5a1 1 0 0 1 1 1V7a1 1 0 0 1-1 1h-1"/></svg>
@@ -128,10 +133,26 @@
   <!-- Window contents. Screenshots of the portals and the apps come in a later
        pass, so the panes that need them say so instead of faking it. -->
   <div class="contents" hidden>
-    <template data-window="experience" data-title="experience/">
-      <p class="lede">Prime Supermarket, software development internship, six months.
-        Five systems. Three of them have a web half and a mobile half that were built
-        to work as one thing, so they are filed as one thing.</p>
+    <template data-window="experience" data-title="experience/" data-icon="folder" data-w="470" data-h="310">
+      <ul class="folder-grid">
+        <li>
+          <button type="button" class="file" data-open="prime" aria-haspopup="dialog">
+            <svg class="glyph folder" viewBox="0 0 40 34" aria-hidden="true">
+              <path class="fill" d="M1 6a3 3 0 0 1 3-3h10.5l3.4 4H36a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z"/>
+              <path class="line" d="M1 12.5h38"/>
+            </svg>
+            <span class="label">prime-supermarket/</span>
+          </button>
+        </li>
+      </ul>
+      <p class="folder-foot">One folder so far. The next job gets its own.</p>
+    </template>
+
+    <template data-window="prime" data-title="experience/prime-supermarket" data-icon="folder" data-w="660" data-h="500">
+      <p class="lede">Five months at Prime Supermarket as a software development
+        intern, then a sixth month back on the team as temporary staff, with an open
+        invitation to return. Five of their internal portals, two of them with a web
+        half and a mobile half built to work as one thing, so those sit on one row.</p>
       <ul class="systems">
         <li class="system">
           <button type="button" class="row" data-open="logistics" aria-haspopup="dialog">
@@ -139,8 +160,12 @@
             <span class="row-note">Multi company fleet management, route optimisation, driver app</span>
           </button>
           <span class="platforms">
-            <button type="button" class="chip is-live" data-demo="logistics/index.html" data-kind="web" data-label="Logistics, admin portal">web</button>
-            <button type="button" class="chip is-live" data-demo="logistics/mobile.html" data-kind="phone" data-label="Logistics, driver app">mobile</button>
+            <button type="button" class="chip is-live" data-demo="logistics/index.html" data-kind="web" data-label="Logistics, admin portal" title="Web portal, opens in a window" aria-label="Open the Logistics admin portal">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-web"></use></svg>
+            </button>
+            <button type="button" class="chip is-live" data-demo="logistics/mobile.html" data-kind="phone" data-label="Logistics, driver app" title="Mobile app, opens in a phone" aria-label="Open the Logistics driver app">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-phone"></use></svg>
+            </button>
           </span>
         </li>
         <li class="system">
@@ -149,35 +174,54 @@
             <span class="row-note">Operations portal that replaced the paper logs</span>
           </button>
           <span class="platforms">
-            <button type="button" class="chip is-live" data-demo="fishfarm/index.html" data-kind="web" data-label="Fish Farm, operations portal">web</button>
-            <button type="button" class="chip is-live" data-demo="fishfarm/mobile.html" data-kind="phone" data-label="Fish Farm, crew app">mobile</button>
+            <button type="button" class="chip is-live" data-demo="fishfarm/index.html" data-kind="web" data-label="Fish Farm, operations portal" title="Web portal, opens in a window" aria-label="Open the Fish Farm operations portal">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-web"></use></svg>
+            </button>
+            <button type="button" class="chip is-live" data-demo="fishfarm/mobile.html" data-kind="phone" data-label="Fish Farm, crew app" title="Mobile app, opens in a phone" aria-label="Open the Fish Farm crew app">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-phone"></use></svg>
+            </button>
           </span>
         </li>
         <li class="system">
           <button type="button" class="row" data-open="hq" aria-haspopup="dialog">
             <span class="row-name">HQ</span>
-            <span class="row-note">Laravel backend and a Flutter app over the same workflows</span>
+            <span class="row-note">Flutter app over a Laravel backend, no web side to it</span>
           </button>
-          <span class="platforms"><span class="chip">web</span><span class="chip">mobile</span></span>
+          <span class="platforms">
+            <span class="chip" title="Mobile app">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-phone"></use></svg>
+              <span class="sr-only">Mobile app</span>
+            </span>
+          </span>
         </li>
         <li class="system">
           <button type="button" class="row" data-open="iam" aria-haspopup="dialog">
             <span class="row-name">IAM</span>
             <span class="row-note">Single sign on. The service the others log into</span>
           </button>
-          <span class="platforms"><span class="chip">web</span></span>
+          <span class="platforms">
+            <span class="chip" title="Web portal">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-web"></use></svg>
+              <span class="sr-only">Web portal</span>
+            </span>
+          </span>
         </li>
         <li class="system">
           <button type="button" class="row" data-open="analytics" aria-haspopup="dialog">
             <span class="row-name">Analytics</span>
             <span class="row-note">Elasticsearch indexing, spreadsheet exports, scraping</span>
           </button>
-          <span class="platforms"><span class="chip">web</span></span>
+          <span class="platforms">
+            <span class="chip" title="Web portal">
+              <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-web"></use></svg>
+              <span class="sr-only">Web portal</span>
+            </span>
+          </span>
         </li>
       </ul>
     </template>
 
-    <template data-window="logistics" data-title="experience/logistics">
+    <template data-window="logistics" data-title="prime-supermarket/logistics" data-icon="folder">
       <p>Multi company fleet management. Plain PHP 7.4, MySQL and vanilla JS on the
         web side: a Leaflet map with OSRM route optimisation, a public delivery
         tracking page, and an Excel order import that geocodes addresses and assigns
@@ -189,7 +233,7 @@
         Both run on sample data, with the portal built on the stylesheet the real one uses.</p>
     </template>
 
-    <template data-window="fishfarm" data-title="experience/fish-farm">
+    <template data-window="fishfarm" data-title="prime-supermarket/fish-farm" data-icon="folder">
       <p>Operations portal for the farm. Harvest, feed and medicine inventory,
         environment surveys, net repairs, incident logging. It replaced paper logs.
         PHP, MySQL and Bootstrap 5, with a Flutter companion app for the work that
@@ -199,42 +243,42 @@
         Ten screens and a cage map on one side, scan a cage and log the work on the other, including the queue for when the pontoon has no signal.</p>
     </template>
 
-    <template data-window="hq" data-title="experience/hq">
-      <p>Laravel backend with a Tailwind and Vite front end, plus a Flutter app
-        covering the same workflows.</p>
+    <template data-window="hq" data-title="prime-supermarket/hq" data-icon="folder">
+      <p>A Flutter app over a Laravel backend, phone only. No web front end was ever
+        built for it, so the workflows live entirely in the app.</p>
       <p class="stub">Screenshots go here.</p>
     </template>
 
-    <template data-window="iam" data-title="experience/iam">
+    <template data-window="iam" data-title="prime-supermarket/iam" data-icon="folder">
       <p>Single sign on, role and department mapping, per portal access control,
-        shared across the company's internal systems. It is the service the other
+        shared across the company’s internal systems. It is the service the other
         four log into.</p>
       <p class="stub">Screenshots go here.</p>
     </template>
 
-    <template data-window="analytics" data-title="experience/analytics">
+    <template data-window="analytics" data-title="prime-supermarket/analytics" data-icon="folder">
       <p>Elasticsearch indexing, PHPSpreadsheet exports for ABC analysis and vendor
         commission reports, and Puppeteer scraping for the sources that had no API.</p>
       <p class="stub">Screenshots go here.</p>
     </template>
 
-    <template data-window="readme" data-title="README.md">
+    <template data-window="readme" data-title="README.md" data-icon="doc">
       <p class="lede">I build internal systems: admin portals, the mobile apps that go
         with them, and the auth, tracking and reporting services that tie them
         together. Mostly PHP, Laravel, Flutter and MySQL.</p>
       <p class="stub">More of the about copy goes here.</p>
     </template>
 
-    <template data-window="stack" data-title="stack/">
+    <template data-window="stack" data-title="stack/" data-icon="folder">
       <p class="stub">PHP, Laravel, Flutter, MySQL, Elasticsearch, and what each one
         was actually used for. Filling this in is the next pass.</p>
     </template>
 
-    <template data-window="env" data-title=".env">
+    <template data-window="env" data-title=".env" data-icon="doc">
       <p class="stub">The off the record things. Still deciding what goes in here.</p>
     </template>
 
-    <template data-window="trash" data-title=".trash/">
+    <template data-window="trash" data-title=".trash/" data-icon="folder">
       <p>Experiments that did not make the cut but are still worth opening.</p>
       <p class="stub">The Three.js portrait lives here: the photo rebuilt as a 3D head
         that tracks the cursor, blinks, and lets its hair lag behind a turn. It is
@@ -248,6 +292,18 @@
     </symbol>
     <symbol id="linkedin" viewBox="0 0 24 24">
       <path d="M3.5 8.8h3.8V21H3.5zM5.4 2.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4M9.8 8.8h3.6v1.7c.6-1 1.8-1.9 3.7-1.9 3 0 4.4 1.8 4.4 5.1V21h-3.8v-6.4c0-1.7-.6-2.6-2-2.6-1.4 0-2.2 1-2.2 2.6V21H9.8z"/>
+    </symbol>
+    <symbol id="pf-web" viewBox="0 0 24 24">
+      <path d="M3.2 3.5h17.6c1 0 1.7.8 1.7 1.7v10.1c0 1-.8 1.7-1.7 1.7h-6.4v2h2.4a1 1 0 0 1 0 2H7.2a1 1 0 0 1 0-2h2.4v-2H3.2c-1 0-1.7-.8-1.7-1.7V5.2c0-1 .8-1.7 1.7-1.7m.3 2v9.5h17V5.5z"/>
+    </symbol>
+    <symbol id="pf-phone" viewBox="0 0 24 24">
+      <path d="M7.6 1.5h8.8c1.4 0 2.6 1.2 2.6 2.6v15.8c0 1.4-1.2 2.6-2.6 2.6H7.6A2.6 2.6 0 0 1 5 19.9V4.1c0-1.4 1.2-2.6 2.6-2.6m0 2a.6.6 0 0 0-.6.6v15.8c0 .3.3.6.6.6h8.8c.3 0 .6-.3.6-.6V4.1a.6.6 0 0 0-.6-.6h-1.3v.6c0 .5-.4.9-.9.9h-4.4a.9.9 0 0 1-.9-.9v-.6z"/>
+    </symbol>
+    <symbol id="dock-folder" viewBox="0 0 24 24">
+      <path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h5.1l2.1 2.6h7.8A2.5 2.5 0 0 1 22 8.1v10.4a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5z"/>
+    </symbol>
+    <symbol id="dock-doc" viewBox="0 0 24 24">
+      <path d="M6.6 1.5h7.1L19 6.9v14.1c0 .8-.7 1.5-1.5 1.5h-11c-.8 0-1.5-.7-1.5-1.5V3c0-.8.7-1.5 1.5-1.5M13 3.5V7h3.5z"/>
     </symbol>
     <symbol id="mail" viewBox="0 0 24 24">
       <path d="M2.5 5h19a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-19a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1m.7 2L12 13l8.8-6z"/>

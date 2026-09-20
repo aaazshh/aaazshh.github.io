@@ -11,8 +11,8 @@
  *
  * Anywhere the swap has not happened, which means a local checkout, a fork, or
  * a deploy that did not run the workflow, the placeholder is still sitting
- * there. That is not an error: the map falls back to CARTO's Positron basemap,
- * which needs no key at all, and everything keeps working.
+ * there. That is not an error: the map falls back to OpenStreetMap's own tiles,
+ * which need no key at all, and everything keeps working.
  *
  * Worth being clear about what this does and does not buy. A tile key used from
  * a browser is readable by anyone who opens the network tab, because the tile
@@ -32,9 +32,19 @@ function mapKey() {
   return MAPTILER_KEY.indexOf('MAPTILER_KEY') === -1 ? MAPTILER_KEY : '';
 }
 
-function cartoLayer() {
-  return L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap, &copy; CARTO',
+/**
+ * The keyless basemap: OpenStreetMap's own tiles, which is what the real portal
+ * and the real driver app both draw. CARTO's Positron used to sit here and
+ * needed no key either, but it now stamps "API KEY REQUIRED" across every tile,
+ * which is worse than plain OSM for something meant to be looked at.
+ *
+ * OSM ask that apps and sites with real traffic not lean on their servers, so
+ * this is the fallback rather than the destination. Set MAPTILER_KEY and the
+ * maps upgrade away from it.
+ */
+function osmLayer() {
+  return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
     maxZoom: 19
   });
 }
@@ -75,13 +85,13 @@ var keyWorks = (function () {
  * broken map on screen, then upgrades to MapTiler if the key checks out.
  */
 function basemap(map) {
-  var carto = cartoLayer().addTo(map);
+  var base = osmLayer().addTo(map);
 
   keyWorks.then(function (ok) {
-    if (!ok || !map.hasLayer(carto)) return;
+    if (!ok || !map.hasLayer(base)) return;
     maptilerLayer(mapKey()).addTo(map);
-    map.removeLayer(carto);
+    map.removeLayer(base);
   });
 
-  return carto;
+  return base;
 }

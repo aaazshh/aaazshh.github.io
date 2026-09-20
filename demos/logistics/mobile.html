@@ -1533,6 +1533,14 @@
       }
 
       requestAnimationFrame(frame);
+
+      // Frames stop while the tab is hidden, so the animation alone cannot be
+      // trusted to finish. Wall clock retires the splash either way.
+      setTimeout(function () {
+        if (!document.body.contains(wrap)) return;
+        wrap.classList.add('gone');
+        setTimeout(function () { wrap.remove(); }, 750);
+      }, PATH_MS + DRIVE_MS + REST_MS + 1500);
     }());
 
     /* Sign in --------------------------------------------------------------- */

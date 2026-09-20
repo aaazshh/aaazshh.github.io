@@ -13,56 +13,128 @@
 <body>
   <div class="app" data-page="trip-routes" data-title="Trip Routes">
 
-    <div class="cc-layout">
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Finished trips</div>
-            <div class="card-subtitle">Yesterday</div>
-          </div>
-        </div>
-        <div id="tr-list"></div>
-      </div>
-
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="tr-title"></div>
-            <div class="card-subtitle" id="tr-sub"></div>
-          </div>
-        </div>
-        <div id="tr-map" class="cc-map"></div>
-        <div class="tr-controls">
-          <button type="button" class="btn btn-primary btn-sm" id="tr-play">Play</button>
-          <span class="tr-clock" id="tr-clock"></span>
-          <input type="range" id="tr-scrub" class="tr-scrub" min="0" max="1000" value="0" step="1" aria-label="Scrub the trip">
-          <div class="tr-speeds">
-            <button type="button" class="tr-speed-btn is-active" data-mult="1">1x</button>
-            <button type="button" class="tr-speed-btn" data-mult="2">2x</button>
-            <button type="button" class="tr-speed-btn" data-mult="4">4x</button>
-          </div>
-        </div>
+    <div class="page-header">
+      <div>
+        <h2>Trip Routes</h2>
+        <p>Replay and review every completed trip</p>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px;">
-      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div class="card-title">Delivery audit log</div>
-          <div class="card-subtitle">Every stop across every trip, what went out against what the outlet signed for</div>
+    <div class="tr-grid">
+
+      <section class="cc-panel tr-list-panel">
+        <div class="tr-filters">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="tr-filter-vehicle">Vehicle</label>
+            <select id="tr-filter-vehicle" class="form-control">
+              <option value="">All vehicles</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="tr-filter-driver">Driver</label>
+            <select id="tr-filter-driver" class="form-control">
+              <option value="">All drivers</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group" style="margin:0;">
-          <label class="form-label" for="driver">Driver</label>
-          <select id="driver" class="form-control"><option>All drivers</option></select>
+        <div class="cc-panel-head">
+          <span class="cc-panel-title">Completed Trips</span>
+          <span class="badge badge-admin" id="tr-count">0</span>
+        </div>
+        <div class="cc-panel-body" id="tr-list"></div>
+      </section>
+
+      <section class="cc-panel tr-detail-panel">
+        <div class="tr-tabs" id="tr-tabs" style="display:none;">
+          <button type="button" class="tr-tab is-active" data-tab="playback">Playback</button>
+          <button type="button" class="tr-tab" data-tab="performance">Performance</button>
+          <button type="button" class="tr-tab" data-tab="deliveries">Deliveries</button>
+        </div>
+
+        <div class="tr-tabpane" id="tr-pane-playback" style="display:none;">
+          <div id="tr-map" class="tr-map"></div>
+          <div class="tr-overlay" id="tr-overlay" style="display:none;">
+            <span id="tr-time">--:--:--</span>
+            <span id="tr-speed"></span>
+          </div>
+          <div class="tr-controls" id="tr-controls" style="display:none;">
+            <button type="button" class="btn btn-primary btn-sm" id="tr-play">▶ Play</button>
+            <input type="range" id="tr-scrub" min="0" max="1000" value="0" step="1" class="tr-scrub">
+            <div class="tr-speeds">
+              <button type="button" class="tr-speed-btn is-active" data-mult="1">1×</button>
+              <button type="button" class="tr-speed-btn" data-mult="2">2×</button>
+              <button type="button" class="tr-speed-btn" data-mult="4">4×</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tr-tabpane" id="tr-pane-performance" style="display:none;">
+          <div id="tr-performance" class="tr-performance"></div>
+        </div>
+
+        <div class="tr-tabpane" id="tr-pane-deliveries" style="display:none;">
+          <div id="tr-deliveries" class="tr-deliveries"></div>
+        </div>
+
+        <div class="tr-detail-empty" id="tr-detail-empty">
+          <div class="cc-empty">Select a trip to replay.</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Every order across every trip, not just the selected one. -->
+    <section class="cc-panel tr-audit-panel">
+      <div class="cc-panel-head">
+        <span class="cc-panel-title">Delivery Audit Log</span>
+        <span class="badge badge-admin" id="tr-audit-count">0</span>
+      </div>
+
+      <div class="tr-audit-filters">
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-company">Company</label>
+          <select id="tr-audit-company" class="form-control"><option value="">All companies</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-outlet">Outlet</label>
+          <select id="tr-audit-outlet" class="form-control"><option value="">All outlets</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-driver">Driver</label>
+          <select id="tr-audit-driver" class="form-control"><option value="">All drivers</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-vehicle">Vehicle</label>
+          <select id="tr-audit-vehicle" class="form-control"><option value="">All vehicles</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-status">Status</label>
+          <select id="tr-audit-status" class="form-control"><option value="">All statuses</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-from">From</label>
+          <input type="date" id="tr-audit-from" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tr-audit-to">To</label>
+          <input type="date" id="tr-audit-to" class="form-control">
+        </div>
+        <div class="form-group tr-audit-filter-actions">
+          <button type="button" class="btn btn-secondary btn-sm" id="tr-audit-reset">Clear filters</button>
         </div>
       </div>
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr><th>Trip</th><th>Stop</th><th>Driver</th><th>Arrived</th><th>Sent</th><th>Signed for</th><th>Outcome</th></tr>
-          </thead>
-          <tbody id="audit"></tbody>
-        </table>
+
+      <div class="cc-panel-body" id="tr-audit-body"></div>
+    </section>
+
+    <!-- The note and photos the outlet attached, which the table can only hint at. -->
+    <div class="modal-overlay" id="tr-audit-detail" role="dialog" aria-modal="true" aria-labelledby="tr-audit-detail-title">
+      <div class="modal" style="max-width:560px;">
+        <div class="modal-header">
+          <div class="modal-title" id="tr-audit-detail-title">Delivery details</div>
+          <button class="modal-close" data-close="tr-audit-detail" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" id="tr-audit-detail-body"></div>
       </div>
     </div>
 
@@ -74,193 +146,458 @@
   <script>
     'use strict';
 
-    var map = L.map('tr-map').setView([1.3521, 103.8198], 12);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-    }).addTo(map);
+    var STATUS_LABELS = {
+      confirmed: 'Confirmed received',
+      disputed: 'Issue reported',
+      awaiting_confirmation: 'Awaiting outlet',
+      not_delivered: 'Not delivered',
+      not_reached: 'Outlet not reached'
+    };
+    var ISSUE_LABELS = {
+      missing: 'Missing', damaged: 'Damaged', wrong_item: 'Wrong item',
+      short_qty: 'Short quantity', other: 'Other'
+    };
 
-    var layer = L.layerGroup().addTo(map);
-    var trail = null, marker = null, path = [];
-    var trip = DATA.history[0];
-    var playing = false, mult = 1, t = 0, last = 0;
+    function $(id) { return document.getElementById(id); }
 
-    var dot = L.divIcon({
-      className: '', iconSize: [18, 18], iconAnchor: [9, 9],
-      html: '<div style="width:18px;height:18px;border-radius:50%;background:#264653;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>'
-    });
-
-    function stopIcon(n) {
-      return L.divIcon({
-        className: '', iconSize: [20, 20], iconAnchor: [10, 10],
-        html: '<div style="width:20px;height:20px;border-radius:50%;background:#2a9d8f;color:#fff;font:600 11px/20px Inter,sans-serif;text-align:center">' + n + '</div>'
-      });
+    function fmtDur(sec) {
+      if (sec == null) return '—';
+      if (sec < 60) return sec + 's';
+      var m = Math.floor(sec / 60), s = sec % 60;
+      if (m < 60) return s > 0 ? m + 'm ' + s + 's' : m + 'm';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
     }
 
-    function load(index) {
-      trip = DATA.history[index];
-      layer.clearLayers();
-      path = DATA.coords(trip.stops.map(function (s) { return s[0]; }));
-
-      L.polyline(path, { color: '#cbd5e1', weight: 4 }).addTo(layer);
-      trail = L.polyline([path[0]], { color: '#2a9d8f', weight: 4 }).addTo(layer);
-      trip.stops.forEach(function (s, i) {
-        L.marker(path[i], { icon: stopIcon(i + 1) })
-          .bindPopup('<strong>' + s[0] + '</strong><br>Arrived ' + s[1]).addTo(layer);
-      });
-      marker = L.marker(path[0], { icon: dot, zIndexOffset: 600 }).addTo(layer);
-      map.fitBounds(L.polyline(path).getBounds(), { padding: [40, 40] });
-
-      document.getElementById('tr-title').textContent = trip.id + ', ' + trip.plate;
-      document.getElementById('tr-sub').textContent =
-        trip.driver + ', ' + trip.stops.length + ' stops, ' + trip.start + ' to ' + trip.end;
-
-      t = 0;
-      document.getElementById('tr-scrub').value = 0;
-      seek(0);
-
-      Array.prototype.forEach.call(document.querySelectorAll('#tr-list .cc-vehicle'), function (el, i) {
-        el.classList.toggle('is-active', i === index);
-      });
+    function statusChip(status) {
+      return '<span class="tr-status tr-status--' + status + '">' + STATUS_LABELS[status] + '</span>';
     }
 
-    // Walks the position along the leg the scrub value falls in, and reports the
-    // time the way the playback on the real page does.
-    function seek(value) {
-      var legs = path.length - 1;
-      var pos = value / 1000 * legs;
-      var leg = Math.min(Math.floor(pos), legs - 1);
-      var f = pos - leg;
-
-      var a = path[leg], b = path[leg + 1];
-      var here = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
-      marker.setLatLng(here);
-      trail.setLatLngs(path.slice(0, leg + 1).concat([here]));
-
-      var from = toMinutes(trip.stops[leg][1]);
-      var to = toMinutes(trip.stops[leg + 1][1]);
-      var mins = from + (to - from) * f;
-      document.getElementById('tr-clock').textContent =
-        clock(mins) + ', stop ' + (leg + 1) + ' of ' + trip.stops.length;
+    function orderLabel(o) {
+      return o.ref +
+        (o.shipment ? ' <span class="tr-order-tag">' + o.shipment + '</span>' : '') +
+        ' <span class="tr-order-tag">' + o.platform + '</span>';
     }
 
-    function toMinutes(hhmm) {
-      var p = hhmm.split(':');
-      return Number(p[0]) * 60 + Number(p[1]);
-    }
-
-    function clock(mins) {
-      return pad(Math.floor(mins / 60)) + ':' + pad(Math.floor(mins % 60)) + ':' + pad(Math.floor((mins % 1) * 60));
-    }
-
-    function pad(n) { return (n < 10 ? '0' : '') + n; }
-
-    function frame(now) {
-      if (playing) {
-        if (last) {
-          t += (now - last) * 0.03 * mult;
-          if (t >= 1000) { t = 1000; stop(); }
-          document.getElementById('tr-scrub').value = t;
-          seek(t);
-        }
-        last = now;
-      } else {
-        last = 0;
+    function issueText(o) {
+      if (o.status === 'confirmed' || o.status === 'awaiting_confirmation') return '';
+      if (o.issueType) {
+        var parts = [ISSUE_LABELS[o.issueType]];
+        if (o.issueQty != null) parts.push('qty ' + o.issueQty);
+        return parts.join(' · ') + (o.issueNote ? ' — ' + o.issueNote : '');
       }
-      requestAnimationFrame(frame);
+      return o.issueNote || '';
     }
 
-    function stop() {
+    /* ---- filters and the trip list ---- */
+
+    (function fillFilters() {
+      var plates = {}, drivers = {};
+      DATA.history.forEach(function (t) { plates[t.plate] = 1; drivers[t.driver] = 1; });
+      $('tr-filter-vehicle').innerHTML += Object.keys(plates).map(function (p) {
+        return '<option>' + p + '</option>';
+      }).join('');
+      $('tr-filter-driver').innerHTML += Object.keys(drivers).map(function (d) {
+        return '<option>' + d + '</option>';
+      }).join('');
+    }());
+
+    var selectedId = null;
+
+    function renderList() {
+      var plate = $('tr-filter-vehicle').value;
+      var driver = $('tr-filter-driver').value;
+      var trips = DATA.history.filter(function (t) {
+        return (!plate || t.plate === plate) && (!driver || t.driver === driver);
+      });
+
+      $('tr-count').textContent = trips.length;
+      $('tr-list').innerHTML = trips.length ? trips.map(function (t) {
+        return '<div class="cc-route-card cc-route-card--clickable' +
+          (selectedId === t.id ? ' is-active' : '') + '" data-route-id="' + t.id + '">' +
+          '<div class="cc-route-top">' +
+            '<span class="cc-plate">' + t.plate + '</span>' +
+            '<span class="cc-route-prog">' + t.stops.filter(function (s) { return s.at; }).length +
+            '/' + t.stops.length + ' stops</span>' +
+          '</div>' +
+          '<div class="cc-route-driver">' + t.driver + '</div>' +
+          '<div class="cc-route-dest">' + t.date + ' ' + t.end + '</div>' +
+          '</div>';
+      }).join('') : '<div class="cc-empty">No completed trips.</div>';
+    }
+
+    $('tr-filter-vehicle').addEventListener('change', renderList);
+    $('tr-filter-driver').addEventListener('change', renderList);
+
+    /* ---- playback ---- */
+
+    var map = null, trackLine = null, marker = null, stopLayer = null;
+    var track = [], playing = false, progress = 0, mult = 1, rafId = null;
+    var wallStart = 0, progStart = 0;
+    var BASE_SECONDS = 24;   // a whole trip replays in about this long at 1x
+
+    function ensureMap() {
+      if (map) return;
+      map = L.map('tr-map', { zoomControl: true }).setView([1.3521, 103.8198], 12);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+      }).addTo(map);
+      stopLayer = L.layerGroup().addTo(map);
+    }
+
+    // The planned line with GPS-looking wobble on it, which is what the stored
+    // breadcrumb looks like next to the plan.
+    function buildTrack(trip) {
+      var line = [DATA.place(trip.depot)].concat(trip.stops.map(function (s) { return DATA.place(s.name); }))
+        .map(function (p) { return [p.lat, p.lng]; });
+      var pts = [];
+      line.forEach(function (p, i) {
+        pts.push(p);
+        if (i === line.length - 1) return;
+        var q = line[i + 1];
+        for (var t = 0.1; t < 1; t += 0.1) {
+          pts.push([
+            p[0] + (q[0] - p[0]) * t + (Math.random() - 0.5) * 0.003,
+            p[1] + (q[1] - p[1]) * t + (Math.random() - 0.5) * 0.003
+          ]);
+        }
+      });
+      return pts;
+    }
+
+    function pad(n) { return ('0' + n).slice(-2); }
+
+    function updateMarker(trip) {
+      if (!track.length) return;
+      var idx = Math.min(track.length - 1, Math.floor(progress * (track.length - 1)));
+      marker.setLatLng(track[idx]);
+
+      // Clock runs from the trip's own start to its own end.
+      var s = Number(trip.start.slice(0, 2)) * 3600 + Number(trip.start.slice(3)) * 60;
+      var e = Number(trip.end.slice(0, 2)) * 3600 + Number(trip.end.slice(3)) * 60;
+      var now = s + (e - s) * progress;
+      $('tr-time').textContent = pad(Math.floor(now / 3600)) + ':' +
+        pad(Math.floor(now % 3600 / 60)) + ':' + pad(Math.floor(now % 60));
+      $('tr-speed').textContent = '· ' + Math.round(trip.avgSpeed + Math.sin(progress * 24) * 12) + ' km/h';
+      $('tr-scrub').value = String(Math.round(progress * 1000));
+    }
+
+    function frame(trip) {
+      if (!playing) return;
+      var dur = BASE_SECONDS * 1000 / mult;
+      progress = Math.min(1, progStart + (performance.now() - wallStart) / dur);
+      updateMarker(trip);
+      if (progress >= 1) { stopPlay(); return; }
+      rafId = requestAnimationFrame(function () { frame(trip); });
+    }
+
+    function stopPlay() {
       playing = false;
-      document.getElementById('tr-play').textContent = 'Play';
+      cancelAnimationFrame(rafId);
+      $('tr-play').textContent = '▶ Play';
     }
 
-    document.getElementById('tr-play').addEventListener('click', function () {
-      if (t >= 1000) { t = 0; document.getElementById('tr-scrub').value = 0; seek(0); }
-      playing = !playing;
-      this.textContent = playing ? 'Pause' : 'Play';
-    });
+    function selectTrip(id) {
+      selectedId = id;
+      var trip = DATA.history.filter(function (t) { return t.id === id; })[0];
+      renderList();
 
-    document.getElementById('tr-scrub').addEventListener('input', function () {
-      t = Number(this.value);
-      seek(t);
-    });
+      $('tr-detail-empty').style.display = 'none';
+      $('tr-tabs').style.display = '';
+      switchTab('playback');
 
-    document.querySelector('.tr-speeds').addEventListener('click', function (event) {
-      var btn = event.target.closest('.tr-speed-btn');
-      if (!btn) return;
-      mult = Number(btn.dataset.mult);
-      Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('is-active'); });
-      btn.classList.add('is-active');
-    });
+      ensureMap();
+      setTimeout(function () { map.invalidateSize(); }, 0);
 
-    document.getElementById('tr-list').innerHTML = DATA.history.map(function (tr, i) {
-      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
-        '<div class="cc-plate">' + tr.id + '</div>' +
-        '<div class="cc-driver">' + tr.plate + ', ' + tr.driver + '</div>' +
-        '<div class="cc-driver">' + tr.stops.length + ' stops, ' + tr.start + ' to ' + tr.end + '</div>' +
-        '</button>';
-    }).join('');
+      track = buildTrack(trip);
+      if (trackLine) map.removeLayer(trackLine);
+      trackLine = L.polyline(track, { color: '#2a9d8f', weight: 4, opacity: 0.8 }).addTo(map);
 
-    document.getElementById('tr-list').addEventListener('click', function (event) {
-      var btn = event.target.closest('.cc-vehicle');
-      if (!btn) return;
-      stop();
-      load(Number(btn.dataset.i));
-    });
+      stopLayer.clearLayers();
+      trip.stops.forEach(function (s, i) {
+        var p = DATA.place(s.name);
+        L.marker([p.lat, p.lng], {
+          icon: L.divIcon({
+            className: '', iconSize: [22, 22], iconAnchor: [11, 11],
+            html: '<span class="cc-stop-marker' + (s.at ? '' : ' is-visited') +
+              '" style="background:#2a9d8f">' + (i + 1) + '</span>'
+          })
+        }).bindPopup('<strong>' + (i + 1) + '. ' + s.name + '</strong><br>' +
+          (s.at ? 'Arrived ' + s.at : 'Never reached')).addTo(stopLayer);
+      });
 
-    /* Audit log ------------------------------------------------------------ */
+      if (marker) map.removeLayer(marker);
+      marker = L.marker(track[0], {
+        icon: L.divIcon({
+          className: '', iconSize: [0, 0], iconAnchor: [0, 0],
+          html: '<div class="cc-driver-avatar"><span class="cc-driver-disc" style="background:#264653">' +
+            '<img src="assets/vehicles/truck.png" alt="" onerror="this.style.display=\'none\'"></span>' +
+            '<span class="cc-driver-pin" style="background:#264653">' + trip.plate + '</span></div>'
+        }),
+        zIndexOffset: 1000
+      }).addTo(map);
 
-    // Two rows out of the set are short, which is the whole point of keeping
-    // what was sent next to what was signed for.
-    var SHORT = { 'TR-4402|Queenstown Blk 52': 2, 'TR-4405|Geylang Serai': 1 };
+      map.fitBounds(trackLine.getBounds(), { padding: [40, 40] });
 
-    var audit = [];
-    DATA.history.forEach(function (tr) {
-      tr.stops.forEach(function (s, i) {
-        if (i === 0) return;
-        var sent = 8 + ((s[0].length * 3 + i * 5) % 28);
-        var short = SHORT[tr.id + '|' + s[0]] || 0;
-        audit.push({
-          trip: tr.id, stop: s[0], driver: tr.driver, at: s[1],
-          sent: sent, signed: sent - short, short: short
+      stopPlay();
+      progress = 0;
+      $('tr-overlay').style.display = '';
+      $('tr-controls').style.display = '';
+      updateMarker(trip);
+
+      renderPerformance(trip);
+      renderDeliveries(trip);
+
+      $('tr-play').onclick = function () {
+        if (playing) { stopPlay(); return; }
+        if (progress >= 1) progress = 0;
+        playing = true;
+        progStart = progress;
+        wallStart = performance.now();
+        this.textContent = '❚❚ Pause';
+        frame(trip);
+      };
+      $('tr-scrub').oninput = function () {
+        stopPlay();
+        progress = Number(this.value) / 1000;
+        updateMarker(trip);
+      };
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tr-speed-btn'), function (b) {
+      b.addEventListener('click', function () {
+        mult = Number(b.dataset.mult);
+        if (playing) { wallStart = performance.now(); progStart = progress; }
+        Array.prototype.forEach.call(document.querySelectorAll('.tr-speed-btn'), function (x) {
+          x.classList.toggle('is-active', x === b);
         });
       });
     });
 
-    var drivers = DATA.history.map(function (tr) { return tr.driver; }).filter(function (d, i, a) {
-      return a.indexOf(d) === i;
-    });
-    var select = document.getElementById('driver');
-    drivers.forEach(function (d) {
-      var opt = document.createElement('option');
-      opt.textContent = d;
-      select.appendChild(opt);
+    $('tr-list').addEventListener('click', function (event) {
+      var card = event.target.closest('.cc-route-card[data-route-id]');
+      if (card) selectTrip(Number(card.dataset.routeId));
     });
 
-    function paintAudit() {
-      var who = select.value;
-      document.getElementById('audit').innerHTML = audit.filter(function (a) {
-        return who === 'All drivers' || a.driver === who;
-      }).map(function (a) {
-        return '<tr>' +
-          '<td><strong>' + a.trip + '</strong></td>' +
-          '<td>' + a.stop + '</td>' +
-          '<td>' + a.driver + '</td>' +
-          '<td>' + a.at + '</td>' +
-          '<td>' + a.sent + ' cases</td>' +
-          '<td>' + a.signed + ' cases</td>' +
-          '<td>' + (a.short
-            ? '<span class="status-chip status-pending">' + a.short + ' short</span>'
-            : '<span class="status-chip status-completed">Matched</span>') + '</td>' +
-          '</tr>';
+    function switchTab(name) {
+      ['playback', 'performance', 'deliveries'].forEach(function (t) {
+        $('tr-pane-' + t).style.display = t === name ? 'flex' : 'none';
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.tr-tab'), function (b) {
+        b.classList.toggle('is-active', b.dataset.tab === name);
+      });
+      if (name === 'playback' && map) setTimeout(function () { map.invalidateSize(); }, 0);
+    }
+
+    $('tr-tabs').addEventListener('click', function (event) {
+      var b = event.target.closest('.tr-tab');
+      if (b) switchTab(b.dataset.tab);
+    });
+
+    /* ---- performance ---- */
+
+    function renderPerformance(trip) {
+      function pill(value, label) {
+        return '<div class="tr-pill"><span class="tr-pill-val">' + value +
+          '</span><span class="tr-pill-label">' + label + '</span></div>';
+      }
+      var total = trip.stops.reduce(function (n, s) { return n + (s.dwell || 0) + (s.leg || 0); }, 0);
+      var visited = trip.stops.filter(function (s) { return s.at; }).length;
+
+      var head = '<div class="tr-perf-card">' +
+        '<div class="tr-perf-title">' + trip.plate + ' · ' + trip.driver + '</div>' +
+        '<div class="tr-pills">' +
+          pill(fmtDur(total), 'Total') +
+          pill(visited + ' / ' + trip.stops.length, 'Stops') +
+          pill(trip.avgSpeed, 'avg km/h') +
+          pill(trip.maxSpeed, 'max km/h') +
+        '</div></div>';
+
+      $('tr-performance').innerHTML = head + '<div class="tr-perf-stops-title">Stops</div>' +
+        trip.stops.map(function (s, i) {
+          return '<div class="tr-stop-row' + (s.at ? ' is-visited' : '') + '">' +
+            '<span class="tr-stop-num' + (s.at ? ' is-visited' : '') + '">' + (i + 1) + '</span>' +
+            '<div class="tr-stop-body">' +
+              '<div class="tr-stop-name">' + s.name + '</div>' +
+              '<div class="tr-stop-metrics">Stayed ' + fmtDur(s.dwell) + ' · Travel ' + fmtDur(s.leg) + '</div>' +
+            '</div>' +
+            '<span class="tr-stop-check">' + (s.at ? '✓' : '○') + '</span>' +
+            '</div>';
+        }).join('');
+    }
+
+    /* ---- deliveries: the driver's word beside the outlet's ---- */
+
+    function renderDeliveries(trip) {
+      $('tr-deliveries').innerHTML = trip.stops.map(function (s, i) {
+        var head = '<div class="tr-del-head">' +
+          '<span class="tr-stop-num' + (s.at ? ' is-visited' : '') + '">' + (i + 1) + '</span>' +
+          '<div class="tr-del-head-body">' +
+            '<div class="tr-stop-name">' + s.name +
+              ' <span class="tr-order-tag">' + s.code + '</span></div>' +
+            '<div class="tr-stop-metrics">' + (s.at ? 'Reached ' + trip.date + ' ' + s.at : 'Not reached') + '</div>' +
+          '</div></div>';
+
+        var orders = s.orders.map(function (o) {
+          var issue = issueText(o);
+          return '<div class="tr-del-order">' +
+            '<div class="tr-del-order-main">' +
+              '<span class="tr-del-order-ref">' + orderLabel(o) + '</span>' +
+              '<span class="tr-del-order-qty">' + o.items + ' items · ' + o.qty + ' qty</span>' +
+            '</div>' +
+            statusChip(o.status) +
+            (issue ? '<div class="tr-del-issue">' + issue + '</div>' : '') +
+            '</div>';
+        }).join('');
+
+        var foot = s.receipt
+          ? '<div class="tr-del-receipt">Confirmed by ' + s.receipt.by + ' · ' + s.receipt.at +
+            (s.receipt.note ? ' — ' + s.receipt.note : '') + '</div>' +
+            '<div class="tr-del-photos">' + new Array(s.receipt.photos + 1).join(
+              '<span class="tr-del-photo-broken" title="Photo lives on the retail server">📷</span>') + '</div>'
+          : '<div class="tr-del-receipt tr-del-receipt--pending">Outlet has not confirmed receipt.</div>';
+
+        return '<div class="tr-del-card">' + head + orders + foot + '</div>';
       }).join('');
     }
 
-    select.addEventListener('change', paintAudit);
-    paintAudit();
+    /* ---- the audit log: every order across every trip ---- */
 
-    load(0);
-    requestAnimationFrame(frame);
+    var auditRows = [];
+    var shownRows = [];
+    DATA.history.forEach(function (t) {
+      t.stops.forEach(function (s) {
+        s.orders.forEach(function (o) {
+          auditRows.push({
+            date: t.date, tripId: t.id, outlet: s.code, stop: s.name,
+            driver: t.driver, plate: t.plate, order: o,
+            company: t.plate.indexOf('POL') === 0 ? 'Prime Online' : 'PSM Logistics',
+            receipt: s.receipt
+          });
+        });
+      });
+    });
+
+    (function fillAudit() {
+      function fill(id, values) {
+        $(id).innerHTML += values.map(function (v) { return '<option>' + v + '</option>'; }).join('');
+      }
+      function uniq(key) {
+        var seen = {}, out = [];
+        auditRows.forEach(function (r) { if (!seen[r[key]]) { seen[r[key]] = 1; out.push(r[key]); } });
+        return out.sort();
+      }
+      fill('tr-audit-company', uniq('company'));
+      fill('tr-audit-outlet', uniq('outlet'));
+      fill('tr-audit-driver', uniq('driver'));
+      fill('tr-audit-vehicle', uniq('plate'));
+      $('tr-audit-status').innerHTML += Object.keys(STATUS_LABELS).map(function (k) {
+        return '<option value="' + k + '">' + STATUS_LABELS[k] + '</option>';
+      }).join('');
+    }());
+
+    function renderAudit() {
+      var f = {
+        company: $('tr-audit-company').value,
+        outlet: $('tr-audit-outlet').value,
+        driver: $('tr-audit-driver').value,
+        plate: $('tr-audit-vehicle').value,
+        status: $('tr-audit-status').value
+      };
+      var rows = auditRows.filter(function (r) {
+        return (!f.company || r.company === f.company) &&
+          (!f.outlet || r.outlet === f.outlet) &&
+          (!f.driver || r.driver === f.driver) &&
+          (!f.plate || r.plate === f.plate) &&
+          (!f.status || r.order.status === f.status);
+      });
+
+      $('tr-audit-count').textContent = rows.length;
+      if (!rows.length) {
+        $('tr-audit-body').innerHTML = '<div class="cc-empty">No deliveries match these filters.</div>';
+        return;
+      }
+
+      $('tr-audit-body').innerHTML =
+        '<div class="tr-audit-scroll"><table class="tr-audit-table"><thead><tr>' +
+        '<th>Trip date</th><th>Trip</th><th>Outlet</th><th>Driver</th><th>Vehicle</th>' +
+        '<th>Order</th><th>Items / Qty</th><th>Driver</th><th>Outlet</th><th>Status</th><th>Issue</th>' +
+        '</tr></thead><tbody>' + rows.map(function (r, i) {
+          var o = r.order;
+          var issue = issueText(o);
+          var outletSaid = o.status === 'confirmed' ? 'Received'
+            : o.status === 'disputed' ? 'Issue reported'
+            : '<span class="tr-muted">—</span>';
+          return '<tr class="tr-audit-row" data-row="' + i + '" title="Click for details">' +
+            '<td><span class="tr-trip-link" data-trip="' + r.tripId + '">' + r.date + ' ' + '</span></td>' +
+            '<td><span class="tr-trip-link" data-trip="' + r.tripId + '">#' + r.tripId + '</span></td>' +
+            '<td>' + r.outlet + '</td>' +
+            '<td>' + r.driver + '</td>' +
+            '<td>' + r.plate + '</td>' +
+            '<td>' + orderLabel(o) + '</td>' +
+            '<td>' + o.items + ' / ' + o.qty + '</td>' +
+            '<td>' + o.driver + '</td>' +
+            '<td>' + outletSaid + '</td>' +
+            '<td>' + statusChip(o.status) + '</td>' +
+            '<td>' + (issue || '<span class="tr-muted">—</span>') +
+            (r.receipt && r.receipt.photos ? ' <span class="tr-photo-count">📷 ' + r.receipt.photos + '</span>' : '') +
+            '</td></tr>';
+        }).join('') + '</tbody></table></div>';
+
+      shownRows = rows;
+    }
+
+    ['company', 'outlet', 'driver', 'vehicle', 'status', 'from', 'to'].forEach(function (id) {
+      $('tr-audit-' + id).addEventListener('change', renderAudit);
+    });
+    $('tr-audit-reset').addEventListener('click', function () {
+      ['company', 'outlet', 'driver', 'vehicle', 'status', 'from', 'to'].forEach(function (id) {
+        $('tr-audit-' + id).value = '';
+      });
+      renderAudit();
+    });
+
+    $('tr-audit-body').addEventListener('click', function (event) {
+      var link = event.target.closest('.tr-trip-link');
+      if (link) {
+        selectTrip(Number(link.dataset.trip));
+        switchTab('deliveries');
+        document.querySelector('.tr-grid').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      var row = event.target.closest('.tr-audit-row');
+      if (!row) return;
+      var r = shownRows[Number(row.dataset.row)];
+      var o = r.order;
+      var issue = issueText(o);
+
+      $('tr-audit-detail-body').innerHTML =
+        '<div class="incident-detail-row"><span>Order</span><strong>' + orderLabel(o) + '</strong></div>' +
+        '<div class="incident-detail-row"><span>Trip</span><strong>#' + r.tripId + ' · ' + r.date + '</strong></div>' +
+        '<div class="incident-detail-row"><span>Outlet</span><strong>' + r.stop + ' (' + r.outlet + ')</strong></div>' +
+        '<div class="incident-detail-row"><span>Driver said</span><strong>' + o.driver + '</strong></div>' +
+        '<div class="incident-detail-row"><span>Outlet said</span><strong>' + STATUS_LABELS[o.status] + '</strong></div>' +
+        (issue ? '<div class="incident-detail-row"><span>Issue</span><strong>' + issue + '</strong></div>' : '') +
+        (r.receipt
+          ? '<div class="incident-detail-row"><span>Confirmed by</span><strong>' + r.receipt.by +
+            ' · ' + r.receipt.at + '</strong></div>' +
+            (r.receipt.note ? '<div class="incident-detail-row"><span>Note</span><strong>“' + r.receipt.note + '”</strong></div>' : '') +
+            '<div class="tr-del-photos">' + new Array(r.receipt.photos + 1).join(
+              '<span class="tr-del-photo-broken" title="Served by the retail system">📷</span>') + '</div>'
+          : '<div class="tr-del-receipt tr-del-receipt--pending">Outlet has not confirmed receipt.</div>');
+
+      document.getElementById('tr-audit-detail').classList.add('open');
+    });
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) document.getElementById(closer.dataset.close).classList.remove('open');
+      else if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('open');
+    });
+
+    renderList();
+    renderAudit();
+    selectTrip(DATA.history[0].id);
   </script>
 </body>
 </html>

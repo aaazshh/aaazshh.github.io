@@ -13,28 +13,66 @@
 <body>
   <div class="app" data-page="control-center" data-title="Control Center">
 
-    <div class="cc-layout">
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title">On the road</div>
-            <div class="card-subtitle">6 of 18 vehicles</div>
-          </div>
-        </div>
-        <div id="cc-list"></div>
+    <div class="page-header">
+      <div>
+        <h2>Control Center</h2>
+        <p>Live fleet, routes and schedule at a glance</p>
       </div>
-
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="cc-title"></div>
-            <div class="card-subtitle" id="cc-sub"></div>
-          </div>
-        </div>
-        <div id="cc-map" class="cc-map"></div>
-        <div id="cc-stops"></div>
-      </div>
+      <div class="cc-updated" id="cc-updated">Loading…</div>
     </div>
+
+    <div id="cc-incident-banner" class="cc-incident-banner" style="display:none;"></div>
+
+    <div class="cc-kpis" id="cc-kpis">
+      <div class="cc-kpi"><span class="cc-kpi-label">Orders in pool</span><span class="cc-kpi-value" id="kpi-orders">—</span></div>
+      <div class="cc-kpi"><span class="cc-kpi-label">Active routes</span><span class="cc-kpi-value" id="kpi-routes">—</span></div>
+      <div class="cc-kpi"><span class="cc-kpi-label">Drivers on duty</span><span class="cc-kpi-value" id="kpi-drivers">—</span></div>
+      <div class="cc-kpi"><span class="cc-kpi-label">Vehicles</span><span class="cc-kpi-value" id="kpi-vehicles">—</span></div>
+      <div class="cc-kpi"><span class="cc-kpi-label">Utilization</span><span class="cc-kpi-value" id="kpi-util">—</span></div>
+      <div class="cc-kpi"><span class="cc-kpi-label">Idle</span><span class="cc-kpi-value" id="kpi-idle">—</span></div>
+    </div>
+
+    <div class="cc-grid">
+
+      <section class="cc-panel cc-left">
+        <div class="cc-panel-head">
+          <span class="cc-panel-title">Active Routes</span>
+          <button type="button" id="cc-trail-toggle" class="cc-trail-btn" title="Overlay the actual GPS path each driver took">Trip history</button>
+          <span class="badge badge-admin" id="cc-routes-count">0</span>
+        </div>
+        <div class="cc-panel-body" id="cc-routes-list">
+          <div class="cc-empty">No active routes.</div>
+        </div>
+      </section>
+
+      <section class="cc-panel cc-map-panel">
+        <div id="cc-map"></div>
+      </section>
+
+      <section class="cc-panel cc-right">
+        <div class="cc-panel-head">
+          <span class="cc-panel-title">Fleet &amp; Drivers</span>
+          <span class="badge badge-admin" id="cc-fleet-count">0</span>
+        </div>
+        <div class="cc-panel-body" id="cc-fleet-list">
+          <div class="cc-empty">No vehicles.</div>
+        </div>
+      </section>
+
+    </div>
+
+    <section class="cc-panel cc-schedule">
+      <div class="cc-panel-head">
+        <span class="cc-panel-title">Today's Schedule</span>
+        <span class="cc-legend">
+          <span class="cc-legend-item"><i class="cc-dot cc-dot-active"></i> Active</span>
+          <span class="cc-legend-item"><i class="cc-dot cc-dot-completed"></i> Completed</span>
+        </span>
+      </div>
+      <div class="cc-gantt" id="cc-gantt">
+        <div class="cc-empty">No routes scheduled today.</div>
+      </div>
+    </section>
 
   </div>
 
@@ -44,103 +82,397 @@
   <script>
     'use strict';
 
-    var map = L.map('cc-map', { zoomControl: true }).setView([1.3521, 103.8198], 12);
+    /* The real page polls api/control-center.php?action=overview every few
+       seconds and repaints all four panels from one payload. Here the payload is
+       DATA, and the only thing that moves is the GPS the drivers would be
+       sending in, so the map is not a still picture. */
+
+    var focus = null;      // isolate one route on the map
+    var trailAll = false;  // the Trip history overlay
+    var routes = DATA.live;
+
+    function routeColor(i) { return 'hsl(' + ((i * 137.508) % 360) + ', 65%, 50%)'; }
+    function routeColorDark(i) { return 'hsl(' + ((i * 137.508) % 360) + ', 70%, 30%)'; }
+
+    function visible() {
+      return focus == null ? routes : routes.filter(function (r) { return r.id === focus; });
+    }
+
+    // Stops carry their own visited flag so the map, the list and the popups all
+    // agree on where each truck has got to.
+    routes.forEach(function (r) {
+      r.stopRows = r.stops.map(function (name, i) {
+        var p = DATA.place(name);
+        return { name: name, lat: p.lat, lng: p.lng, visited: i < r.visited };
+      });
+      r.nextStop = r.stopRows.filter(function (s) { return !s.visited; })[0] || null;
+    });
+
+    /* ---- KPI strip ---- */
+
+    var onDuty = DATA.vehicles.filter(function (v) { return v.status === 2; }).length;
+    document.getElementById('kpi-orders').textContent = DATA.transferOrders.length;
+    document.getElementById('kpi-routes').textContent = routes.length;
+    document.getElementById('kpi-drivers').textContent = onDuty;
+    document.getElementById('kpi-vehicles').textContent = DATA.vehicles.length;
+    document.getElementById('kpi-util').textContent = Math.round(onDuty / DATA.vehicles.length * 100) + '%';
+    document.getElementById('kpi-idle').textContent =
+      DATA.vehicles.filter(function (v) { return v.status === 1; }).length;
+
+    /* ---- incident banner ---- */
+
+    var TYPE_LABEL = { breakdown: 'Breakdown', accident: 'Accident', medical: 'Medical', other: 'Other' };
+
+    (function () {
+      var open = DATA.incidents.filter(function (i) {
+        return i.status === 'open' || i.status === 'acknowledged' || i.status === 'reassigned';
+      });
+      if (!open.length) return;
+
+      var unack = open.filter(function (i) { return i.status === 'open'; }).length;
+      var rescues = open.filter(function (i) { return i.status === 'reassigned'; }).length;
+
+      var rows = open.map(function (i) {
+        var rescue = '';
+        if (i.status === 'reassigned' && i.newPlate) {
+          var run = routes.filter(function (r) { return r.id === i.newRouteId; })[0];
+          rescue = '<span class="cc-incident-rescue">→ 🚚 ' + i.newPlate + ' · ' +
+            (run ? run.driver + ' · ' + run.visited + '/' + run.stops.length + ' stops' : 'not started yet') + '</span>';
+        }
+        return '<li class="cc-incident-row' + (i.status === 'open' ? ' is-open' : '') +
+          (i.status === 'reassigned' ? ' is-rescued' : '') + '">' +
+          '<span class="cc-incident-plate">' + i.plate + '</span>' +
+          '<span class="cc-incident-what"><strong>' + TYPE_LABEL[i.type] + '</strong> · ' +
+          i.driver + ' · ' + DATA.relTime(i.raisedMins) +
+          '<span class="cc-incident-note">“' + i.note + '”</span>' + rescue + '</span>' +
+          '<span class="cc-incident-actions">' +
+          '<a class="cc-incident-loc" href="https://www.google.com/maps?q=' + i.lat + ',' + i.lng +
+          '" target="_blank" rel="noopener">' + i.address + '</a></span>' +
+          '</li>';
+      }).join('');
+
+      var el = document.getElementById('cc-incident-banner');
+      el.innerHTML =
+        '<div class="cc-incident-head">' +
+          '<span class="cc-incident-badge">⚠ ' + open.length + ' active incident' + (open.length > 1 ? 's' : '') +
+          (unack ? ' · ' + unack + ' unacknowledged' : '') +
+          (rescues ? ' · ' + rescues + ' rescue' + (rescues > 1 ? 's' : '') + ' underway' : '') + '</span>' +
+          '<a class="cc-incident-link" href="incidents.html">Open Incidents ›</a>' +
+        '</div><ul class="cc-incident-list">' + rows + '</ul>';
+      el.style.display = 'block';
+    }());
+
+    /* ---- map ---- */
+
+    var map = L.map('cc-map', { zoomControl: true }).setView([1.3521, 103.8198], 11);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
     }).addTo(map);
 
-    var layer = L.layerGroup().addTo(map);
-    var truckMarker = null;
+    var keyDiv = null;
+    var key = L.control({ position: 'bottomleft' });
+    key.onAdd = function () {
+      var div = L.DomUtil.create('div', 'cc-map-key');
+      L.DomEvent.disableClickPropagation(div);
+      keyDiv = div;
+      return div;
+    };
+    key.addTo(map);
 
-    function stopIcon(state, n) {
-      var fill = state === 'done' ? '#2a9d8f' : state === 'next' ? '#d97706' : '#94a3b8';
+    var layers = [];
+    var fitted = false;
+
+    function driverIcon(r, color) {
       return L.divIcon({
-        className: '', iconSize: [22, 22], iconAnchor: [11, 11],
-        html: '<div style="width:22px;height:22px;border-radius:50%;background:' + fill +
-          ';color:#fff;font:600 11px/22px Inter,sans-serif;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.3)">' + n + '</div>'
+        className: '',
+        html: '<div class="cc-driver-avatar">' +
+          '<span class="cc-driver-disc" style="background:' + color + '">' +
+          '<img src="assets/vehicles/truck.png" alt="" onerror="this.style.display=\'none\'">' +
+          '</span>' +
+          '<span class="cc-driver-pin" style="background:' + color + '">' + r.plate + '</span>' +
+          '</div>',
+        iconSize: [0, 0], iconAnchor: [0, 0]
       });
     }
 
-    var truckIcon = L.divIcon({
-      className: '', iconSize: [30, 30], iconAnchor: [15, 15],
-      html: '<div style="width:30px;height:30px;border-radius:50%;background:#264653;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);display:grid;place-items:center">' +
-        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>'
+    function stopIcon(s, n, isNext, color) {
+      var cls = 'cc-stop-marker' + (s.visited ? ' is-visited' : '') + (isNext ? ' is-next' : '');
+      return L.divIcon({
+        className: '',
+        html: '<span class="cc-stop-wrap' + (isNext ? ' is-next' : '') + '">' +
+          (isNext ? '<span class="cc-stop-halo" style="background:' + color + '"></span>' : '') +
+          '<span class="' + cls + '" style="background:' + color + '">' + n + '</span>' +
+          (isNext ? '<span class="cc-stop-label">' + s.name + '</span>' : '') +
+          '</span>',
+        iconSize: [isNext ? 34 : 22, isNext ? 34 : 22],
+        iconAnchor: [isNext ? 17 : 11, isNext ? 17 : 11]
+      });
+    }
+
+    // The plan, split three ways: already driven, the leg being driven now, and
+    // the rest of the run. Only the live leg is drawn loud.
+    function geometry(r, color) {
+      var line = DATA.routeLine(r);
+      var at = Math.min(r.visited, line.length - 1);
+      var driven = line.slice(0, at + 1).concat([r.at]);
+      var ahead = [r.at].concat(line.slice(at + 1));
+      var leg = ahead.slice(0, 2);
+      var later = ahead.slice(1);
+      var out = [];
+
+      if (driven.length > 1) {
+        out.push(L.polyline(driven, { color: '#94a3b8', weight: 3, opacity: 0.45, dashArray: '1,9', lineCap: 'round' }));
+      }
+      if (later.length > 1) {
+        out.push(L.polyline(later, { color: color, weight: 4, opacity: 0.28, dashArray: '10,7' }));
+      }
+      if (leg.length > 1) {
+        out.push(L.polyline(leg, { color: '#fff', weight: 11, opacity: 0.95, lineCap: 'round', lineJoin: 'round' }));
+        out.push(L.polyline(leg, { color: color, weight: 6, opacity: 1, lineCap: 'round', lineJoin: 'round' })
+          .bindPopup('<strong>' + r.plate + ' is driving here now</strong>' +
+            (r.nextStop ? '<br>→ ' + r.nextStop.name : '')));
+      }
+      return out;
+    }
+
+    // The GPS breadcrumb behind the plan. Faked here by wobbling the planned line,
+    // which is what a real trail looks like next to it.
+    function trail(r, i) {
+      var line = DATA.routeLine(r).slice(0, Math.max(2, r.visited + 1));
+      var pts = [];
+      line.forEach(function (p, n) {
+        pts.push(p);
+        if (n === line.length - 1) return;
+        var q = line[n + 1];
+        for (var t = 0.25; t < 1; t += 0.25) {
+          pts.push([
+            p[0] + (q[0] - p[0]) * t + (Math.random() - 0.5) * 0.004,
+            p[1] + (q[1] - p[1]) * t + (Math.random() - 0.5) * 0.004
+          ]);
+        }
+      });
+      return L.polyline(pts, {
+        color: routeColorDark(i), weight: 2.5, opacity: 0.85, dashArray: '4,6', lineCap: 'round'
+      });
+    }
+
+    function renderMap() {
+      layers.forEach(function (l) { map.removeLayer(l); });
+      layers = [];
+      var pts = [];
+
+      visible().forEach(function (r) {
+        var i = routes.indexOf(r);
+        var color = routeColor(i);
+
+        r.stopRows.forEach(function (s, si) {
+          var isNext = r.nextStop && r.nextStop.name === s.name && !s.visited;
+          var m = L.marker([s.lat, s.lng], { icon: stopIcon(s, si + 1, isNext, color), zIndexOffset: isNext ? 800 : 0 })
+            .bindPopup('<strong>' + (si + 1) + '. ' + s.name + '</strong>' +
+              (s.visited ? '<br><span class="cc-stop-done">Visited</span>' : '') +
+              (isNext ? '<br><span class="cc-stop-next">Heading here now</span>' : '') +
+              '<br><span class="cc-stop-route">' + r.plate + ' · ' + r.driver + '</span>')
+            .addTo(map);
+          layers.push(m);
+          pts.push([s.lat, s.lng]);
+        });
+
+        geometry(r, color).forEach(function (l) { layers.push(l.addTo(map)); });
+        if (trailAll) layers.push(trail(r, i).addTo(map));
+
+        var dm = L.marker(r.at, { icon: driverIcon(r, color), zIndexOffset: 1000 })
+          .bindPopup('<strong>' + r.plate + ' · ' + r.driver +
+            (r.nextStop ? '<br>→ ' + r.nextStop.name : '') + '</strong>')
+          .addTo(map);
+        dm.plate = r.plate;
+        layers.push(dm);
+        pts.push(r.at);
+      });
+
+      if (!fitted && pts.length) {
+        map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 14 });
+        fitted = true;
+      }
+      renderMapKey();
+    }
+
+    function renderMapKey() {
+      var shown = visible();
+      var html = '<div class="cc-map-key-title">' +
+        (focus != null ? 'Showing 1 route' : 'Drivers on map') + '</div>';
+
+      if (!shown.length) {
+        html += '<div class="cc-map-key-item cc-map-key-empty">No active routes</div>';
+      } else {
+        html += shown.map(function (r) {
+          var i = routes.indexOf(r);
+          return '<div class="cc-map-key-item">' +
+            '<span class="cc-key-swatch" style="background:' + routeColor(i) + '"></span>' +
+            r.plate + ' · ' + r.driver +
+            (r.nextStop ? '<span class="cc-key-dest">→ ' + r.nextStop.name + '</span>' : '') +
+            '</div>';
+        }).join('');
+        html += '<div class="cc-map-key-title cc-map-key-title--sub">Route line</div>' +
+          '<div class="cc-map-key-item"><span class="cc-key-line cc-key-line--leg"></span> Driving to next stop</div>' +
+          '<div class="cc-map-key-item"><span class="cc-key-line cc-key-line--later"></span> Rest of the run</div>' +
+          '<div class="cc-map-key-item"><span class="cc-key-line cc-key-line--driven"></span> Already driven</div>';
+      }
+      if (shown.length && trailAll) {
+        html += '<div class="cc-map-key-item"><span class="cc-key-trail"></span> Actual path (GPS)</div>';
+      }
+      keyDiv.innerHTML = html;
+    }
+
+    /* ---- left: active routes ---- */
+
+    function renderRoutes() {
+      document.getElementById('cc-routes-count').textContent = routes.length;
+      document.getElementById('cc-routes-list').innerHTML = routes.map(function (r) {
+        var pct = Math.round(r.visited / r.stops.length * 100);
+        var cape = r.rescueFor
+          ? '<span class="cc-rescue-badge" title="Picking up ' + r.rescueFor + '’s stops">🦸 rescue run</span>'
+          : '';
+        return '<div class="cc-route-card cc-route-card--clickable' +
+          (focus === r.id ? ' is-active' : '') + (r.rescueFor ? ' is-rescue' : '') +
+          '" data-route-id="' + r.id + '" title="Click to isolate this route on the map">' +
+          '<div class="cc-route-top">' +
+            '<span class="cc-plate">' + r.plate + '</span>' +
+            '<span class="cc-route-prog">' + cape + r.visited + '/' + r.stops.length + ' stops</span>' +
+          '</div>' +
+          '<div class="cc-route-driver">' + r.driver + '</div>' +
+          '<div class="cc-route-dest">→ ' + (r.nextStop ? r.nextStop.name : 'All stops done') + '</div>' +
+          '<div class="cc-progress"><span style="width:' + pct + '%"></span></div>' +
+          '<button type="button" class="cc-end-route-btn" data-unbuilt="Force-completing a route">End route</button>' +
+          '</div>';
+      }).join('');
+    }
+
+    document.getElementById('cc-routes-list').addEventListener('click', function (event) {
+      if (event.target.closest('[data-unbuilt]')) return;
+      var card = event.target.closest('.cc-route-card[data-route-id]');
+      if (!card) return;
+      var id = Number(card.dataset.routeId);
+      focus = focus === id ? null : id;
+      fitted = false;
+      renderRoutes();
+      renderMap();
     });
 
-    function state(trip, i) {
-      if (i < trip.done) return 'done';
-      if (i === trip.done) return 'next';
-      return 'queued';
-    }
-
-    function draw(index) {
-      var trip = DATA.live[index];
-      layer.clearLayers();
-
-      var line = DATA.coords(trip.stops);
-      L.polyline(line, { color: '#2a9d8f', weight: 4, opacity: 0.75 }).addTo(layer);
-
-      trip.stops.forEach(function (name, i) {
-        var o = DATA.outlet(name);
-        L.marker([o.lat, o.lng], { icon: stopIcon(state(trip, i), i + 1) })
-          .bindPopup('<strong>' + o.name + '</strong><br>' + o.addr)
-          .addTo(layer);
-      });
-
-      truckMarker = L.marker(trip.at, { icon: truckIcon, zIndexOffset: 500 })
-        .bindPopup('<strong>' + trip.plate + '</strong><br>' + trip.driver)
-        .addTo(layer);
-
-      map.fitBounds(L.polyline(line).getBounds(), { padding: [40, 40] });
-
-      document.getElementById('cc-title').textContent = trip.plate;
-      document.getElementById('cc-sub').textContent =
-        trip.driver + ', trip ' + trip.trip + ', ' + trip.done + ' of ' + trip.total + ' stops done';
-
-      document.getElementById('cc-stops').innerHTML =
-        '<div class="table-responsive"><table class="table"><thead><tr>' +
-        '<th style="width:48px;">#</th><th>Stop</th><th>Address</th><th>Status</th>' +
-        '</tr></thead><tbody>' +
-        trip.stops.map(function (name, i) {
-          var o = DATA.outlet(name);
-          var s = state(trip, i);
-          var chip = s === 'done' ? '<span class="status-chip status-completed">Delivered</span>'
-            : s === 'next' ? '<span class="status-chip status-in">On the way</span>'
-            : '<span class="status-chip status-idle">Queued</span>';
-          return '<tr><td>' + (i + 1) + '</td><td><strong>' + o.name + '</strong></td>' +
-            '<td style="color:#6b7280;">' + o.addr + '</td><td>' + chip + '</td></tr>';
-        }).join('') +
-        '</tbody></table></div>';
-
-      Array.prototype.forEach.call(document.querySelectorAll('#cc-list .cc-vehicle'), function (el, i) {
-        el.classList.toggle('is-active', i === index);
-      });
-    }
-
-    var list = document.getElementById('cc-list');
-    list.innerHTML = DATA.live.map(function (t, i) {
-      var pct = Math.round(t.done / t.total * 100);
-      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
-        '<div class="cc-plate">' + t.plate + '</div>' +
-        '<div class="cc-driver">' + t.driver + ', ' + t.done + '/' + t.total + ' stops</div>' +
-        '<div class="cc-progress"><span style="width:' + pct + '%"></span></div>' +
-        '</button>';
-    }).join('');
-
-    list.addEventListener('click', function (event) {
-      var btn = event.target.closest('.cc-vehicle');
-      if (btn) draw(Number(btn.dataset.i));
+    document.getElementById('cc-trail-toggle').addEventListener('click', function () {
+      trailAll = !trailAll;
+      this.classList.toggle('is-on', trailAll);
+      renderMap();
     });
 
-    draw(0);
+    /* ---- right: fleet and drivers ---- */
 
-    // The real page moves these markers from the GPS the driver app sends in.
-    // Here they wander a little so the map is not a still picture.
+    (function () {
+      var fleet = DATA.vehicles;
+      document.getElementById('cc-fleet-count').textContent = fleet.length;
+      document.getElementById('cc-fleet-list').innerHTML = fleet.map(function (v) {
+        var run = routes.filter(function (r) { return r.plate === v.plate; })[0];
+        var meta = [];
+        if (v.status === 2 && run) meta.push(run.speed + ' km/h');
+        meta.push(run ? DATA.relTime(run.seenMinsAgo) : DATA.relTime(180));
+
+        return '<div class="cc-fleet-card">' +
+          '<div class="cc-fleet-row1">' +
+            '<span class="cc-plate">' + v.plate + '</span>' +
+            '<span class="status-chip status-' + DATA.statusClass[v.status] + '">' + DATA.statusLabel[v.status] + '</span>' +
+          '</div>' +
+          '<div class="cc-fleet-driver">' + (v.driver || 'Unassigned') + '</div>' +
+          '<div class="cc-fleet-cap">' + DATA.capacity(v) + '</div>' +
+          (run ? '<div class="cc-fleet-dest">→ ' + (run.nextStop ? run.nextStop.name : 'All stops done') +
+            ' · ' + run.visited + '/' + run.stops.length + '</div>' : '') +
+          '<div class="cc-fleet-meta">' + meta.join(' · ') + '</div>' +
+          '</div>';
+      }).join('');
+    }());
+
+    /* ---- bottom: today's schedule ---- */
+
+    (function () {
+      var today = new Date();
+      var midnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+      function at(hhmm) {
+        var p = hhmm.split(':');
+        return midnight + Number(p[0]) * 3600000 + Number(p[1]) * 60000;
+      }
+
+      var bars = routes.map(function (r) {
+        return { plate: r.plate, start: at(r.start), end: at(r.end), done: false, projected: true };
+      }).concat(DATA.history.filter(function (h) { return h.date === '19 Sep 2026'; }).map(function (h) {
+        return { plate: h.plate, start: at(h.start), end: at(h.end), done: true, projected: false };
+      }));
+
+      var winStart = midnight + 6 * 3600000;
+      var winEnd = midnight + 18 * 3600000;
+      bars.forEach(function (b) {
+        if (b.start < winStart) winStart = Math.floor(b.start / 3600000) * 3600000;
+        if (b.end > winEnd) winEnd = Math.ceil(b.end / 3600000) * 3600000;
+      });
+      var span = winEnd - winStart || 1;
+      function pos(t) { return (Math.max(winStart, Math.min(winEnd, t)) - winStart) / span * 100; }
+      function clock(t) { var d = new Date(t); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+
+      var hours = '';
+      for (var h = winStart; h <= winEnd; h += 3600000) {
+        hours += '<span class="cc-gantt-tick" style="left:' + pos(h) + '%">' +
+          ('0' + new Date(h).getHours()).slice(-2) + ':00</span>';
+      }
+
+      var byPlate = {}, order = [];
+      bars.forEach(function (b) {
+        if (!byPlate[b.plate]) { byPlate[b.plate] = []; order.push(b.plate); }
+        byPlate[b.plate].push(b);
+      });
+
+      var nowPct = pos(Date.now());
+      var nowLine = (Date.now() >= winStart && Date.now() <= winEnd)
+        ? '<div class="cc-gantt-now" style="left:' + nowPct + '%"></div>' : '';
+
+      document.getElementById('cc-gantt').innerHTML =
+        '<div class="cc-gantt-ruler"><div class="cc-gantt-label"></div>' +
+        '<div class="cc-gantt-track cc-gantt-ticks">' + hours + nowLine + '</div></div>' +
+        order.map(function (plate) {
+          return '<div class="cc-gantt-row">' +
+            '<div class="cc-gantt-label">' + plate + '</div>' +
+            '<div class="cc-gantt-track">' + byPlate[plate].map(function (b) {
+              var left = pos(b.start);
+              var width = Math.max(1.5, pos(b.end) - left);
+              var t = clock(b.start) + '–' + (b.projected ? '~' : '') + clock(b.end);
+              return '<div class="cc-bar ' + (b.done ? 'cc-bar-completed' : 'cc-bar-active') +
+                '" style="left:' + left + '%;width:' + width + '%" title="' + plate + '  ' + t +
+                (b.projected ? '  (projected from progress)' : '') + '"><span>' + t + '</span></div>';
+            }).join('') + '</div></div>';
+        }).join('');
+    }());
+
+    /* ---- first paint, then keep the trucks moving ---- */
+
+    renderRoutes();
+    renderMap();
+
+    function stamp() {
+      var d = new Date();
+      document.getElementById('cc-updated').textContent =
+        'Updated ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    }
+    stamp();
+
+    // The real page gets these positions from the driver app's GPS pings. Here
+    // the moving trucks drift towards the stop they are heading for.
     setInterval(function () {
-      if (!truckMarker) return;
-      var p = truckMarker.getLatLng();
-      truckMarker.setLatLng([p.lat + (Math.random() - 0.5) * 0.002, p.lng + (Math.random() - 0.5) * 0.002]);
-    }, 2000);
+      routes.forEach(function (r) {
+        if (!r.speed || !r.nextStop) return;
+        r.at = [
+          r.at[0] + (r.nextStop.lat - r.at[0]) * 0.04 + (Math.random() - 0.5) * 0.0008,
+          r.at[1] + (r.nextStop.lng - r.at[1]) * 0.04 + (Math.random() - 0.5) * 0.0008
+        ];
+      });
+      renderMap();
+      stamp();
+    }, 5000);
   </script>
 </body>
 </html>

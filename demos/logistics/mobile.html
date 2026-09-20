@@ -326,7 +326,7 @@
       <div class="who">
         <div class="avatar">RO</div>
         <div class="name">Rahim Osman</div>
-        <div class="role">Driver, Prime Supermarket</div>
+        <div class="role">Driver, PSM Logistics</div>
       </div>
       <div class="pad">
         <div class="card">
@@ -405,9 +405,10 @@
   <script>
     'use strict';
 
-    // The run the admin side assigned to this driver: trip TR-4417 on the
-    // control center, same seven stops, same plate.
+    // The run the admin side assigned to this driver: route #4417 on the
+    // control center, same stops, same plate, same transfer order refs.
     var TRIP = DATA.live[0];
+    var TRIP_LABEL = '#' + TRIP.id;
 
     var LINES = {
       'Clementi Ave 3': [['Chilled dairy', 9], ['Dry goods', 12], ['Produce', 8]],
@@ -415,24 +416,24 @@
       'Tiong Bahru Plaza': [['Dry goods', 14], ['Frozen', 10]],
       'Toa Payoh Lor 4': [['Chilled dairy', 7], ['Dry goods', 9]],
       'Ang Mo Kio Ave 10': [['Dry goods', 18], ['Produce', 11], ['Frozen', 5]],
-      'Yishun Ring Rd': [['Chilled dairy', 10], ['Dry goods', 15]],
-      'Distribution Centre, Pandan Loop': [['Load out', 0]]
+      'Yishun Ring Rd': [['Chilled dairy', 10], ['Dry goods', 15]]
     };
 
-    var TIMES = ['06:48', '07:14', '07:58', '08:36', '', '', ''];
+    var TIMES = ['07:14', '07:58', '08:36', '09:29', '', ''];
 
     var stops = TRIP.stops.map(function (name, i) {
-      var o = DATA.outlet(name);
+      var o = DATA.place(name);
       var lines = LINES[name] || [['Dry goods', 10]];
       return {
         name: name,
-        addr: o.addr,
+        addr: o.address,
+        code: o.code,
         lat: o.lat,
         lng: o.lng,
-        po: 'PO-88' + (214 + i),
+        po: 'DC-TO000' + (781 + i),
         lines: lines,
         cases: lines.reduce(function (n, l) { return n + l[1]; }, 0),
-        state: i < TRIP.done ? 'done' : i === TRIP.done ? 'next' : 'queued',
+        state: i < TRIP.visited ? 'done' : i === TRIP.visited ? 'next' : 'queued',
         at: TIMES[i] || '',
         signed: null
       };
@@ -459,7 +460,7 @@
       view.navbar.hidden = !chrome || name === 'stop' || name === 'deliver' || name === 'done';
       view.appbar.classList.toggle('has-back', name === 'stop' || name === 'deliver');
       view.title.textContent = opts.title || 'Today\'s run';
-      view.sub.textContent = opts.sub || (TRIP.trip + ', ' + TRIP.plate);
+      view.sub.textContent = opts.sub || (TRIP_LABEL + ', ' + TRIP.plate);
       document.getElementById('body').scrollTop = 0;
       if (name === 'map') drawMap();
       if (name === 'run') paintRun();
@@ -479,7 +480,7 @@
 
     function paintRun() {
       var d = done();
-      document.getElementById('trip-id').textContent = TRIP.trip;
+      document.getElementById('trip-id').textContent = TRIP_LABEL;
       document.getElementById('trip-plate').textContent = TRIP.plate;
       document.getElementById('trip-meta').textContent =
         d + ' of ' + stops.length + ' stops done, ' + (stops.length - d) + ' to go';
@@ -671,13 +672,13 @@
       var sent = stops.reduce(function (n, s) { return n + s.cases; }, 0);
 
       document.getElementById('summary').innerHTML =
-        '<div class="row"><span>Trip</span><span>' + TRIP.trip + '</span></div>' +
+        '<div class="row"><span>Trip</span><span>' + TRIP_LABEL + '</span></div>' +
         '<div class="row"><span>Stops</span><span>' + stops.length + '</span></div>' +
         '<div class="row"><span>Cases out</span><span>' + sent + '</span></div>' +
         '<div class="row"><span>Signed for</span><span>' + (sent - short) + '</span></div>' +
         '<div class="row total"><span>Short</span><span>' + short + '</span></div>';
 
-      show('done', { title: 'Run complete', sub: TRIP.trip });
+      show('done', { title: 'Run complete', sub: TRIP_LABEL });
     }
 
     /* Map ------------------------------------------------------------------ */
@@ -764,12 +765,12 @@
       var where = btn.dataset.go;
       show(where, {
         title: where === 'map' ? 'Route' : where === 'me' ? 'Rahim Osman' : 'Today\'s run',
-        sub: where === 'me' ? 'Driver, Prime Supermarket' : TRIP.trip + ', ' + TRIP.plate
+        sub: where === 'me' ? 'Driver, PSM Logistics' : TRIP_LABEL + ', ' + TRIP.plate
       });
     });
 
     document.getElementById('return-depot').addEventListener('click', function () {
-      toast('Heading back to Pandan Loop. The trip closes when the truck is back.');
+      toast('Heading back to Joo Koon. The trip closes when the truck is back.');
     });
 
     document.getElementById('signout').addEventListener('click', function () {

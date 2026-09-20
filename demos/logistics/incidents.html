@@ -6,31 +6,93 @@
   <title>Incidents, Logistics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
   <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <div class="app" data-page="incidents" data-title="Incidents">
 
-    <div class="cc-layout">
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Raised</div>
-            <div class="card-subtitle">Two still open</div>
-          </div>
-        </div>
-        <div id="list"></div>
+    <div class="page-header">
+      <div>
+        <h2>Incidents</h2>
+        <p>Driver SOS &amp; breakdown reports</p>
       </div>
+      <div class="incident-filter" role="group" aria-label="Filter incidents">
+        <button type="button" class="btn btn-sm btn-secondary is-active" data-filter="all">All</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-filter="open">Live</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-filter="resolved">Resolved</button>
+      </div>
+    </div>
 
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="title">INC-2291, Breakdown</div>
-            <div class="card-subtitle" id="sub">XF 6638 H, Arun Raj</div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Incident log</div>
+        <span class="badge badge-admin" id="incident-count">—</span>
+      </div>
+      <div id="incident-list-wrap"></div>
+    </div>
+
+    <!-- Reassign -->
+    <div class="modal-overlay" id="incident-reassign-modal" role="dialog" aria-modal="true" aria-labelledby="incident-reassign-title">
+      <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+          <div class="modal-title" id="incident-reassign-title">Reassign to another truck</div>
+          <button class="modal-close" data-close="incident-reassign-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-sm text-secondary" style="margin-bottom:10px;">
+            Moves the remaining undelivered stops onto an idle truck as a new route.
+            The broken-down truck's route is closed and it stays out of service.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="incident-reassign-target">Available truck</label>
+            <select id="incident-reassign-target" class="form-control"></select>
           </div>
         </div>
-        <div class="card-body" id="detail"></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="incident-reassign-modal">Cancel</button>
+          <button class="btn btn-primary" id="incident-reassign-confirm" disabled>Reassign</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details, the full post-mortem -->
+    <div class="modal-overlay" id="incident-detail-modal" role="dialog" aria-modal="true" aria-labelledby="incident-detail-title">
+      <div class="modal" style="max-width:720px;">
+        <div class="modal-header">
+          <div class="modal-title" id="incident-detail-title">Incident details</div>
+          <button class="modal-close" data-close="incident-detail-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" id="incident-detail-body" style="max-height:70vh;overflow-y:auto;"></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="incident-detail-modal">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resolve -->
+    <div class="modal-overlay" id="incident-resolve-modal" role="dialog" aria-modal="true" aria-labelledby="incident-resolve-title">
+      <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+          <div class="modal-title" id="incident-resolve-title">Resolve incident</div>
+          <button class="modal-close" data-close="incident-resolve-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-sm text-secondary" style="margin-bottom:10px;">
+            Closing this incident. This does not return the vehicle to service, do that from the
+            <a href="fleet.html">Fleet</a> page.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="incident-resolve-note">Resolution note (optional)</label>
+            <textarea id="incident-resolve-note" class="form-control" rows="3" maxlength="500"
+              placeholder="e.g. Towed; orders reassigned to PSM1003."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="incident-resolve-modal">Cancel</button>
+          <button class="btn btn-primary" id="incident-resolve-confirm">Resolve</button>
+        </div>
       </div>
     </div>
 
@@ -38,71 +100,289 @@
 
   <script src="data.js"></script>
   <script src="shell.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
   <script>
     'use strict';
 
-    var chip = { 'Pending': 'status-pending', 'In Progress': 'status-in', 'Completed': 'status-completed' };
+    var TYPE_LABEL = { breakdown: 'Breakdown', accident: 'Accident', medical: 'Medical', other: 'Other' };
+    var STATUS_CLASS = {
+      open: 'status-unavailable', acknowledged: 'status-in_transit',
+      reassigned: 'status-active', resolved: 'status-completed'
+    };
+    var STATUS_LABEL = {
+      open: 'Open', acknowledged: 'Acknowledged', reassigned: 'Reassigned', resolved: 'Resolved'
+    };
+    var OUTCOME = {
+      delivered_before: { label: 'Delivered before breakdown', cls: 'status-completed' },
+      delivered_by_rescue: { label: 'Delivered by rescue truck', cls: 'status-completed' },
+      rescue_pending: { label: 'With rescue truck', cls: 'status-in_transit' },
+      not_reassigned: { label: 'Not reassigned', cls: 'status-unavailable' },
+      stranded: { label: 'Stranded — never delivered', cls: 'status-unavailable' }
+    };
 
-    document.getElementById('list').innerHTML = DATA.incidents.map(function (inc, i) {
-      return '<button type="button" class="cc-vehicle' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' +
-        '<div class="cc-plate">' + inc.id + ', ' + inc.type + '</div>' +
-        '<div class="cc-driver">' + inc.plate + ', ' + inc.driver + '</div>' +
-        '<div style="margin-top:6px;"><span class="status-chip ' + chip[inc.status] + '">' + inc.status + '</span>' +
-        '<span class="cc-driver" style="display:inline;margin-left:8px;">' + inc.raised + '</span></div>' +
-        '</button>';
-    }).join('');
+    var filter = 'all';
+    var pendingId = null;
+    var detailMap = null;
 
-    function open(i) {
-      var inc = DATA.incidents[i];
-      document.getElementById('title').textContent = inc.id + ', ' + inc.type;
-      document.getElementById('sub').textContent = inc.plate + ', ' + inc.driver;
+    function fmtDur(sec) {
+      if (sec == null) return '—';
+      if (sec < 60) return sec + 's';
+      var m = Math.floor(sec / 60);
+      if (m < 60) return m + 'm';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
 
-      document.getElementById('detail').innerHTML =
-        '<p style="margin-top:0;font-size:15px;line-height:1.7;">' + inc.note + '</p>' +
-        '<div class="table-responsive"><table class="table"><tbody>' +
-          row('Status', '<span class="status-chip ' + chip[inc.status] + '">' + inc.status + '</span>') +
-          row('Raised', inc.raised) +
-          row('Where', inc.where) +
-          row('Stop', inc.stop) +
-          row('Orders held up', inc.orders) +
-          row('Arrived', inc.arrived) +
-          row('Outcome', inc.outcome) +
-        '</tbody></table></div>' +
-        (inc.status === 'Completed' ? '' :
-          '<div style="display:flex;gap:10px;margin-top:16px;">' +
-          '<button type="button" class="btn btn-primary" data-act="close" data-i="' + i + '">Close incident</button>' +
-          '<button type="button" class="btn" data-unbuilt="Reassigning the stop">Reassign stop</button>' +
-          '</div>');
+    function coordText(inc) {
+      return inc.lat.toFixed(5) + ', ' + inc.lng.toFixed(5);
+    }
 
-      Array.prototype.forEach.call(document.querySelectorAll('#list .cc-vehicle'), function (el, n) {
-        el.classList.toggle('is-active', n === i);
+    function locationCell(inc) {
+      return '<a href="https://www.google.com/maps?q=' + inc.lat + ',' + inc.lng + '" ' +
+        'target="_blank" rel="noopener" title="Open in Google Maps">' + inc.address + '</a>';
+    }
+
+    function rowHtml(inc) {
+      var actions = [];
+      if (inc.status === 'open') {
+        actions.push('<button type="button" class="btn btn-ghost btn-sm" data-ack="' + inc.id + '">Acknowledge</button>');
+      }
+      if ((inc.status === 'open' || inc.status === 'acknowledged') && inc.routeId) {
+        actions.push('<button type="button" class="btn btn-ghost btn-sm" style="color:var(--primary);" data-reassign="' + inc.id + '">Reassign</button>');
+      }
+      if (inc.status !== 'resolved') {
+        actions.push('<button type="button" class="btn btn-ghost btn-sm" style="color:var(--success);" data-resolve="' + inc.id + '">Resolve</button>');
+      }
+      return '<tr>' +
+        '<td><span class="status-chip ' + STATUS_CLASS[inc.status] + '">' + STATUS_LABEL[inc.status] + '</span></td>' +
+        '<td><strong>' + TYPE_LABEL[inc.type] + '</strong>' +
+          '<div class="text-sm text-secondary" style="margin-top:2px;">“' + inc.note + '”</div></td>' +
+        '<td style="font-family:monospace;font-weight:600;">' + inc.plate + '</td>' +
+        '<td>' + inc.driver + '</td>' +
+        '<td class="text-sm">' + DATA.relTime(inc.raisedMins) + '</td>' +
+        '<td class="text-sm">' + locationCell(inc) + '</td>' +
+        '<td><button type="button" class="btn btn-ghost btn-sm" data-detail="' + inc.id + '">Details</button></td>' +
+        '<td style="text-align:right;white-space:nowrap;">' + actions.join(' ') + '</td>' +
+        '</tr>';
+    }
+
+    function shown() {
+      return DATA.incidents.filter(function (i) {
+        if (filter === 'all') return true;
+        if (filter === 'resolved') return i.status === 'resolved';
+        return i.status !== 'resolved';
       });
     }
 
-    function row(k, v) {
-      return '<tr><td style="width:170px;color:#6b7280;">' + k + '</td><td>' + v + '</td></tr>';
+    function render() {
+      var list = shown();
+      document.getElementById('incident-count').textContent =
+        list.length + (filter === 'all' ? ' total' : '');
+      var wrap = document.getElementById('incident-list-wrap');
+
+      if (!list.length) {
+        wrap.innerHTML = '<div class="card-body"><div class="location-empty">No incidents to show.</div></div>';
+        return;
+      }
+      wrap.innerHTML =
+        '<div class="table-wrapper"><table><thead><tr>' +
+        '<th>Status</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Raised</th><th>Location</th>' +
+        '<th>Details</th><th style="text-align:right;">Actions</th>' +
+        '</tr></thead><tbody>' + list.map(rowHtml).join('') + '</tbody></table></div>';
     }
 
-    document.getElementById('list').addEventListener('click', function (event) {
-      var btn = event.target.closest('[data-i]');
-      if (btn) open(Number(btn.dataset.i));
+    /* ---- detail drawer ---- */
+
+    function detailRow(label, value) {
+      return '<div class="incident-detail-row"><span>' + label + '</span><strong>' + value + '</strong></div>';
+    }
+
+    function stopsTable(stops) {
+      return '<div class="table-wrapper"><table><thead><tr>' +
+        '<th>Stop</th><th>Orders</th><th>Outcome</th><th>Arrived</th>' +
+        '</tr></thead><tbody>' + stops.map(function (s) {
+          var o = OUTCOME[s.outcome];
+          var orders = s.orders.map(function (t) {
+            return '<div class="text-sm">' + t.ref +
+              ' <span class="text-muted">· ' + t.pallets + ' plt</span>' +
+              (t.at ? ' <span class="text-xs" style="color:var(--success);">✓ ' + t.at + '</span>' : '') +
+              '</div>';
+          }).join('');
+          return '<tr>' +
+            '<td><strong>' + s.name + '</strong><div class="text-xs text-muted">' + s.code + '</div></td>' +
+            '<td>' + orders + '</td>' +
+            '<td><span class="status-chip ' + o.cls + '">' + o.label + '</span></td>' +
+            '<td class="text-sm">' + (s.arrived || '—') + '</td>' +
+            '</tr>';
+        }).join('') + '</tbody></table></div>';
+    }
+
+    function openDetail(id) {
+      var inc = DATA.incidents.filter(function (i) { return i.id === id; })[0];
+      var undelivered = inc.stops.filter(function (s) {
+        return s.outcome !== 'delivered_before' && s.outcome !== 'delivered_by_rescue';
+      }).length;
+
+      var verdict = undelivered === 0
+        ? '<span class="status-chip status-completed">✓ All ' + inc.stops.length + ' stop(s) delivered</span>'
+        : '<span class="status-chip status-unavailable">' + undelivered + ' of ' + inc.stops.length +
+          ' stop(s) not delivered yet</span>';
+
+      var html = '<div class="incident-detail-verdict">' + verdict + '</div>';
+
+      html += '<h4 class="incident-detail-h">What happened</h4>';
+      html += detailRow('Type', TYPE_LABEL[inc.type]);
+      html += detailRow('Raised', DATA.relTime(inc.raisedMins));
+      html += detailRow('Truck', inc.plate);
+      html += detailRow('Driver', inc.driver);
+      html += detailRow('Driver’s note', '“' + inc.note + '”');
+      html += detailRow('Location', inc.address);
+      html += '<div id="incident-detail-map" class="incident-detail-map"></div>';
+      html += '<div class="text-xs text-muted" style="margin:6px 0 4px;">' + coordText(inc) +
+        ' · <a href="https://www.google.com/maps?q=' + inc.lat + ',' + inc.lng +
+        '" target="_blank" rel="noopener">Open in Google Maps</a></div>';
+
+      html += '<h4 class="incident-detail-h">How long it took</h4>';
+      html += detailRow('Acknowledged after', fmtDur(inc.ackSecs) +
+        (inc.ackBy ? ' <span class="text-muted">by ' + inc.ackBy + '</span>' : ''));
+      html += detailRow('Reassigned after', fmtDur(inc.reassignSecs));
+      html += detailRow('Resolved after', fmtDur(inc.resolveSecs) +
+        (inc.resolvedBy ? ' <span class="text-muted">by ' + inc.resolvedBy + '</span>' : ''));
+      html += detailRow('Breakdown → last drop', fmtDur(inc.lastDropSecs));
+      if (inc.resolution) html += detailRow('Resolution note', '“' + inc.resolution + '”');
+
+      html += '<h4 class="incident-detail-h">Rerouted to</h4>';
+      if (inc.newPlate) {
+        html += detailRow('Truck', inc.newPlate);
+        html += detailRow('Driver', inc.newDriver);
+        html += detailRow('New route', '#' + inc.newRouteId +
+          ' <span class="text-muted">· ' + inc.newStatus + '</span>');
+        html += detailRow('Rescue started', inc.rescueStart || '—');
+        html += detailRow('Rescue finished', inc.rescueEnd || '—');
+        html += detailRow('Rescue drive time', fmtDur(inc.rescueDriveSecs));
+      } else {
+        html += '<div class="text-sm text-secondary">Never reassigned, the remaining stops stayed with the broken-down truck.</div>';
+      }
+
+      html += '<h4 class="incident-detail-h">Stops on the original route ' +
+        '<span class="text-muted text-sm">(#' + inc.routeId + ')</span></h4>';
+      html += stopsTable(inc.stops);
+
+      document.getElementById('incident-detail-body').innerHTML = html;
+      open('incident-detail-modal');
+
+      // Leaflet needs the container to have a real size before it will behave.
+      setTimeout(function () {
+        var el = document.getElementById('incident-detail-map');
+        if (!el) return;
+        detailMap = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView([inc.lat, inc.lng], 15);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
+        }).addTo(detailMap);
+        L.marker([inc.lat, inc.lng]).addTo(detailMap).bindPopup('<strong>' + inc.plate + '</strong><br>' + inc.address);
+        detailMap.invalidateSize();
+      }, 30);
+    }
+
+    /* ---- modal plumbing, the same openModal/closeModal the app uses ---- */
+
+    function open(id) { document.getElementById(id).classList.add('open'); }
+    function close(id) {
+      document.getElementById(id).classList.remove('open');
+      if (id === 'incident-detail-modal' && detailMap) { detailMap.remove(); detailMap = null; }
+    }
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) { close(closer.dataset.close); return; }
+      if (event.target.classList.contains('modal-overlay')) close(event.target.id);
     });
 
-    document.getElementById('detail').addEventListener('click', function (event) {
-      var btn = event.target.closest('[data-act="close"]');
+    /* ---- actions ---- */
+
+    document.querySelector('.incident-filter').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-filter]');
       if (!btn) return;
-      var inc = DATA.incidents[Number(btn.dataset.i)];
-      inc.status = 'Completed';
-      inc.outcome = 'Closed by Maram Aashna';
-      inc.arrived = inc.arrived === 'Pending' ? 'Not needed' : inc.arrived;
-      open(Number(btn.dataset.i));
-      window.flash(inc.id + ' closed. The driver gets a push telling them it is cleared.');
-      var el = document.querySelectorAll('#list .cc-vehicle')[Number(btn.dataset.i)];
-      el.querySelector('.status-chip').className = 'status-chip status-completed';
-      el.querySelector('.status-chip').textContent = 'Completed';
+      filter = btn.dataset.filter;
+      Array.prototype.forEach.call(this.children, function (b) {
+        b.classList.toggle('is-active', b === btn);
+      });
+      render();
     });
 
-    open(0);
+    document.getElementById('incident-list-wrap').addEventListener('click', function (event) {
+      var btn = event.target.closest('button[data-ack], button[data-reassign], button[data-resolve], button[data-detail]');
+      if (!btn) return;
+
+      if (btn.dataset.detail) { openDetail(Number(btn.dataset.detail)); return; }
+
+      if (btn.dataset.ack) {
+        var inc = DATA.incidents.filter(function (i) { return i.id === Number(btn.dataset.ack); })[0];
+        inc.status = 'acknowledged';
+        inc.ackSecs = inc.raisedMins * 60;
+        inc.ackBy = 'Maram Aashna';
+        render();
+        window.flash('Incident #' + inc.id + ' acknowledged. The driver app tells the driver somebody has seen it.');
+        return;
+      }
+
+      if (btn.dataset.reassign) {
+        pendingId = Number(btn.dataset.reassign);
+        var free = DATA.vehicles.filter(function (v) { return v.status === 1 && v.driver; });
+        var sel = document.getElementById('incident-reassign-target');
+        sel.innerHTML = '<option value="">Select a truck…</option>' + free.map(function (v) {
+          return '<option value="' + v.id + '">' + v.plate + ' — ' + v.driver + '</option>';
+        }).join('');
+        document.getElementById('incident-reassign-confirm').disabled = true;
+        open('incident-reassign-modal');
+        return;
+      }
+
+      if (btn.dataset.resolve) {
+        pendingId = Number(btn.dataset.resolve);
+        document.getElementById('incident-resolve-note').value = '';
+        open('incident-resolve-modal');
+      }
+    });
+
+    document.getElementById('incident-reassign-target').addEventListener('change', function () {
+      document.getElementById('incident-reassign-confirm').disabled = !this.value;
+    });
+
+    document.getElementById('incident-reassign-confirm').addEventListener('click', function () {
+      var sel = document.getElementById('incident-reassign-target');
+      var v = DATA.vehicle(sel.options[sel.selectedIndex].text.split(' — ')[0]);
+      var inc = DATA.incidents.filter(function (i) { return i.id === pendingId; })[0];
+
+      inc.status = 'reassigned';
+      inc.newPlate = v.plate;
+      inc.newDriver = v.driver;
+      inc.newRouteId = 4500 + inc.id % 100;
+      inc.newStatus = 'pending';
+      inc.reassignSecs = inc.raisedMins * 60;
+      inc.stops.forEach(function (s) {
+        if (s.outcome === 'not_reassigned') s.outcome = 'rescue_pending';
+      });
+      v.status = 2;
+
+      close('incident-reassign-modal');
+      render();
+      window.flash('The undelivered stops became a new route on ' + v.plate +
+        '. ' + inc.plate + ' stays out of service until Fleet puts it back.');
+    });
+
+    document.getElementById('incident-resolve-confirm').addEventListener('click', function () {
+      var inc = DATA.incidents.filter(function (i) { return i.id === pendingId; })[0];
+      var note = document.getElementById('incident-resolve-note').value.trim();
+      inc.status = 'resolved';
+      inc.resolveSecs = inc.raisedMins * 60;
+      inc.resolvedBy = 'Maram Aashna';
+      if (note) inc.resolution = note;
+      close('incident-resolve-modal');
+      render();
+      window.flash('Incident #' + inc.id + ' closed. The truck stays unavailable until Fleet returns it to service.');
+    });
+
+    render();
   </script>
 </body>
 </html>

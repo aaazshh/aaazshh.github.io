@@ -13,28 +13,121 @@
 <body>
   <div class="app" data-page="locations" data-title="Locations">
 
-    <div class="cc-layout">
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Outlets</div>
-            <div class="card-subtitle">Addresses are geocoded once, on import</div>
+    <div class="locations-layout">
+
+      <!-- Left: add or edit a location. The postal code auto-fills the address
+           and pins the map, which is how every outlet gets its coordinates. -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="form-heading">Add New Location</div>
+              <div class="card-subtitle">Search and pin a location on the map</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="location-form" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="input-type">Location Type <span class="required">*</span></label>
+                <select id="input-type" class="form-control" required>
+                  <option value="">Select a type…</option>
+                  <option value="warehouse">Warehouse</option>
+                  <option value="outlet">Outlet</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="input-name">Location Name <span class="required">*</span></label>
+                <input type="text" id="input-name" class="form-control"
+                  placeholder="e.g. Jurong Warehouse A" maxlength="200" required>
+              </div>
+
+              <div class="form-group" id="warehouse-code-group" style="display:none;">
+                <label class="form-label" for="input-warehouse-code">Warehouse Code <span class="required">*</span></label>
+                <select id="input-warehouse-code" class="form-control">
+                  <option value="DC60">DC60 — Joo Koon</option>
+                  <option value="DC125">DC125 — Defu</option>
+                </select>
+                <p class="form-hint">Links this warehouse to its orders, used as a start point in Transfer Orders auto-assign.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="input-postal">Postal Code</label>
+                <div class="postal-wrapper">
+                  <input type="text" id="input-postal" class="form-control"
+                    inputmode="numeric" maxlength="6" placeholder="e.g. 629117" autocomplete="off">
+                  <span id="postal-status" class="postal-status"></span>
+                </div>
+                <p class="form-hint">Enter a 6-digit Singapore postal code to auto-fill the address and pin the map.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="input-address">Address <span class="required">*</span></label>
+                <input type="text" id="input-address" class="form-control"
+                  placeholder="Postal code, building name or street…" autocomplete="off" required>
+                <p class="form-hint">Search and select a result to pin the map. You can then edit to add a unit number.</p>
+              </div>
+
+              <div id="location-map"></div>
+
+              <div id="pin-confirmed" style="display:none;margin-top:8px;" class="alert alert-success">
+                ✓ Location pinned. Fill in the name and click Add Location.
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:18px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;" id="submit-btn">Add Location</button>
+                <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display:none;">Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
-        <div class="form-group" style="margin:0;padding:0 14px 12px;">
-          <input id="q" class="form-control" type="search" placeholder="Search outlets">
-        </div>
-        <div id="list" style="max-height:430px;overflow-y:auto;"></div>
       </div>
 
-      <div class="card" style="margin:0;">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="title">18 outlets across the island</div>
-            <div class="card-subtitle" id="sub">The depot in the west, everything else on the delivery round</div>
+      <!-- Right: the two lists. Delivery Points and Stop Points are hidden in
+           the real portal too, they were never needed. -->
+      <div class="location-sections">
+        <div class="card">
+          <div class="card-header">
+            <div class="location-section-header" style="width:100%;display:flex;align-items:center;gap:8px;">
+              <span class="location-section-title">Warehouses (Start Points)</span>
+              <span class="location-count" id="count-warehouses">0</span>
+            </div>
+          </div>
+          <div class="card-body" style="padding-top:12px;">
+            <div id="list-warehouses" class="location-list"></div>
           </div>
         </div>
-        <div id="map" class="cc-map"></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="location-section-header" style="width:100%;display:flex;align-items:center;gap:8px;">
+              <span class="location-section-title">Outlets</span>
+              <span class="location-count" id="count-outlets">0</span>
+              <span style="margin-left:auto;">
+                <button type="button" id="sync-outlets-btn" class="btn btn-secondary btn-sm">Sync Outlets</button>
+              </span>
+            </div>
+          </div>
+          <div class="card-body" style="padding-top:12px;">
+            <div id="list-outlets" class="location-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title" id="delete-modal-title">Remove Location</span>
+          <button class="modal-close" data-close="delete-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Remove <strong id="delete-name"></strong>? Routes that already used it keep their history.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="delete-modal">Cancel</button>
+          <button class="btn btn-danger" id="confirm-delete-btn">Remove Location</button>
+        </div>
       </div>
     </div>
 
@@ -46,72 +139,195 @@
   <script>
     'use strict';
 
-    var map = L.map('map').setView([1.3521, 103.8198], 11);
+    function $(id) { return document.getElementById(id); }
+
+    var warehouses = DATA.warehouses.slice();
+    var outlets = DATA.outlets.slice();
+    var editing = null;
+    var pendingDelete = null;
+
+    var map = L.map('location-map', { zoomControl: true }).setView([1.3521, 103.8198], 11);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
     }).addTo(map);
+    var pin = null;
 
-    var pins = {};
+    var EDIT_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>' +
+      '<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+    var DELETE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<polyline points="3 6 5 6 21 6"></polyline>' +
+      '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>' +
+      '<path d="M10 11v6"></path><path d="M14 11v6"></path></svg>';
+    var PIN_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>' +
+      '<circle cx="12" cy="10" r="3"></circle></svg>';
 
-    function pin(o) {
-      return L.divIcon({
-        className: '', iconSize: [16, 16], iconAnchor: [8, 8],
-        html: '<div style="width:16px;height:16px;border-radius:50%;background:' +
-          (o.hub ? '#264653' : '#2a9d8f') + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>'
-      });
+    function itemHtml(loc, kind) {
+      return '<div class="location-item" data-kind="' + kind + '" data-name="' + loc.name + '">' +
+        '<div class="location-item-icon">' + PIN_ICON + '</div>' +
+        '<div class="location-item-body">' +
+          '<div class="location-item-name">' + loc.name +
+            (loc.code ? ' <span class="location-count">' + loc.code + '</span>' : '') + '</div>' +
+          '<div class="location-item-address">' + loc.address + '</div>' +
+        '</div>' +
+        '<div class="location-item-actions">' +
+          '<button class="btn btn-ghost btn-sm btn-icon" title="Edit" data-edit>' + EDIT_ICON + '</button>' +
+          '<button class="btn btn-ghost btn-sm btn-icon" title="Delete" data-delete>' + DELETE_ICON + '</button>' +
+        '</div></div>';
     }
 
-    DATA.outlets.forEach(function (o) {
-      pins[o.name] = L.marker([o.lat, o.lng], { icon: pin(o) })
-        .bindPopup('<strong>' + o.name + '</strong><br>' + o.addr + '<br>' + o.company)
-        .addTo(map);
-    });
-
-    var ZONES = ['West', 'Central', 'North', 'East'];
-
-    function paint() {
-      var q = document.getElementById('q').value.trim().toLowerCase();
-      var html = '';
-
-      ZONES.forEach(function (zone) {
-        var here = DATA.outlets.filter(function (o) {
-          return o.zone === zone && (!q || (o.name + ' ' + o.addr).toLowerCase().indexOf(q) !== -1);
-        });
-        if (!here.length) return;
-
-        html += '<div class="location-section-header">' +
-          '<span class="location-section-title">' + zone + '</span>' +
-          '<span class="location-count">' + here.length + '</span></div>';
-
-        html += here.map(function (o) {
-          return '<button type="button" class="cc-vehicle" data-name="' + o.name + '">' +
-            '<div class="cc-plate">' + o.name + (o.hub ? ' <span class="status-chip status-active">depot</span>' : '') + '</div>' +
-            '<div class="cc-driver">' + o.addr + '</div>' +
-            '<div class="cc-driver">' + o.company + '</div>' +
-            '</button>';
-        }).join('');
-      });
-
-      document.getElementById('list').innerHTML = html ||
-        '<div class="location-empty" style="padding:24px;text-align:center;color:#6b7280;">No outlet matches that.</div>';
+    function render() {
+      $('count-warehouses').textContent = warehouses.length;
+      $('count-outlets').textContent = outlets.length;
+      $('list-warehouses').innerHTML = warehouses.length
+        ? warehouses.map(function (w) { return itemHtml(w, 'warehouse'); }).join('')
+        : '<div class="location-empty">No warehouses added yet.</div>';
+      $('list-outlets').innerHTML = outlets.length
+        ? outlets.map(function (o) { return itemHtml(o, 'outlet'); }).join('')
+        : '<div class="location-empty">No outlets added yet.</div>';
     }
 
-    document.getElementById('q').addEventListener('input', paint);
+    function setPin(lat, lng, label) {
+      if (pin) map.removeLayer(pin);
+      pin = L.marker([lat, lng]).addTo(map);
+      if (label) pin.bindPopup('<strong>' + label + '</strong>').openPopup();
+      map.setView([lat, lng], 16);
+      $('pin-confirmed').style.display = 'block';
+    }
 
-    document.getElementById('list').addEventListener('click', function (event) {
-      var btn = event.target.closest('[data-name]');
-      if (!btn) return;
-      var o = DATA.outlet(btn.dataset.name);
-      map.setView([o.lat, o.lng], 15);
-      pins[o.name].openPopup();
-      document.getElementById('title').textContent = o.name;
-      document.getElementById('sub').textContent = o.addr + ', ' + o.zone + ' round';
-      Array.prototype.forEach.call(this.querySelectorAll('.cc-vehicle'), function (el) {
-        el.classList.toggle('is-active', el === btn);
-      });
+    $('input-type').addEventListener('change', function () {
+      $('warehouse-code-group').style.display = this.value === 'warehouse' ? 'block' : 'none';
     });
 
-    paint();
+    // The real field calls OneMap on the sixth digit. Here the known locations
+    // answer, and anything else lands somewhere plausible, so the flow still reads.
+    $('input-postal').addEventListener('input', function () {
+      var code = this.value.replace(/\D/g, '').slice(0, 6);
+      this.value = code;
+      var status = $('postal-status');
+      if (code.length < 6) { status.className = 'postal-status'; status.textContent = ''; return; }
+
+      status.className = 'postal-status loading';
+      status.textContent = 'Looking up…';
+      setTimeout(function () {
+        var hit = DATA.places.filter(function (p) { return p.address.indexOf(code) !== -1; })[0];
+        if (hit) {
+          $('input-address').value = hit.address;
+          setPin(hit.lat, hit.lng, hit.name);
+        } else {
+          var lat = 1.29 + (Number(code.slice(0, 3)) % 180) / 1000;
+          var lng = 103.70 + (Number(code.slice(3)) % 280) / 1000;
+          $('input-address').value = 'Singapore ' + code;
+          setPin(lat, lng, 'Singapore ' + code);
+        }
+        status.className = 'postal-status ok';
+        status.textContent = '✓ found';
+      }, 400);
+    });
+
+    $('location-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var type = $('input-type').value;
+      var name = $('input-name').value.trim();
+      var address = $('input-address').value.trim();
+      if (!type || !name || !address) {
+        window.flash('Type, name and a pinned address are all required.');
+        return;
+      }
+
+      var rec = {
+        name: name, address: address,
+        code: type === 'warehouse' ? $('input-warehouse-code').value : '',
+        lat: pin ? pin.getLatLng().lat : 1.3521,
+        lng: pin ? pin.getLatLng().lng : 103.8198
+      };
+
+      if (editing) {
+        var list = editing.kind === 'warehouse' ? warehouses : outlets;
+        var i = list.map(function (x) { return x.name; }).indexOf(editing.name);
+        list[i] = rec;
+        editing = null;
+        resetForm();
+        window.flash(name + ' updated. Anything already routed to it keeps the old coordinates.');
+      } else {
+        (type === 'warehouse' ? warehouses : outlets).push(rec);
+        resetForm();
+        window.flash(name + ' added and pinned. It can be a stop from the next assignment onwards.');
+      }
+      render();
+    });
+
+    function resetForm() {
+      $('location-form').reset();
+      $('warehouse-code-group').style.display = 'none';
+      $('pin-confirmed').style.display = 'none';
+      $('postal-status').textContent = '';
+      $('form-heading').textContent = 'Add New Location';
+      $('submit-btn').textContent = 'Add Location';
+      $('cancel-edit-btn').style.display = 'none';
+      if (pin) { map.removeLayer(pin); pin = null; }
+      editing = null;
+    }
+
+    $('cancel-edit-btn').addEventListener('click', resetForm);
+
+    document.querySelector('.location-sections').addEventListener('click', function (event) {
+      var item = event.target.closest('.location-item');
+      if (!item) return;
+      var kind = item.dataset.kind;
+      var list = kind === 'warehouse' ? warehouses : outlets;
+      var loc = list.filter(function (x) { return x.name === item.dataset.name; })[0];
+
+      if (event.target.closest('[data-delete]')) {
+        pendingDelete = { kind: kind, name: loc.name };
+        $('delete-name').textContent = loc.name;
+        $('delete-modal').classList.add('open');
+        return;
+      }
+
+      if (event.target.closest('[data-edit]')) {
+        editing = { kind: kind, name: loc.name };
+        $('input-type').value = kind;
+        $('warehouse-code-group').style.display = kind === 'warehouse' ? 'block' : 'none';
+        if (loc.code) $('input-warehouse-code').value = loc.code;
+        $('input-name').value = loc.name;
+        $('input-address').value = loc.address;
+        $('form-heading').textContent = 'Edit Location';
+        $('submit-btn').textContent = 'Save Location';
+        $('cancel-edit-btn').style.display = '';
+        setPin(loc.lat, loc.lng, loc.name);
+        return;
+      }
+
+      setPin(loc.lat, loc.lng, loc.name);
+    });
+
+    $('confirm-delete-btn').addEventListener('click', function () {
+      var list = pendingDelete.kind === 'warehouse' ? warehouses : outlets;
+      var i = list.map(function (x) { return x.name; }).indexOf(pendingDelete.name);
+      list.splice(i, 1);
+      $('delete-modal').classList.remove('open');
+      render();
+      window.flash(pendingDelete.name + ' removed. Trips that already visited it keep their history.');
+      pendingDelete = null;
+    });
+
+    $('sync-outlets-btn').addEventListener('click', function () {
+      window.flash('Sync pulls the outlet list from IPS and geocodes anything new. Not wired up in this walkthrough.');
+    });
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) document.getElementById(closer.dataset.close).classList.remove('open');
+      else if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('open');
+    });
+
+    render();
+    setTimeout(function () { map.invalidateSize(); }, 50);
   </script>
 </body>
 </html>

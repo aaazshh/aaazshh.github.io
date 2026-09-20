@@ -12,37 +12,104 @@
 <body>
   <div class="app" data-page="users" data-title="User Management">
 
+    <div class="page-header">
+      <div>
+        <h2>User Management</h2>
+        <p>Accounts, roles and which company each person belongs to</p>
+      </div>
+      <button class="btn btn-primary" id="add-user">+ Add User</button>
+    </div>
+
     <div class="card">
-      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div class="card-title">People</div>
-          <div class="card-subtitle">Accounts come from the IAM service, roles are set per company here</div>
+      <div class="card-header">
+        <div class="card-title">Users</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-field">
+          <label class="filter-field-label" for="users-company-filter">Company</label>
+          <select id="users-company-filter" class="form-control filter-select">
+            <option value="">All companies</option>
+          </select>
         </div>
-        <div style="display:flex;align-items:flex-end;gap:10px;">
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="role">Role</label>
-            <select id="role" class="form-control">
-              <option>All roles</option>
-              <option>Super Admin</option>
-              <option>Admin</option>
-              <option>Ops Manager</option>
-              <option>Driver</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="q">Search</label>
-            <input id="q" class="form-control" type="search" placeholder="Name or email">
-          </div>
+        <div class="filter-field">
+          <label class="filter-field-label" for="users-role-filter">Role</label>
+          <select id="users-role-filter" class="form-control filter-select">
+            <option value="">All roles</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label class="filter-field-label" for="users-status-filter">Status</label>
+          <select id="users-status-filter" class="form-control filter-select">
+            <option value="">All statuses</option>
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+          </select>
+        </div>
+        <div class="filter-bar-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="users-clear">Clear</button>
+          <span class="badge badge-admin" id="users-count">0 total</span>
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="table">
+      <div class="table-wrapper">
+        <table id="users-table">
           <thead>
-            <tr><th>Name</th><th>Email</th><th>Role</th><th>Company</th><th>Status</th><th>Created</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
           </thead>
-          <tbody id="rows"></tbody>
+          <tbody id="users-body"></tbody>
         </table>
+        <div id="users-no-match" class="location-empty" style="display:none;">No users match these filters.</div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="user-modal" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+      <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+          <span class="modal-title" id="user-modal-title">Add New User</span>
+          <button class="modal-close" data-close="user-modal" aria-label="Close">&times;</button>
+        </div>
+        <form id="user-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="u-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="u-name" class="form-control" placeholder="Jane Doe" required maxlength="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-email">Email <span class="required">*</span></label>
+              <input type="email" id="u-email" class="form-control" placeholder="jane@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-company">Company <span class="required">*</span></label>
+              <select id="u-company" class="form-control" required>
+                <option value="">Select company…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-role">Role <span class="required">*</span></label>
+              <select id="u-role" class="form-control" required>
+                <option value="">Select role…</option>
+              </select>
+              <p class="form-hint">Roles are per company. Picking the company narrows this list.</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-password">Password <span class="required" id="u-password-req">*</span></label>
+              <input type="password" id="u-password" class="form-control" placeholder="Min. 8 characters">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close="user-modal">Cancel</button>
+            <button type="submit" id="user-submit-btn" class="btn btn-primary">Add User</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -53,31 +120,163 @@
   <script>
     'use strict';
 
-    function paint() {
-      var role = document.getElementById('role').value;
-      var q = document.getElementById('q').value.trim().toLowerCase();
+    function $(id) { return document.getElementById(id); }
 
-      var rows = DATA.users.filter(function (u) {
-        if (role !== 'All roles' && u.role !== role) return false;
-        if (q && (u.name + ' ' + u.email).toLowerCase().indexOf(q) === -1) return false;
+    var users = DATA.users;
+    var editingId = null;
+
+    var TOGGLE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>';
+    var TOGGLE_ON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+    var EDIT_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>' +
+      '<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+
+    function roleBadge(u) {
+      var cls = u.kind === 'driver' ? 'badge-driver' : 'badge-admin';
+      return '<span class="badge ' + cls + '">' + u.role.replace(/_/g, ' ') + '</span>';
+    }
+
+    (function fillFilters() {
+      $('users-company-filter').innerHTML += DATA.companies.map(function (c) {
+        return '<option value="' + c.name + '">' + c.name + '</option>';
+      }).join('');
+      $('users-role-filter').innerHTML += DATA.roles.map(function (r) {
+        return '<option value="' + r.name + '">' + r.name.replace(/_/g, ' ') + '</option>';
+      }).join('');
+      $('u-company').innerHTML += DATA.companies.map(function (c) {
+        return '<option value="' + c.name + '">' + c.name + '</option>';
+      }).join('');
+    }());
+
+    function render() {
+      var co = $('users-company-filter').value;
+      var role = $('users-role-filter').value;
+      var st = $('users-status-filter').value;
+
+      var rows = users.filter(function (u) {
+        if (co && u.company !== co) return false;
+        if (role && u.role !== role) return false;
+        if (st !== '' && String(u.active) !== st) return false;
         return true;
       });
 
-      document.getElementById('rows').innerHTML = rows.length ? rows.map(function (u) {
-        return '<tr>' +
-          '<td><strong>' + u.name + '</strong></td>' +
-          '<td>' + u.email + '</td>' +
-          '<td>' + u.role + '</td>' +
-          '<td>' + u.company + '</td>' +
-          '<td><span class="status-chip ' + (u.status === 'Active' ? 'status-active' : 'status-unavailable') + '">' + u.status + '</span></td>' +
-          '<td>' + u.created + '</td>' +
-          '</tr>';
-      }).join('') : '<tr><td colspan="6" style="padding:28px;text-align:center;color:#6b7280;">Nobody matches that.</td></tr>';
+      $('users-count').textContent = rows.length + ' total';
+      $('users-no-match').style.display = rows.length ? 'none' : 'block';
+
+      $('users-body').innerHTML = rows.map(function (u) {
+        return '<tr data-id="' + u.id + '">' +
+          '<td class="font-semibold">' + u.name + '</td>' +
+          '<td class="text-muted">' + u.email + '</td>' +
+          '<td>' + roleBadge(u) + '</td>' +
+          '<td class="text-sm">' + (u.company || '<span class="text-muted">All companies</span>') + '</td>' +
+          '<td><span class="status-chip ' + (u.active ? 'status-delivering' : 'status-pending') + '">' +
+            (u.active ? 'Active' : 'Inactive') + '</span></td>' +
+          '<td class="text-muted text-sm">' + u.created + '</td>' +
+          '<td><div style="display:flex;gap:4px;">' +
+            '<button class="btn btn-ghost btn-sm btn-icon" title="Edit" data-edit="' + u.id + '">' + EDIT_ICON + '</button>' +
+            '<button class="btn btn-ghost btn-sm btn-icon" title="' + (u.active ? 'Deactivate' : 'Activate') +
+              '" data-toggle="' + u.id + '">' + (u.active ? TOGGLE_OFF : TOGGLE_ON) + '</button>' +
+          '</div></td></tr>';
+      }).join('');
     }
 
-    document.getElementById('role').addEventListener('change', paint);
-    document.getElementById('q').addEventListener('input', paint);
-    paint();
+    ['users-company-filter', 'users-role-filter', 'users-status-filter'].forEach(function (id) {
+      $(id).addEventListener('change', render);
+    });
+    $('users-clear').addEventListener('click', function () {
+      ['users-company-filter', 'users-role-filter', 'users-status-filter'].forEach(function (id) { $(id).value = ''; });
+      render();
+    });
+
+    // A role belongs to a company, so the company answer narrows the role list.
+    function refreshRoleOptions(company, selected) {
+      $('u-role').innerHTML = '<option value="">Select role…</option>' +
+        DATA.roles.filter(function (r) { return r.company === company; }).map(function (r) {
+          return '<option value="' + r.name + '"' + (r.name === selected ? ' selected' : '') + '>' +
+            r.name.replace(/_/g, ' ') + '</option>';
+        }).join('');
+    }
+
+    $('u-company').addEventListener('change', function () { refreshRoleOptions(this.value, null); });
+
+    $('add-user').addEventListener('click', function () {
+      editingId = null;
+      $('user-modal-title').textContent = 'Add New User';
+      $('user-submit-btn').textContent = 'Add User';
+      $('user-form').reset();
+      $('u-role').innerHTML = '<option value="">Select role…</option>';
+      $('u-password-req').style.display = '';
+      $('u-password').placeholder = 'Min. 8 characters';
+      $('user-modal').classList.add('open');
+    });
+
+    $('users-body').addEventListener('click', function (event) {
+      var btn = event.target.closest('button[data-edit], button[data-toggle]');
+      if (!btn) return;
+      var u = users.filter(function (x) { return x.id === Number(btn.dataset.edit || btn.dataset.toggle); })[0];
+
+      if (btn.dataset.toggle) {
+        u.active = u.active ? 0 : 1;
+        render();
+        window.flash(u.name + (u.active
+          ? ' reactivated. They can sign in again.'
+          : ' deactivated. The account stays, the sign-in stops, and their history is untouched.'));
+        return;
+      }
+
+      editingId = u.id;
+      $('user-modal-title').textContent = 'Edit User';
+      $('user-submit-btn').textContent = 'Save User';
+      $('u-name').value = u.name;
+      $('u-email').value = u.email;
+      $('u-company').value = u.company || '';
+      refreshRoleOptions(u.company, u.role);
+      $('u-password').value = '';
+      $('u-password').placeholder = 'Leave blank to keep the current one';
+      $('u-password-req').style.display = 'none';
+      $('user-modal').classList.add('open');
+    });
+
+    $('user-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var name = $('u-name').value.trim();
+      var email = $('u-email').value.trim();
+      var company = $('u-company').value;
+      var role = $('u-role').value;
+      if (!name || !email || !company || !role) { window.flash('Name, email, company and role are all required.'); return; }
+
+      var kind = DATA.roles.filter(function (r) { return r.name === role; })[0].kind;
+
+      if (editingId) {
+        var u = users.filter(function (x) { return x.id === editingId; })[0];
+        u.name = name; u.email = email; u.company = company; u.role = role; u.kind = kind;
+        window.flash(name + ' updated.');
+      } else {
+        users.push({
+          id: Math.max.apply(null, users.map(function (x) { return x.id; })) + 1,
+          name: name, email: email, role: role, kind: kind, company: company, active: 1,
+          created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+        });
+        window.flash(name + ' added as ' + role.replace(/_/g, ' ') +
+          (kind === 'driver' ? '. They can sign into the driver app and be given a truck in Fleet.' : '.'));
+      }
+
+      $('user-modal').classList.remove('open');
+      render();
+    });
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) document.getElementById(closer.dataset.close).classList.remove('open');
+      else if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('open');
+    });
+
+    render();
   </script>
 </body>
 </html>

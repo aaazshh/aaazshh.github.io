@@ -12,51 +12,127 @@
 <body>
   <div class="app" data-page="fleet" data-title="Fleet Management">
 
-    <div class="stats-grid" style="margin-bottom:18px;">
-      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
-        <p class="stat-label">Fleet size</p><h4 class="stat-value">18</h4><p class="stat-sublabel">Across 3 companies</p>
-      </div></div></div>
-      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
-        <p class="stat-label">On the road</p><h4 class="stat-value">6</h4><p class="stat-sublabel">Right now</p>
-      </div></div></div>
-      <div class="stat-card"><div class="stat-card-body"><div class="stat-info">
-        <p class="stat-label">Idle</p><h4 class="stat-value">10</h4><p class="stat-sublabel">Available to assign</p>
-      </div></div></div>
-      <div class="stat-card" style="--stat-accent:#dc2626;"><div class="stat-card-body"><div class="stat-info">
-        <p class="stat-label">In workshop</p><h4 class="stat-value">2</h4><p class="stat-sublabel">Off the roster</p>
-      </div></div></div>
+    <div class="page-header">
+      <div>
+        <h2>Fleet Management</h2>
+        <p>Monitor and manage all registered vehicles</p>
+      </div>
+      <button type="button" class="btn btn-primary" id="add-vehicle">+ Add Vehicle</button>
     </div>
 
     <div class="card">
-      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div class="card-title">Vehicles</div>
-          <div class="card-subtitle">Every truck, who drives it and which company it belongs to</div>
+      <div class="card-header">
+        <div class="card-title">Vehicles</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-field">
+          <label class="filter-field-label" for="fleet-company-filter">Company</label>
+          <select id="fleet-company-filter" class="form-control filter-select">
+            <option value="">All companies</option>
+          </select>
         </div>
-        <div style="display:flex;align-items:flex-end;gap:10px;">
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="status">Status</label>
-            <select id="status" class="form-control">
-              <option>All statuses</option>
-              <option>In Transit</option>
-              <option>Idle</option>
-              <option>Maintenance</option>
-            </select>
-          </div>
-          <button type="button" class="btn btn-primary" data-unbuilt="Adding a vehicle">Add vehicle</button>
+        <div class="filter-field">
+          <label class="filter-field-label" for="fleet-driver-filter">Driver</label>
+          <select id="fleet-driver-filter" class="form-control filter-select">
+            <option value="">All drivers</option>
+            <option value="none">— Unassigned —</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label class="filter-field-label" for="fleet-status-filter">Status</label>
+          <select id="fleet-status-filter" class="form-control filter-select">
+            <option value="">All statuses</option>
+            <option value="1">Idle</option>
+            <option value="2">In Transit</option>
+            <option value="3">Unavailable</option>
+          </select>
+        </div>
+        <div class="filter-bar-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="fleet-clear">Clear</button>
+          <span class="badge badge-admin" id="fleet-count">0 total</span>
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="table">
+      <div class="table-wrapper">
+        <table>
           <thead>
             <tr>
-              <th>Plate Number</th><th>Capacity</th><th>Status</th><th>Driver</th>
-              <th>Company</th><th>Registered</th><th style="text-align:right;">Actions</th>
+              <th>Plate Number</th>
+              <th>Capacity</th>
+              <th>Status</th>
+              <th>Driver</th>
+              <th>Company</th>
+              <th>Registered</th>
+              <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
-          <tbody id="rows"></tbody>
+          <tbody id="fleet-body"></tbody>
         </table>
+        <div id="fleet-no-match" class="location-empty" style="display:none;">No vehicles match these filters.</div>
+      </div>
+    </div>
+
+    <!-- Add / edit vehicle -->
+    <div class="modal-overlay" id="vehicle-modal" role="dialog" aria-modal="true" aria-labelledby="vehicle-modal-title">
+      <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+          <div class="modal-title" id="vehicle-modal-title">Add Vehicle</div>
+          <button class="modal-close" data-close="vehicle-modal" aria-label="Close">&times;</button>
+        </div>
+        <form id="vehicle-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="vehicle-plate">Plate Number <span class="required">*</span></label>
+              <input type="text" id="vehicle-plate" class="form-control" placeholder="e.g. PSM1001"
+                maxlength="20" required style="text-transform:uppercase;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehicle-company">Company <span class="required">*</span></label>
+              <select id="vehicle-company" class="form-control" required>
+                <option value="">Select a company…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehicle-pallet">Pallet Capacity</label>
+              <input type="number" id="vehicle-pallet" class="form-control" placeholder="e.g. 8" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehicle-weight">Max Weight (tonnes)</label>
+              <input type="number" id="vehicle-weight" class="form-control" placeholder="e.g. 2.4" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehicle-cage">Cage Capacity</label>
+              <input type="number" id="vehicle-cage" class="form-control" placeholder="e.g. 12" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehicle-driver">Driver</label>
+              <select id="vehicle-driver" class="form-control">
+                <option value="">— Unassigned —</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close="vehicle-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="vehicle-submit">Save Vehicle</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="vehicle-delete-modal" role="dialog" aria-modal="true" aria-labelledby="vehicle-delete-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="vehicle-delete-title">Delete Vehicle</div>
+          <button class="modal-close" data-close="vehicle-delete-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Delete <strong id="vehicle-delete-name"></strong>? Completed trips keep their record of it.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="vehicle-delete-modal">Cancel</button>
+          <button class="btn btn-danger" id="vehicle-delete-confirm">Delete</button>
+        </div>
       </div>
     </div>
 
@@ -67,30 +143,223 @@
   <script>
     'use strict';
 
-    var chip = {
-      'In Transit': 'status-transit',
-      'Idle': 'status-idle',
-      'Maintenance': 'status-unavailable'
-    };
+    function $(id) { return document.getElementById(id); }
 
-    function paint(filter) {
-      document.getElementById('rows').innerHTML = DATA.vehicles.filter(function (v) {
-        return !filter || filter === 'All statuses' || v.status === filter;
-      }).map(function (v) {
-        return '<tr>' +
-          '<td><strong>' + v.plate + '</strong></td>' +
-          '<td>' + v.cap + '</td>' +
-          '<td><span class="status-chip ' + chip[v.status] + '">' + v.status + '</span></td>' +
-          '<td>' + v.driver + '</td>' +
-          '<td>' + v.company + '</td>' +
-          '<td>' + v.since + '</td>' +
-          '<td style="text-align:right;"><button type="button" class="btn btn-sm" data-unbuilt="Editing a vehicle">Edit</button></td>' +
-          '</tr>';
+    var vehicles = DATA.vehicles;
+    var editingId = null;
+    var pendingDelete = null;
+
+    function drivers(companyId) {
+      return DATA.users.filter(function (u) {
+        return u.kind === 'driver' &&
+          u.company === (DATA.companies.filter(function (c) { return c.id === companyId; })[0] || {}).name;
+      });
+    }
+
+    (function fillFilters() {
+      $('fleet-company-filter').innerHTML += DATA.companies.map(function (c) {
+        return '<option value="' + c.id + '">' + c.name + '</option>';
+      }).join('');
+      // Only drivers actually holding a vehicle: a dropdown of everyone would be
+      // mostly dead options.
+      var holding = {};
+      vehicles.forEach(function (v) { if (v.driver) holding[v.driverId] = v.driver; });
+      $('fleet-driver-filter').innerHTML += Object.keys(holding).sort(function (a, b) {
+        return holding[a].localeCompare(holding[b]);
+      }).map(function (id) {
+        return '<option value="' + id + '">' + holding[id] + '</option>';
+      }).join('');
+      $('vehicle-company').innerHTML += DATA.companies.map(function (c) {
+        return '<option value="' + c.id + '">' + c.name + '</option>';
+      }).join('');
+    }());
+
+    function driverSelect(v) {
+      var list = drivers(v.companyId);
+      return '<select class="form-control" data-driver-for="' + v.id + '" ' +
+        'style="font-size:12px;padding:4px 24px 4px 8px;width:auto;min-width:140px;">' +
+        '<option value="">— Unassigned —</option>' +
+        list.map(function (d) {
+          return '<option value="' + d.id + '"' + (v.driverId === d.id ? ' selected' : '') + '>' + d.name + '</option>';
+        }).join('') + '</select>';
+    }
+
+    function companySelect(v) {
+      return '<select class="form-control" data-company-for="' + v.id + '" ' +
+        'style="font-size:12px;padding:4px 24px 4px 8px;width:auto;min-width:150px;">' +
+        DATA.companies.map(function (c) {
+          return '<option value="' + c.id + '"' + (v.companyId === c.id ? ' selected' : '') + '>' + c.name + '</option>';
+        }).join('') + '</select>';
+    }
+
+    function render() {
+      var co = $('fleet-company-filter').value;
+      var dr = $('fleet-driver-filter').value;
+      var st = $('fleet-status-filter').value;
+
+      var rows = vehicles.filter(function (v) {
+        if (co && String(v.companyId) !== co) return false;
+        if (dr === 'none' && v.driverId) return false;
+        if (dr && dr !== 'none' && String(v.driverId) !== dr) return false;
+        if (st && String(v.status) !== st) return false;
+        return true;
+      });
+
+      $('fleet-count').textContent = rows.length + ' total';
+      $('fleet-no-match').style.display = rows.length ? 'none' : 'block';
+
+      $('fleet-body').innerHTML = rows.map(function (v) {
+        return '<tr data-id="' + v.id + '">' +
+          '<td><span style="font-weight:600;font-family:monospace;letter-spacing:0.5px;">' + v.plate + '</span></td>' +
+          '<td class="text-sm text-secondary">' + DATA.capacity(v) + '</td>' +
+          '<td><span class="status-chip status-' + DATA.statusClass[v.status] + '">' +
+            DATA.statusLabel[v.status] + '</span></td>' +
+          '<td>' + driverSelect(v) + '</td>' +
+          '<td>' + companySelect(v) + '</td>' +
+          '<td class="text-muted text-sm">' + v.created + '</td>' +
+          '<td style="text-align:right;white-space:nowrap;">' +
+            (v.status === 3
+              ? '<button type="button" class="btn btn-sm" style="background:var(--success);color:#fff;" data-return="' + v.id + '">Return to service</button> '
+              : '') +
+            '<button type="button" class="btn btn-ghost btn-sm" data-edit="' + v.id + '">Edit</button>' +
+            '<button type="button" class="btn btn-ghost btn-sm" style="color:var(--danger);" data-del="' + v.id + '">Delete</button>' +
+          '</td></tr>';
       }).join('');
     }
 
-    document.getElementById('status').addEventListener('change', function () { paint(this.value); });
-    paint();
+    ['fleet-company-filter', 'fleet-driver-filter', 'fleet-status-filter'].forEach(function (id) {
+      $(id).addEventListener('change', render);
+    });
+    $('fleet-clear').addEventListener('click', function () {
+      ['fleet-company-filter', 'fleet-driver-filter', 'fleet-status-filter'].forEach(function (id) {
+        $(id).value = '';
+      });
+      render();
+    });
+
+    function byId(id) {
+      return vehicles.filter(function (v) { return v.id === Number(id); })[0];
+    }
+
+    $('fleet-body').addEventListener('change', function (event) {
+      var sel = event.target;
+      if (sel.dataset.driverFor) {
+        var v = byId(sel.dataset.driverFor);
+        var d = DATA.users.filter(function (u) { return u.id === Number(sel.value); })[0];
+        v.driverId = d ? d.id : null;
+        v.driver = d ? d.name : null;
+        window.flash(v.plate + (d ? ' is now ' + d.name + "'s truck." : ' has nobody assigned. It drops out of the assignment board until it does.'));
+        return;
+      }
+      if (sel.dataset.companyFor) {
+        var veh = byId(sel.dataset.companyFor);
+        var c = DATA.companies.filter(function (x) { return x.id === Number(sel.value); })[0];
+        veh.companyId = c.id;
+        veh.company = c.name;
+        veh.driverId = null;
+        veh.driver = null;   // a driver from the old company cannot follow the truck
+        render();
+        window.flash(veh.plate + ' moved to ' + c.name + '. Its old driver was unassigned, same guard as the Company Management board.');
+      }
+    });
+
+    $('fleet-body').addEventListener('click', function (event) {
+      var btn = event.target.closest('button[data-edit], button[data-del], button[data-return]');
+      if (!btn) return;
+
+      if (btn.dataset.return) {
+        var back = byId(btn.dataset.return);
+        back.status = 1;
+        render();
+        window.flash(back.plate + ' is back on the roster and can take orders again.');
+        return;
+      }
+
+      if (btn.dataset.del) {
+        pendingDelete = byId(btn.dataset.del);
+        $('vehicle-delete-name').textContent = pendingDelete.plate;
+        $('vehicle-delete-modal').classList.add('open');
+        return;
+      }
+
+      var v = byId(btn.dataset.edit);
+      editingId = v.id;
+      $('vehicle-modal-title').textContent = 'Edit Vehicle';
+      $('vehicle-plate').value = v.plate;
+      $('vehicle-company').value = v.companyId;
+      $('vehicle-pallet').value = v.pallets;
+      $('vehicle-weight').value = v.tonnes;
+      $('vehicle-cage').value = v.cages;
+      fillModalDrivers(v.companyId, v.driverId);
+      $('vehicle-modal').classList.add('open');
+    });
+
+    function fillModalDrivers(companyId, selected) {
+      $('vehicle-driver').innerHTML = '<option value="">— Unassigned —</option>' +
+        drivers(Number(companyId)).map(function (d) {
+          return '<option value="' + d.id + '"' + (d.id === selected ? ' selected' : '') + '>' + d.name + '</option>';
+        }).join('');
+    }
+
+    $('vehicle-company').addEventListener('change', function () {
+      fillModalDrivers(this.value, null);
+    });
+
+    $('add-vehicle').addEventListener('click', function () {
+      editingId = null;
+      $('vehicle-modal-title').textContent = 'Add Vehicle';
+      $('vehicle-form').reset();
+      $('vehicle-driver').innerHTML = '<option value="">— Unassigned —</option>';
+      $('vehicle-modal').classList.add('open');
+    });
+
+    $('vehicle-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var plate = $('vehicle-plate').value.trim().toUpperCase();
+      var companyId = Number($('vehicle-company').value);
+      if (!plate || !companyId) { window.flash('A plate and a company are both required.'); return; }
+
+      var d = DATA.users.filter(function (u) { return u.id === Number($('vehicle-driver').value); })[0];
+      var rec = {
+        plate: plate, companyId: companyId,
+        company: DATA.companies.filter(function (c) { return c.id === companyId; })[0].name,
+        pallets: Number($('vehicle-pallet').value) || 0,
+        cages: Number($('vehicle-cage').value) || 0,
+        tonnes: Number($('vehicle-weight').value) || 0,
+        driver: d ? d.name : null, driverId: d ? d.id : null
+      };
+
+      if (editingId) {
+        var v = byId(editingId);
+        for (var k in rec) v[k] = rec[k];
+        window.flash(plate + ' updated.');
+      } else {
+        rec.id = Math.max.apply(null, vehicles.map(function (x) { return x.id; })) + 1;
+        rec.status = 1;
+        rec.created = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        vehicles.push(rec);
+        window.flash(plate + ' registered. It shows up as a lane on the assignment board once it has a driver.');
+      }
+
+      $('vehicle-modal').classList.remove('open');
+      render();
+    });
+
+    $('vehicle-delete-confirm').addEventListener('click', function () {
+      vehicles.splice(vehicles.indexOf(pendingDelete), 1);
+      $('vehicle-delete-modal').classList.remove('open');
+      render();
+      window.flash(pendingDelete.plate + ' deleted. It is a soft delete, so finished trips still name it.');
+      pendingDelete = null;
+    });
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) document.getElementById(closer.dataset.close).classList.remove('open');
+      else if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('open');
+    });
+
+    render();
   </script>
 </body>
 </html>

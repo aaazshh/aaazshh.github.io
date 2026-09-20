@@ -12,16 +12,72 @@
 <body>
   <div class="app" data-page="companies" data-title="Company Management">
 
+    <div class="page-header">
+      <div>
+        <h2>Company Management</h2>
+        <p>Create companies and drag trucks between them, Fleet Management reflects every move</p>
+      </div>
+      <button type="button" class="btn btn-primary" id="add-company">+ Add Company</button>
+    </div>
+
     <div class="card">
-      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div class="card-title">Companies</div>
-          <div class="card-subtitle">Each one brings its own outlets, trucks and order source. A super admin switches between them.</div>
-        </div>
-        <button type="button" class="btn btn-primary" data-unbuilt="Adding a company">Add company</button>
+      <div class="card-header">
+        <div class="card-title">Companies &amp; Fleet Allocation</div>
+        <span class="badge badge-admin" id="co-count">—</span>
       </div>
       <div class="card-body">
-        <div class="co-board" id="board"></div>
+        <p class="text-muted text-sm" style="margin:0 0 12px;">
+          Drag a truck onto another company to reassign it. Trucks on an active route are locked
+          until the route ends, and a driver from the old company is unassigned on the move.
+        </p>
+        <div class="co-board" id="co-board"></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="company-modal" role="dialog" aria-modal="true" aria-labelledby="company-modal-title">
+      <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+          <div class="modal-title" id="company-modal-title">Add Company</div>
+          <button class="modal-close" data-close="company-modal" aria-label="Close">&times;</button>
+        </div>
+        <form id="company-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="company-name">Company Name <span class="required">*</span></label>
+              <input type="text" id="company-name" class="form-control" placeholder="e.g. PSM Logistics" required maxlength="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="company-code">Company Code <span class="required">*</span></label>
+              <input type="text" id="company-code" class="form-control" placeholder="e.g. PSM" required maxlength="10"
+                style="text-transform:uppercase;">
+              <p class="form-hint">An admin and a driver role are created from this code, so PSM gets psm_admin and psm_driver.</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="company-prefix">Label Prefix</label>
+              <input type="text" id="company-prefix" class="form-control" placeholder="Defaults to the code" maxlength="10">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close="company-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="company-submit">Save Company</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="company-delete-modal" role="dialog" aria-modal="true" aria-labelledby="company-delete-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="company-delete-title">Delete Company</div>
+          <button class="modal-close" data-close="company-delete-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Delete <strong id="company-delete-name"></strong>? Its trucks, users and locations go with it.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-close="company-delete-modal">Cancel</button>
+          <button class="btn btn-danger" id="company-delete-confirm">Delete</button>
+        </div>
       </div>
     </div>
 
@@ -32,35 +88,185 @@
   <script>
     'use strict';
 
-    document.getElementById('board').innerHTML = DATA.companies.map(function (c) {
-      var trucks = DATA.vehicles.filter(function (v) { return v.company === c.name; });
-      var people = DATA.users.filter(function (u) { return u.company === c.name; });
+    function $(id) { return document.getElementById(id); }
 
-      return '<div class="co-col">' +
-        '<div class="co-col-head">' +
-          '<div><div class="co-col-title">' + c.name + '</div>' +
-          '<span class="co-code">' + c.code + '</span></div>' +
-        '</div>' +
-        '<div class="co-meta">' +
-          '<div>' + c.outlets + ' outlets</div>' +
-          '<div>' + trucks.length + ' vehicles</div>' +
-          '<div>' + people.length + ' users</div>' +
-          '<div>Orders from: ' + c.source + '</div>' +
-        '</div>' +
-        '<div class="co-roles">' +
-          people.slice(0, 4).map(function (p) {
-            return '<span class="co-role-chip">' + p.name + ', ' + p.role + '</span>';
-          }).join('') +
-          (people.length > 4 ? '<span class="co-role-chip">and ' + (people.length - 4) + ' more</span>' : '') +
-        '</div>' +
-        '<div class="co-drop">' +
-          trucks.map(function (t) {
-            return '<div class="co-veh"><span class="co-veh-plate">' + t.plate + '</span>' +
-              '<span class="co-veh-meta">' + t.cap + ', ' + t.driver + '</span></div>';
-          }).join('') +
-        '</div>' +
-      '</div>';
-    }).join('');
+    var companies = DATA.companies;
+    var editingId = null;
+    var pendingDelete = null;
+    var draggingId = null;
+
+    // A truck on an active route cannot move company until the route ends.
+    function onRoute(plate) {
+      return DATA.live.some(function (r) { return r.plate === plate; });
+    }
+
+    function vehicleChip(v) {
+      var locked = onRoute(v.plate);
+      var meta = [];
+      if (v.driver) meta.push(v.driver);
+      meta.push(v.pallets + ' plt');
+      return '<div class="co-veh' + (locked ? ' locked' : '') + '" data-vehicle="' + v.id + '"' +
+        (locked ? '' : ' draggable="true"') + '>' +
+        '<div class="co-veh-plate">' + v.plate + '</div>' +
+        '<div class="co-veh-meta">' +
+          '<span class="status-chip status-' + DATA.statusClass[v.status] + '">' + DATA.statusLabel[v.status] + '</span>' +
+          '<span>' + meta.join(' · ') + '</span>' +
+          (locked ? '<span title="On an active route">🔒 on route</span>' : '') +
+        '</div></div>';
+    }
+
+    function render() {
+      $('co-count').textContent = companies.length + ' total';
+
+      $('co-board').innerHTML = companies.map(function (c) {
+        var trucks = DATA.vehicles.filter(function (v) { return v.companyId === c.id; });
+        var people = DATA.users.filter(function (u) { return u.company === c.name; });
+        var locs = DATA.places.filter(function (p) { return p.company === c.name; });
+        var roles = DATA.roles.filter(function (r) { return r.company === c.name; });
+
+        return '<div class="co-col" data-company="' + c.id + '">' +
+          '<div class="co-col-head">' +
+            '<div class="co-col-title">' +
+              '<span class="co-name">' + c.name + '</span>' +
+              '<span class="co-col-actions">' +
+                '<button class="btn btn-ghost btn-sm" data-edit="' + c.id + '">Edit</button>' +
+                '<button class="btn btn-ghost btn-sm" style="color:var(--danger);" data-del="' + c.id + '">Delete</button>' +
+              '</span>' +
+            '</div>' +
+            '<div class="co-meta"><span class="co-code">' + c.code + '</span> &nbsp;' +
+              trucks.length + ' truck' + (trucks.length === 1 ? '' : 's') + ' · ' +
+              people.length + ' user' + (people.length === 1 ? '' : 's') + ' · ' +
+              locs.length + ' location' + (locs.length === 1 ? '' : 's') + '</div>' +
+            '<div class="co-roles">' + roles.map(function (r) {
+              return '<span class="co-role-chip">' + r.name + '</span>';
+            }).join('') + '</div>' +
+          '</div>' +
+          '<div class="co-drop" data-company="' + c.id + '">' +
+            (trucks.length ? trucks.map(vehicleChip).join('') : '<div class="co-empty">Drop trucks here</div>') +
+          '</div></div>';
+      }).join('');
+
+      wireDrag();
+    }
+
+    function wireDrag() {
+      Array.prototype.forEach.call(document.querySelectorAll('.co-veh[draggable]'), function (el) {
+        el.addEventListener('dragstart', function (event) {
+          draggingId = Number(el.dataset.vehicle);
+          el.classList.add('dragging');
+          event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.setData('text/plain', el.dataset.vehicle);
+        });
+        el.addEventListener('dragend', function () {
+          el.classList.remove('dragging');
+          draggingId = null;
+        });
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('.co-drop'), function (zone) {
+        zone.addEventListener('dragover', function (event) {
+          event.preventDefault();
+          zone.classList.add('dragover');
+        });
+        zone.addEventListener('dragleave', function () { zone.classList.remove('dragover'); });
+        zone.addEventListener('drop', function (event) {
+          event.preventDefault();
+          zone.classList.remove('dragover');
+          if (draggingId == null) return;
+
+          var v = DATA.vehicles.filter(function (x) { return x.id === draggingId; })[0];
+          var c = companies.filter(function (x) { return x.id === Number(zone.dataset.company); })[0];
+          if (v.companyId === c.id) return;
+
+          var hadDriver = v.driver;
+          v.companyId = c.id;
+          v.company = c.name;
+          v.driver = null;
+          v.driverId = null;
+          render();
+          window.flash(v.plate + ' now belongs to ' + c.name + '.' +
+            (hadDriver ? ' ' + hadDriver + ' stayed behind, so the truck needs a driver from ' + c.name + ' before it can be dispatched.' : ''));
+        });
+      });
+    }
+
+    $('add-company').addEventListener('click', function () {
+      editingId = null;
+      $('company-modal-title').textContent = 'Add Company';
+      $('company-form').reset();
+      $('company-code').disabled = false;
+      $('company-modal').classList.add('open');
+    });
+
+    $('co-board').addEventListener('click', function (event) {
+      var btn = event.target.closest('button[data-edit], button[data-del]');
+      if (!btn) return;
+      var c = companies.filter(function (x) { return x.id === Number(btn.dataset.edit || btn.dataset.del); })[0];
+
+      if (btn.dataset.del) {
+        pendingDelete = c;
+        $('company-delete-name').textContent = c.name;
+        $('company-delete-modal').classList.add('open');
+        return;
+      }
+
+      editingId = c.id;
+      $('company-modal-title').textContent = 'Edit Company';
+      $('company-name').value = c.name;
+      $('company-code').value = c.code;
+      $('company-code').disabled = true;   // the code already named this company's roles
+      $('company-prefix').value = c.code;
+      $('company-modal').classList.add('open');
+    });
+
+    $('company-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var name = $('company-name').value.trim();
+      var code = $('company-code').value.trim().toUpperCase();
+      if (!name || !code) { window.flash('A name and a code are both required.'); return; }
+
+      if (editingId) {
+        var c = companies.filter(function (x) { return x.id === editingId; })[0];
+        var old = c.name;
+        c.name = name;
+        DATA.vehicles.forEach(function (v) { if (v.companyId === c.id) v.company = name; });
+        DATA.users.forEach(function (u) { if (u.company === old) u.company = name; });
+        DATA.roles.forEach(function (r) { if (r.company === old) r.company = name; });
+        window.flash(name + ' renamed. The code stays, so its roles keep their names.');
+      } else {
+        var id = Math.max.apply(null, companies.map(function (x) { return x.id; })) + 1;
+        companies.push({
+          id: id, name: name, code: code, source: 'ips',
+          sourceLabel: 'Transfer orders from IPS',
+          sourceNote: 'DC60 and DC125 outlet deliveries, pulled live.'
+        });
+        // Creating a company creates its two roles, which is where psm_admin and
+        // psm_driver came from in the first place.
+        var low = code.toLowerCase();
+        DATA.roles.push({ id: 90 + id, name: low + '_admin', kind: 'admin', company: name, users: 0, builtin: false });
+        DATA.roles.push({ id: 91 + id, name: low + '_driver', kind: 'driver', company: name, users: 0, builtin: false });
+        window.flash(name + ' created, along with ' + low + '_admin and ' + low + '_driver. Drag trucks onto it to give it a fleet.');
+      }
+
+      $('company-modal').classList.remove('open');
+      render();
+    });
+
+    $('company-delete-confirm').addEventListener('click', function () {
+      companies.splice(companies.indexOf(pendingDelete), 1);
+      $('company-delete-modal').classList.remove('open');
+      render();
+      window.flash(pendingDelete.name + ' deleted, along with its roles, trucks and locations.');
+      pendingDelete = null;
+    });
+
+    document.addEventListener('click', function (event) {
+      var closer = event.target.closest('[data-close]');
+      if (closer) document.getElementById(closer.dataset.close).classList.remove('open');
+      else if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('open');
+    });
+
+    render();
   </script>
 </body>
 </html>

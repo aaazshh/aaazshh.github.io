@@ -12,36 +12,163 @@
 <body>
   <div class="app" data-page="orders" data-title="Assign Orders">
 
-    <div class="card">
-      <div class="card-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div class="card-title">Tomorrow's orders</div>
-          <div class="card-subtitle">Imported from the outlet spreadsheet, addresses geocoded on upload</div>
+    <!-- The company row is deliberately the only thing on screen until a company
+         is chosen: which controls even apply depends on where that company's
+         orders come from. -->
+    <div class="ord-companybar">
+      <div class="ord-field">
+        <label for="ordCompany">Company</label>
+        <select id="ordCompany">
+          <option value="">Select a company…</option>
+        </select>
+      </div>
+      <div class="ord-source" id="ordSource" style="display:none;">
+        <strong id="ordSourceLabel"></strong>
+        <small id="ordSourceNote"></small>
+      </div>
+    </div>
+
+    <div class="ord-choose" id="ordChoose">
+      <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="3" width="15" height="13"></rect>
+        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+        <circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle>
+      </svg>
+      <h2>Pick a company to start</h2>
+      <p>Each company receives its orders differently!</p>
+    </div>
+
+    <!-- ================= Transfer order board (order_source = ips) ================= -->
+    <div class="to-wrap" id="toWrap" style="display:none;">
+      <div class="to-controls">
+        <div class="to-field">
+          <label for="toDate">Delivery date</label>
+          <input type="date" id="toDate">
         </div>
-        <div style="display:flex;align-items:flex-end;gap:10px;">
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="vehicle">Assign to</label>
-            <select id="vehicle" class="form-control"></select>
+        <div class="to-field">
+          <label for="toPlatform">Platform</label>
+          <select id="toPlatform">
+            <option value="">All</option>
+            <option value="DC60">DC60 (Joo Koon)</option>
+            <option value="DEFU">DC125 (Defu — fruits/veg/frozen/egg)</option>
+          </select>
+        </div>
+        <div class="to-field">
+          <label for="toShipment">AM/PM</label>
+          <select id="toShipment">
+            <option value="">All</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <button class="to-btn" id="toLoadBtn">Load orders</button>
+      </div>
+
+      <div id="toMsg"></div>
+
+      <div id="toActions" style="display:none;gap:10px;margin:0 0 14px;align-items:center;flex-wrap:wrap;">
+        <button class="to-btn" id="toAutoBtn" style="background:#6366f1;">Auto-assign</button>
+        <button class="to-btn" id="toConfirmAllBtn" style="background:#f4a261;" disabled>Confirm all staged</button>
+        <button class="to-btn" id="toUnassignAllBtn" style="background:#9ca3af;">Unassign all (day)</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;cursor:pointer;">
+          <input type="checkbox" id="toBlockEst"> Only confirm packed orders
+        </label>
+        <span id="toStageInfo" style="color:#6b7280;font-size:13px;"></span>
+      </div>
+
+      <div id="toEstBanner" style="display:none;margin:0 0 14px;padding:10px 12px;border-radius:8px;
+           background:#fef3c7;color:#92400e;font-size:13px;border:1px solid #fde68a;"></div>
+
+      <div class="to-board" id="toBoard" style="display:none;">
+        <div>
+          <div class="to-col-title">Unassigned orders <span class="count" id="poolCount">0</span></div>
+          <div class="to-pool" id="toPool" data-drop="pool">
+            <div class="to-pool-empty" id="poolEmpty">Drag orders onto a truck →</div>
           </div>
-          <button type="button" class="btn btn-primary" id="assign">Assign selected</button>
+        </div>
+
+        <div>
+          <div class="to-col-title">Trucks <span class="count" id="laneCount">0</span></div>
+          <div class="to-lanes-scroll" id="toLanesScroll">
+            <div class="to-lanes" id="toLanes"></div>
+          </div>
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style="width:36px;"><input type="checkbox" id="all" aria-label="Select all"></th>
-              <th>Order</th>
-              <th>Outlet</th>
-              <th>Cases</th>
-              <th>Weight</th>
-              <th>Window</th>
-              <th>Vehicle</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <div class="to-assigned-wrap" id="toAssignedWrap" style="display:none;">
+        <div class="to-col-title">Already assigned <span class="count" id="assignedCount">0</span></div>
+        <div class="to-assigned-list" id="toAssignedList"></div>
+      </div>
+    </div>
+
+    <!-- ================= Spreadsheet board (order_source = excel) ================= -->
+    <div class="pol-wrap" id="polWrap" style="display:none;">
+      <div class="pol-import">
+        <h3>Import orders from a spreadsheet</h3>
+        <p class="sub">
+          One row per SKU, repeat the Order Ref to put several SKUs in one delivery. A single file
+          can cover the whole week; the board below shows one day at a time. Fill the
+          <strong>Driver</strong> column and those orders load straight onto that truck.
+        </p>
+        <div class="pol-import-row">
+          <a class="pol-btn ghost" href="#" data-unbuilt="Downloading the Excel template">⬇ Download Excel template</a>
+          <label class="pol-drop" id="polDrop">
+            <strong>Import Excel sheet</strong>
+            <small>Click to choose, or drop an .xlsx / .csv here</small>
+          </label>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label class="pol-opt" title="A Driver column value Fleet has never seen is registered rather than rejected.">
+              <input type="checkbox" checked> Create missing drivers &amp; trucks
+            </label>
+            <button class="pol-btn" id="polUploadBtn" disabled>Upload</button>
+          </div>
+        </div>
+        <div class="pol-batches">
+          <div style="font-size:11.5px;font-weight:700;color:#374151;margin-bottom:4px;">Recent uploads</div>
+          <div id="polBatchList"></div>
+        </div>
+      </div>
+
+      <div class="pol-controls">
+        <div class="pol-field">
+          <label for="polDate">Delivery date</label>
+          <input type="date" id="polDate">
+        </div>
+        <div class="pol-field">
+          <label for="polSlot">Time slot</label>
+          <select id="polSlot">
+            <option value="">All</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <button class="pol-btn" id="polLoadBtn">Load orders</button>
+      </div>
+
+      <div id="polMsg"></div>
+
+      <div id="polActions" style="display:none;gap:10px;margin:0 0 14px;align-items:center;flex-wrap:wrap;">
+        <button class="pol-btn indigo" id="polAutoBtn">Auto-assign by area</button>
+        <button class="pol-btn amber" id="polConfirmAllBtn" disabled>Confirm all staged</button>
+        <button class="pol-btn grey" id="polUnassignAllBtn">Unassign all (day)</button>
+        <span id="polStageInfo" style="color:#6b7280;font-size:13px;"></span>
+      </div>
+
+      <div class="pol-board" id="polBoard" style="display:none;">
+        <div>
+          <div class="pol-col-title">Unassigned orders <span class="count" id="polPoolCount">0</span></div>
+          <div class="pol-pool" id="polPool" data-drop="pool">
+            <div class="pol-empty" id="polPoolEmpty">Drag orders onto a truck →</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="pol-col-title">Trucks <span class="count" id="polLaneCount">0</span></div>
+          <div class="pol-lanes-scroll">
+            <div class="pol-lanes" id="polLanes"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -52,47 +179,657 @@
   <script>
     'use strict';
 
-    var body = document.getElementById('rows');
-    body.innerHTML = DATA.orders.map(function (o) {
-      return '<tr data-id="' + o.id + '">' +
-        '<td><input type="checkbox" class="pick" aria-label="Select ' + o.id + '"></td>' +
-        '<td><strong>' + o.id + '</strong></td>' +
-        '<td>' + o.outlet + '</td>' +
-        '<td>' + o.cases + '</td>' +
-        '<td>' + o.kg + ' kg</td>' +
-        '<td>' + o.win + '</td>' +
-        '<td class="assigned"><span class="status-chip status-idle">Unassigned</span></td>' +
-        '</tr>';
-    }).join('');
+    /* Two boards behind one tab. Which one renders follows the chosen company's
+       order_source: PSM pulls transfer orders live from IPS, Prime Online works
+       off an uploaded spreadsheet. Changing company in the real app reloads the
+       page, because the two boards are different UIs with different scripts and
+       no state should survive the switch. */
 
-    document.getElementById('vehicle').innerHTML = DATA.vehicles.filter(function (v) {
-      return v.status === 'Idle';
-    }).map(function (v) {
-      return '<option>' + v.plate + ', ' + v.driver.split(' ')[0] + '</option>';
-    }).join('');
+    function $(id) { return document.getElementById(id); }
+    function today() { return new Date().toISOString().slice(0, 10); }
 
-    document.getElementById('all').addEventListener('change', function (e) {
-      Array.prototype.forEach.call(document.querySelectorAll('.pick'), function (box) {
-        box.checked = e.target.checked;
+    /* ---- shared pointer drag ------------------------------------------------
+       Pointer events, not HTML5 drag and drop, so the wheel and the scrollbars
+       stay usable while a card is in the air. */
+
+    function makeDragger(cardSel, zoneSel, bodyClass, onDrop) {
+      var drag = null;
+
+      function begin(event, card) {
+        var rect = card.getBoundingClientRect();
+        var ghost = card.cloneNode(true);
+        ghost.classList.add('drag-ghost');
+        ghost.style.width = rect.width + 'px';
+        ghost.style.left = rect.left + 'px';
+        ghost.style.top = rect.top + 'px';
+        document.body.appendChild(ghost);
+        document.body.classList.add(bodyClass);
+        card.classList.add('dragging');
+        drag = { card: card, ghost: ghost, dx: event.clientX - rect.left, dy: event.clientY - rect.top, zone: null };
+        card.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      }
+
+      document.addEventListener('pointerdown', function (event) {
+        if (event.button !== 0) return;
+        var card = event.target.closest(cardSel);
+        if (!card || card.classList.contains('nogeo')) return;
+        if (event.target.closest('input, button')) return;
+        begin(event, card);
       });
-    });
 
-    document.getElementById('assign').addEventListener('click', function () {
-      var vehicle = document.getElementById('vehicle').value.split(',')[0];
-      var picked = document.querySelectorAll('.pick:checked');
-      if (!picked.length) return;
+      document.addEventListener('pointermove', function (event) {
+        if (!drag) return;
+        drag.ghost.style.left = (event.clientX - drag.dx) + 'px';
+        drag.ghost.style.top = (event.clientY - drag.dy) + 'px';
 
-      Array.prototype.forEach.call(picked, function (box) {
-        var row = box.closest('tr');
-        row.querySelector('.assigned').innerHTML =
-          '<span class="status-chip status-transit">' + vehicle + '</span>';
-        box.checked = false;
+        drag.ghost.style.visibility = 'hidden';
+        var under = document.elementFromPoint(event.clientX, event.clientY);
+        drag.ghost.style.visibility = '';
+        var zone = under && under.closest(zoneSel);
+
+        if (zone !== drag.zone) {
+          if (drag.zone) drag.zone.classList.remove('dragover');
+          if (zone) zone.classList.add('dragover');
+          drag.zone = zone;
+        }
       });
-      document.getElementById('all').checked = false;
 
-      window.flash(picked.length + ' order' + (picked.length > 1 ? 's' : '') + ' assigned to ' + vehicle +
-        '. That builds the trip, and the driver app picks it up on its next poll.');
-    });
+      function end() {
+        if (!drag) return;
+        if (drag.zone) drag.zone.classList.remove('dragover');
+        drag.ghost.remove();
+        drag.card.classList.remove('dragging');
+        document.body.classList.remove(bodyClass);
+        var zone = drag.zone, card = drag.card;
+        drag = null;
+        if (zone) onDrop(card, zone);
+      }
+
+      document.addEventListener('pointerup', end);
+      document.addEventListener('pointercancel', end);
+    }
+
+    /* ======================= transfer order board ======================= */
+
+    var TO = (function () {
+      var orders = [];          // the day's pool, each with where it currently sits
+      var lanes = [];           // one per driver's vehicle
+      var laneDepot = {};       // the "Starts at" pick per lane
+      var loaded = false;
+
+      function esc(s) { return String(s == null ? '' : s); }
+
+      function platBadge(o) {
+        return o.platform === 'DC60'
+          ? '<span class="to-badge dc60">DC60</span>'
+          : '<span class="to-badge defu">DC125</span>';
+      }
+
+      // GPS puts a truck at a depot or it does not, and the chip says which.
+      function autoDepot(v) {
+        if (v.status === 2) return null;                 // out on a route, no depot ping
+        return v.id % 3 === 0 ? 'DEFU' : 'DC60';
+      }
+
+      function depotOptions() {
+        return DATA.warehouses.map(function (w) {
+          return '<option value="' + w.key + '">' + w.name + '</option>';
+        }).join('');
+      }
+
+      function roadDeco() {
+        return '<span class="px-cactus" style="left:14%;"></span>' +
+          '<span class="px-rock" style="left:38%;"></span>' +
+          '<span class="traffic-light" style="left:62%;"><i class="tl-r"></i><i class="tl-a"></i><i class="tl-g"></i></span>' +
+          '<span class="px-cactus" style="left:82%;"></span>';
+      }
+
+      function buildCard(o) {
+        var card = document.createElement('div');
+        card.className = 'to-card ' + (o.platform === 'DC60' ? 'dc60' : 'defu');
+        card.dataset.ref = o.ref;
+        card.innerHTML =
+          '<div class="to-card-head"><strong>' + esc(o.ref) + '</strong>' + platBadge(o) + '</div>' +
+          '<div class="to-card-outlet">' + esc(o.outlet) + ' <small>' + esc(o.code) + '</small></div>' +
+          '<div class="to-card-meta">' + o.items + ' items · ' + o.qty + ' qty</div>' +
+          '<div class="to-card-pallets">Pallets <input type="number" min="0" step="1" value="' + o.pallets + '">' +
+          '<span class="plt-src ' + o.pltSrc + '">' + (o.pltSrc === 'ips' ? 'IPS' : 'est') + '</span>' +
+          '<button type="button" class="plt-reset" title="Reset to original"' +
+          (o.pallets === o.seeded ? ' style="display:none;"' : '') + '>↺</button></div>';
+
+        var input = card.querySelector('input');
+        input.addEventListener('input', function () {
+          o.pallets = Math.max(0, parseInt(input.value, 10) || 0);
+          paintPallet(card, o);
+          render();
+        });
+        card.querySelector('.plt-reset').addEventListener('click', function () {
+          o.pallets = o.seeded;
+          input.value = o.seeded;
+          paintPallet(card, o);
+          render();
+        });
+        paintPallet(card, o);
+        return card;
+      }
+
+      function paintPallet(card, o) {
+        var input = card.querySelector('input');
+        var src = card.querySelector('.plt-src');
+        var reset = card.querySelector('.plt-reset');
+        var edited = o.pallets !== o.seeded;
+        input.classList.toggle('overridden', edited);
+        src.className = 'plt-src ' + (edited ? 'edited' : o.pltSrc);
+        src.textContent = edited ? 'edited' : (o.pltSrc === 'ips' ? 'IPS' : 'est');
+        reset.style.display = edited ? '' : 'none';
+      }
+
+      function buildLanes() {
+        var wrap = $('toLanes');
+        wrap.innerHTML = '';
+        lanes.forEach(function (v) {
+          var lane = document.createElement('div');
+          lane.className = 'lane';
+          lane.dataset.vehicle = v.id;
+          var seg = roadDeco();
+          lane.innerHTML =
+            '<div class="lane-head">' +
+              '<div class="lane-driver">' + v.driver +
+                ' <span class="lane-plate-inline">' + v.plate + '</span></div>' +
+              '<div class="lane-depot-row">Starts at ' +
+                '<select class="lane-depot">' + depotOptions() + '</select>' +
+                '<span class="gps-chip-slot"></span></div>' +
+              '<div class="lane-cap-wrap"><span class="lane-cap">0 plt</span>' +
+                '<div class="lane-bar"><div class="lane-bar-fill"></div></div>' +
+                '<button class="assign-lane-btn" disabled>Assign 0 order(s)</button></div>' +
+            '</div>' +
+            '<div class="truck-scene">' +
+              '<div class="road-track"><div class="road-belt">' +
+                '<div class="road-seg">' + seg + '</div><div class="road-seg">' + seg + '</div>' +
+              '</div></div>' +
+              '<div class="truck">' +
+                '<div class="truck-trailer">' +
+                  '<div class="lane-committed" style="display:none;"></div>' +
+                  '<div class="lane-drop" data-vehicle="' + v.id + '">' +
+                    '<div class="lane-empty">Drop orders here</div></div>' +
+                '</div>' +
+                '<div class="truck-cab"><div class="truck-beam"></div></div>' +
+                '<div class="truck-wheel" style="left:18px;"></div>' +
+                '<div class="truck-wheel" style="left:48px;"></div>' +
+                '<div class="truck-wheel" style="right:80px;"></div>' +
+                '<div class="truck-wheel" style="right:14px;"></div>' +
+              '</div>' +
+            '</div>';
+          wrap.appendChild(lane);
+
+          var sel = lane.querySelector('.lane-depot');
+          sel.value = laneDepot[v.id];
+          paintDepotChip(v, lane);
+          sel.addEventListener('change', function () {
+            laneDepot[v.id] = this.value;
+            paintDepotChip(v, lane);
+          });
+
+          lane.querySelector('.assign-lane-btn').addEventListener('click', function () {
+            commit(v);
+          });
+        });
+        $('laneCount').textContent = lanes.length;
+      }
+
+      function paintDepotChip(v, lane) {
+        var slot = lane.querySelector('.gps-chip-slot');
+        var sel = lane.querySelector('.lane-depot');
+        var auto = autoDepot(v);
+        sel.classList.remove('gps-auto', 'gps-override');
+
+        if (!auto) {
+          slot.innerHTML = '<span class="gps-chip none"><span class="gps-dot"></span>No GPS at a depot</span>';
+          return;
+        }
+        var name = DATA.warehouses.filter(function (w) { return w.key === auto; })[0].name;
+        if (laneDepot[v.id] === auto) {
+          sel.classList.add('gps-auto');
+          slot.innerHTML = '<span class="gps-chip auto"><span class="gps-dot"></span>GPS says ' + name + '</span>';
+        } else {
+          sel.classList.add('gps-override');
+          slot.innerHTML = '<span class="gps-chip override"><span class="gps-dot"></span>GPS puts it at ' + name +
+            ' <button type="button" class="gps-use">use it</button></span>';
+          slot.querySelector('.gps-use').addEventListener('click', function () {
+            laneDepot[v.id] = auto;
+            sel.value = auto;
+            paintDepotChip(v, lane);
+          });
+        }
+      }
+
+      function staged(vehicleId) {
+        return orders.filter(function (o) { return o.at === vehicleId; });
+      }
+
+      function committedFor(plate) {
+        return DATA.committedOrders.filter(function (c) { return c.vehicle === plate; });
+      }
+
+      function render() {
+        var pool = $('toPool');
+        Array.prototype.forEach.call(pool.querySelectorAll('.to-card'), function (c) { c.remove(); });
+        var inPool = orders.filter(function (o) { return o.at === null && o.shown; });
+        inPool.forEach(function (o) { pool.appendChild(buildCard(o)); });
+        $('poolEmpty').style.display = inPool.length ? 'none' : 'block';
+        $('poolCount').textContent = inPool.length;
+
+        var totalStaged = 0;
+
+        lanes.forEach(function (v) {
+          var lane = document.querySelector('.lane[data-vehicle="' + v.id + '"]');
+          var drop = lane.querySelector('.lane-drop');
+          Array.prototype.forEach.call(drop.querySelectorAll('.to-card'), function (c) { c.remove(); });
+
+          var mine = staged(v.id);
+          totalStaged += mine.length;
+          mine.forEach(function (o) { drop.appendChild(buildCard(o)); });
+          drop.querySelector('.lane-empty').style.display = mine.length ? 'none' : 'block';
+
+          var done = committedFor(v.plate);
+          var box = lane.querySelector('.lane-committed');
+          if (done.length) {
+            box.style.display = 'flex';
+            box.innerHTML = '<div class="lane-committed-head">On the route (' + done.length + ')' +
+              '<a class="cc-unassign-all" href="#" data-unbuilt="Unassigning a whole truck">unassign all</a></div>' +
+              '<div class="lane-committed-cards">' + done.map(function (c) {
+                return '<div class="committed-card">' +
+                  '<div class="cc-top"><strong>' + c.ref + '</strong>' +
+                  '<span class="cc-plt">' + c.pallets + ' plt</span>' +
+                  '<button class="cc-unassign" title="Unassign" data-unbuilt="Unassigning one order">×</button></div>' +
+                  '<div class="cc-outlet">' + c.outlet + '</div>' +
+                  '<div class="cc-status">' + c.status + '</div></div>';
+              }).join('') + '</div>';
+          } else {
+            box.style.display = 'none';
+            box.innerHTML = '';
+          }
+
+          var plt = mine.reduce(function (n, o) { return n + o.pallets; }, 0) +
+            done.reduce(function (n, c) { return n + c.pallets; }, 0);
+          var pct = Math.min(100, Math.round(plt / v.pallets * 100));
+          lane.querySelector('.lane-cap').textContent = plt + ' / ' + v.pallets + ' plt';
+          var fill = lane.querySelector('.lane-bar-fill');
+          fill.style.width = pct + '%';
+          fill.className = 'lane-bar-fill' + (plt > v.pallets ? ' over' : plt / v.pallets > 0.85 ? ' warn' : '');
+          lane.classList.toggle('over', plt > v.pallets);
+
+          var btn = lane.querySelector('.assign-lane-btn');
+          btn.disabled = !mine.length;
+          btn.textContent = 'Assign ' + mine.length + ' order(s)';
+        });
+
+        $('toStageInfo').textContent = totalStaged
+          ? totalStaged + ' order(s) staged, not yet confirmed'
+          : '';
+        $('toConfirmAllBtn').disabled = !totalStaged;
+
+        var est = orders.filter(function (o) { return o.shown && o.pltSrc === 'est'; }).length;
+        var banner = $('toEstBanner');
+        if (est) {
+          banner.innerHTML = '⚠ ' + est + ' of ' + orders.filter(function (o) { return o.shown; }).length +
+            ' order(s) have no packed pallet count from IPS, so the board estimated one from the quantity. ' +
+            'Tick “Only confirm packed orders” to hold them back.';
+          banner.style.display = 'block';
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+
+      function commit(v) {
+        var mine = staged(v.id);
+        if (!mine.length) return;
+        var blockEst = $('toBlockEst').checked;
+        var send = blockEst ? mine.filter(function (o) { return o.pltSrc !== 'est'; }) : mine;
+        if (!send.length) {
+          msg('Every staged order on ' + v.plate + ' is still an estimate, and “Only confirm packed orders” is on.', 'warn');
+          return;
+        }
+        send.forEach(function (o) {
+          DATA.committedOrders.push({
+            ref: o.ref, platform: o.platform, outlet: o.outlet, code: o.code,
+            pallets: o.pallets, vehicle: v.plate, status: 'Pending'
+          });
+          o.at = 'gone';
+        });
+        var lane = document.querySelector('.lane[data-vehicle="' + v.id + '"]');
+        lane.classList.add('flash');
+        lane.querySelector('.truck-scene').classList.add('thud');
+        setTimeout(function () {
+          lane.classList.remove('flash');
+          lane.querySelector('.truck-scene').classList.remove('thud');
+        }, 1500);
+        render();
+        msg(send.length + ' order(s) confirmed onto ' + v.plate + '. That builds the route, and the driver app picks it up on its next poll.', 'ok');
+      }
+
+      function msg(text, kind) {
+        $('toMsg').innerHTML = '<div class="to-msg ' + kind + '">' + text + '</div>';
+        clearTimeout(msg.timer);
+        msg.timer = setTimeout(function () { $('toMsg').innerHTML = ''; }, 5000);
+      }
+
+      function load() {
+        var platform = $('toPlatform').value;
+        var shipment = $('toShipment').value;
+
+        if (!loaded) {
+          orders = DATA.transferOrders.map(function (o) {
+            return {
+              ref: o.ref, platform: o.platform, shipment: o.shipment, outlet: o.outlet,
+              code: o.code, items: o.items, qty: o.qty,
+              pallets: o.estPallets, seeded: o.estPallets, pltSrc: o.pltSrc,
+              at: null, shown: true
+            };
+          });
+          lanes = DATA.vehicles.filter(function (v) {
+            return v.companyId === 1 && v.driver && v.status !== 3;
+          });
+          lanes.forEach(function (v) { laneDepot[v.id] = autoDepot(v) || 'DC60'; });
+          buildLanes();
+          loaded = true;
+        }
+
+        orders.forEach(function (o) {
+          o.shown = (!platform || o.platform === platform) && (!shipment || o.shipment === shipment);
+          if (!o.shown && o.at !== 'gone') o.at = null;
+        });
+
+        $('toBoard').style.display = 'grid';
+        $('toActions').style.display = 'flex';
+        $('toAssignedWrap').style.display = 'block';
+        render();
+        renderLocked();
+      }
+
+      function renderLocked() {
+        $('assignedCount').textContent = DATA.lockedOrders.length;
+        $('toAssignedList').innerHTML = DATA.lockedOrders.map(function (o) {
+          var cls = o.status === 'Delivered' ? 'delivered' : o.status === 'Not delivered' ? 'notdelivered' : '';
+          return '<div class="to-locked"><strong>' + o.ref + '</strong> · ' + o.outlet +
+            ' · ' + o.vehicle + ' · <span class="lk-status ' + cls + '">' + o.status + '</span></div>';
+        }).join('');
+      }
+
+      // Sweep the pool onto trucks by geography, filling each truck to its pallet
+      // capacity before moving to the next.
+      function auto() {
+        var pool = orders.filter(function (o) { return o.at === null && o.shown; });
+        if (!pool.length) { msg('Nothing left in the pool to assign.', 'warn'); return; }
+
+        var depot = DATA.warehouses[0];
+        pool.sort(function (a, b) {
+          var pa = DATA.place(a.outlet), pb = DATA.place(b.outlet);
+          return Math.atan2(pa.lat - depot.lat, pa.lng - depot.lng) -
+                 Math.atan2(pb.lat - depot.lat, pb.lng - depot.lng);
+        });
+
+        var li = 0;
+        pool.forEach(function (o) {
+          for (var tries = 0; tries < lanes.length; tries++) {
+            var v = lanes[li % lanes.length];
+            var used = staged(v.id).reduce(function (n, x) { return n + x.pallets; }, 0) +
+              committedFor(v.plate).reduce(function (n, c) { return n + c.pallets; }, 0);
+            if (used + o.pallets <= v.pallets) { o.at = v.id; return; }
+            li++;
+          }
+        });
+        render();
+        msg('Swept ' + pool.filter(function (o) { return o.at !== null; }).length +
+          ' order(s) onto trucks by area. Nothing is committed until you confirm.', 'ok');
+      }
+
+      function confirmAll() {
+        lanes.forEach(commit);
+      }
+
+      function unassignAll() {
+        orders.forEach(function (o) { if (o.at !== 'gone') o.at = null; });
+        render();
+        msg('Everything staged went back to the pool.', 'ok');
+      }
+
+      function start() {
+        $('toDate').value = today();
+        $('toLoadBtn').addEventListener('click', load);
+        $('toAutoBtn').addEventListener('click', auto);
+        $('toConfirmAllBtn').addEventListener('click', confirmAll);
+        $('toUnassignAllBtn').addEventListener('click', unassignAll);
+        $('toPlatform').addEventListener('change', function () { if (loaded) load(); });
+        $('toShipment').addEventListener('change', function () { if (loaded) load(); });
+
+        makeDragger('.to-card', '.to-pool, .lane-drop', 'to-dragging', function (card, zone) {
+          var o = orders.filter(function (x) { return x.ref === card.dataset.ref; })[0];
+          if (!o) return;
+          o.at = zone.dataset.drop === 'pool' ? null : Number(zone.dataset.vehicle);
+          render();
+          if (o.at !== null) {
+            var scene = zone.closest('.lane').querySelector('.truck-scene');
+            scene.classList.add('thud');
+            setTimeout(function () { scene.classList.remove('thud'); }, 300);
+          }
+        });
+      }
+
+      return { start: start, load: load };
+    }());
+
+    /* ============================ POL board ============================ */
+
+    var POL = (function () {
+      var orders = [];
+      var lanes = [];
+      var loaded = false;
+
+      function slotBadge(o) {
+        return '<span class="pol-badge ' + o.slot.toLowerCase() + '">' + o.slot + '</span>';
+      }
+
+      function skuLine(o) {
+        var shown = o.skus.slice(0, 3).map(function (s) { return '<span>' + s + '</span>'; }).join('');
+        return '<div class="pol-card-sku">' + shown +
+          (o.skus.length > 3 ? '+' + (o.skus.length - 3) + ' more' : '') + '</div>';
+      }
+
+      function buildCard(o) {
+        var card = document.createElement('div');
+        card.className = 'pol-card' + (o.geo ? '' : ' nogeo');
+        card.dataset.ref = o.ref;
+        card.innerHTML =
+          '<div class="pol-card-head"><strong>' + o.ref + '</strong>' +
+          (o.geo ? slotBadge(o) : '<span class="pol-badge nogeo">no map pin</span>') + '</div>' +
+          '<div class="pol-card-who">' + o.customer + '</div>' +
+          '<div class="pol-card-addr">' + o.address +
+          (o.postal ? ' <strong>S' + o.postal + '</strong>' : '') + '</div>' +
+          skuLine(o) +
+          '<div class="pol-card-pallets">Pallets <input type="number" min="0" step="1" value="' + o.pallets + '">' +
+          '<span style="color:#9ca3af;">· ' + o.items + ' item(s) · ' + o.qty + ' qty</span></div>';
+
+        card.querySelector('input').addEventListener('input', function () {
+          o.pallets = Math.max(0, parseInt(this.value, 10) || 0);
+          render();
+        });
+        return card;
+      }
+
+      function buildLanes() {
+        var wrap = $('polLanes');
+        wrap.innerHTML = '';
+        lanes.forEach(function (v) {
+          var lane = document.createElement('div');
+          lane.className = 'pol-lane';
+          lane.dataset.vehicle = v.id;
+          lane.innerHTML =
+            '<div class="pol-lane-head">' +
+              '<div class="pol-lane-driver">' + v.driver +
+                ' <span class="pol-plate">' + v.plate + '</span></div>' +
+              '<div class="pol-cap-wrap"><span class="pol-cap">0 plt</span>' +
+                '<div class="pol-bar"><i></i></div>' +
+                '<button class="pol-assign-btn" disabled>Assign 0 order(s)</button></div>' +
+            '</div>' +
+            '<div class="pol-truck">' +
+              '<div class="pol-trailer">' +
+                '<div class="pol-drop-zone" data-vehicle="' + v.id + '">' +
+                  '<div class="pol-empty">Drop orders here</div></div>' +
+              '</div>' +
+              '<div class="pol-cab"></div>' +
+              '<div class="pol-wheel" style="left:22px;"></div>' +
+              '<div class="pol-wheel" style="left:52px;"></div>' +
+              '<div class="pol-wheel" style="right:14px;"></div>' +
+            '</div>';
+          wrap.appendChild(lane);
+          lane.querySelector('.pol-assign-btn').addEventListener('click', function () { commit(v); });
+        });
+        $('polLaneCount').textContent = lanes.length;
+      }
+
+      function staged(id) { return orders.filter(function (o) { return o.at === id; }); }
+
+      function render() {
+        var pool = $('polPool');
+        Array.prototype.forEach.call(pool.querySelectorAll('.pol-card'), function (c) { c.remove(); });
+        var inPool = orders.filter(function (o) { return o.at === null && o.shown; });
+        inPool.forEach(function (o) { pool.appendChild(buildCard(o)); });
+        $('polPoolEmpty').style.display = inPool.length ? 'none' : 'block';
+        $('polPoolCount').textContent = inPool.length;
+
+        var total = 0;
+        lanes.forEach(function (v) {
+          var lane = document.querySelector('.pol-lane[data-vehicle="' + v.id + '"]');
+          var drop = lane.querySelector('.pol-drop-zone');
+          Array.prototype.forEach.call(drop.querySelectorAll('.pol-card'), function (c) { c.remove(); });
+          var mine = staged(v.id);
+          total += mine.length;
+          mine.forEach(function (o) { drop.appendChild(buildCard(o)); });
+          drop.querySelector('.pol-empty').style.display = mine.length ? 'none' : 'block';
+
+          var plt = mine.reduce(function (n, o) { return n + o.pallets; }, 0);
+          lane.querySelector('.pol-cap').textContent = plt + ' / ' + v.pallets + ' plt';
+          var bar = lane.querySelector('.pol-bar i');
+          bar.style.width = Math.min(100, Math.round(plt / v.pallets * 100)) + '%';
+          bar.className = plt > v.pallets ? 'over' : plt / v.pallets > 0.85 ? 'warn' : '';
+          lane.classList.toggle('over', plt > v.pallets);
+
+          var btn = lane.querySelector('.pol-assign-btn');
+          btn.disabled = !mine.length;
+          btn.textContent = 'Assign ' + mine.length + ' order(s)';
+        });
+
+        $('polStageInfo').textContent = total ? total + ' order(s) staged, not yet confirmed' : '';
+        $('polConfirmAllBtn').disabled = !total;
+      }
+
+      function commit(v) {
+        var mine = staged(v.id);
+        if (!mine.length) return;
+        mine.forEach(function (o) { o.at = 'gone'; });
+        var lane = document.querySelector('.pol-lane[data-vehicle="' + v.id + '"]');
+        lane.classList.add('flash');
+        setTimeout(function () { lane.classList.remove('flash'); }, 1500);
+        render();
+        $('polMsg').innerHTML = '<div class="pol-msg ok">' + mine.length +
+          ' delivery(s) confirmed onto ' + v.plate + '.</div>';
+        clearTimeout(commit.timer);
+        commit.timer = setTimeout(function () { $('polMsg').innerHTML = ''; }, 5000);
+      }
+
+      function load() {
+        var slot = $('polSlot').value;
+        if (!loaded) {
+          orders = DATA.polOrders.map(function (o) {
+            var copy = {};
+            for (var k in o) copy[k] = o[k];
+            copy.at = null;
+            copy.shown = true;
+            return copy;
+          });
+          lanes = DATA.vehicles.filter(function (v) {
+            return v.companyId === 2 && v.driver && v.status !== 3;
+          });
+          buildLanes();
+          $('polBatchList').innerHTML = DATA.polBatches.map(function (b) {
+            return '<div class="pol-batch">' + b.file + ' · ' + b.when + ' · ' + b.rows +
+              ' rows, ' + b.created + ' created' + (b.skipped ? ', ' + b.skipped + ' skipped' : '') + '</div>';
+          }).join('');
+          loaded = true;
+        }
+        orders.forEach(function (o) {
+          o.shown = !slot || o.slot === slot;
+          if (!o.shown && o.at !== 'gone') o.at = null;
+        });
+        $('polBoard').style.display = 'grid';
+        $('polActions').style.display = 'flex';
+        render();
+      }
+
+      function start() {
+        $('polDate').value = today();
+        $('polLoadBtn').addEventListener('click', load);
+        $('polSlot').addEventListener('change', function () { if (loaded) load(); });
+        $('polAutoBtn').addEventListener('click', function () {
+          var pool = orders.filter(function (o) { return o.at === null && o.shown && o.geo; });
+          pool.forEach(function (o, i) { o.at = lanes[i % lanes.length].id; });
+          render();
+          window.flash(pool.length + ' delivery(s) swept onto trucks by area. The one without a map pin stays behind.');
+        });
+        $('polConfirmAllBtn').addEventListener('click', function () { lanes.forEach(commit); });
+        $('polUnassignAllBtn').addEventListener('click', function () {
+          orders.forEach(function (o) { if (o.at !== 'gone') o.at = null; });
+          render();
+        });
+        $('polDrop').addEventListener('click', function () {
+          window.flash('The importer reads the sheet, geocodes every address and creates the orders. Not wired up in this walkthrough.');
+        });
+
+        makeDragger('.pol-card', '.pol-pool, .pol-drop-zone', 'pol-dragging', function (card, zone) {
+          var o = orders.filter(function (x) { return x.ref === card.dataset.ref; })[0];
+          if (!o) return;
+          o.at = zone.dataset.drop === 'pool' ? null : Number(zone.dataset.vehicle);
+          render();
+        });
+      }
+
+      return { start: start, load: load };
+    }());
+
+    /* ---- the company row ---- */
+
+    (function () {
+      var sel = $('ordCompany');
+      sel.innerHTML += DATA.companies.map(function (c) {
+        return '<option value="' + c.id + '">' + c.name + ' (' + c.code + ')</option>';
+      }).join('');
+
+      TO.start();
+      POL.start();
+
+      sel.addEventListener('change', function () {
+        var c = DATA.companies.filter(function (x) { return String(x.id) === this.value; }.bind(this))[0];
+
+        $('ordChoose').style.display = c ? 'none' : 'block';
+        $('ordSource').style.display = c ? 'flex' : 'none';
+        $('toWrap').style.display = 'none';
+        $('polWrap').style.display = 'none';
+        if (!c) return;
+
+        $('ordSourceLabel').textContent = c.sourceLabel;
+        $('ordSourceNote').textContent = c.sourceNote;
+
+        if (c.source === 'excel') {
+          $('polWrap').style.display = 'block';
+          POL.load();
+        } else {
+          $('toWrap').style.display = 'block';
+          TO.load();
+        }
+      });
+    }());
   </script>
 </body>
 </html>

@@ -1,0 +1,67 @@
+# Publishes the site to GitHub Pages, substituting the map tile key on the way
+# through so it never has to live in the repository.
+#
+# Setup, once:
+#   1. Settings > Secrets and variables > Actions > New repository secret,
+#      named MAPTILER_KEY.
+#   2. Settings > Pages > Build and deployment > Source: GitHub Actions.
+#
+# Without the secret the substitution finds nothing, the placeholder survives,
+# and the maps fall back to the keyless basemap. The site still builds.
+
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. A queued run waits rather than racing the one ahead of
+# it, but an in-flight deploy is never cancelled half way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Put the map key into the built copy
+        env:
+          MAPTILER_KEY: ${{ secrets.MAPTILER_KEY }}
+        run: |
+          if [ -z "$MAPTILER_KEY" ]; then
+            echo "No MAPTILER_KEY secret set, leaving the keyless basemap in place."
+            exit 0
+          fi
+          # Written with python rather than sed so the key is passed as data and
+          # never becomes part of a shell pattern.
+          python3 - <<'PY'
+          import os, pathlib
+          key = os.environ['MAPTILER_KEY']
+          p = pathlib.Path('demos/logistics/tiles.js')
+          text = p.read_text(encoding='utf-8')
+          if '__MAPTILER_KEY__' not in text:
+              raise SystemExit('placeholder missing from tiles.js')
+          p.write_text(text.replace('__MAPTILER_KEY__', key), encoding='utf-8')
+          print('map key substituted')
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

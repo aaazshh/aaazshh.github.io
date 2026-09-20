@@ -101,6 +101,7 @@
   <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="tiles.js"></script>
   <script>
     'use strict';
 
@@ -275,9 +276,7 @@
         var el = document.getElementById('incident-detail-map');
         if (!el) return;
         detailMap = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView([inc.lat, inc.lng], 15);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-        }).addTo(detailMap);
+        basemap(detailMap);
         L.marker([inc.lat, inc.lng]).addTo(detailMap).bindPopup('<strong>' + inc.plate + '</strong><br>' + inc.address);
         detailMap.invalidateSize();
       }, 30);

@@ -136,6 +136,7 @@
   <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="tiles.js"></script>
   <script>
     'use strict';
 
@@ -147,9 +148,7 @@
     var pendingDelete = null;
 
     var map = L.map('location-map', { zoomControl: true }).setView([1.3521, 103.8198], 11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-    }).addTo(map);
+    basemap(map);
     var pin = null;
 
     var EDIT_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" ' +

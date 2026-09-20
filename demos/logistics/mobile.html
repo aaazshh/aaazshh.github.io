@@ -259,6 +259,230 @@
       pointer-events: none;
     }
     .toast.show { opacity: 1; transform: none; }
+
+    /* ── Driver home (DeliveriesPage) ──────────────────────────────────────
+       The real screen is an AppBar titled "My Route" over a route summary
+       card, the start button, and one card per stop carrying its transfer
+       orders. Cards are AppCard: white, 14px radius, hairline border and a
+       soft shadow. */
+
+    .rt-wrap { padding: 16px 16px 108px; }
+
+    .rt-card {
+      padding: 16px;
+      border-radius: 16px;
+      background: #fff;
+      border: 0.5px solid var(--line);
+      box-shadow: 0 3px 12px rgb(0 0 0 / 0.05);
+    }
+    .rt-card-top { display: flex; align-items: center; gap: 10px; }
+    .rt-card-top h2 { margin: 0; font-size: 16px; font-weight: 700; }
+    .pill {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill.assigned { color: #f4a261; background: rgb(244 162 97 / 0.12); border: 1px solid rgb(244 162 97 / 0.35); }
+    .pill.active   { color: #16a34a; background: rgb(22 163 74 / 0.12);  border: 1px solid rgb(22 163 74 / 0.35); }
+
+    .rt-metrics { display: flex; margin-top: 16px; }
+    .rt-metric { flex: 1; }
+    .rt-metric svg { width: 18px; height: 18px; color: var(--brand); display: block; }
+    .rt-metric b { display: block; margin-top: 6px; font-size: 22px; font-weight: 700; }
+    .rt-metric span { font-size: 12px; color: var(--muted); }
+
+    .rt-start {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; margin-top: 12px; padding: 14px;
+      border: 0; border-radius: 10px;
+      background: var(--brand); color: #fff;
+      font: 600 16px Roboto, sans-serif;
+      cursor: pointer;
+    }
+    .rt-start:active { background: var(--brand-dark); }
+    .rt-start.resume { background: #16a34a; }
+    .rt-start svg { width: 20px; height: 20px; }
+
+    .rt-hint { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 0 2px; }
+    .rt-hint p { flex: 1; margin: 0; font-size: 12px; color: var(--muted); }
+    .rt-reorder {
+      display: flex; align-items: center; gap: 4px;
+      padding: 6px 8px; border: 0; border-radius: 8px;
+      background: none; color: var(--brand);
+      font: 500 14px Roboto, sans-serif; cursor: pointer;
+    }
+    .rt-reorder svg { width: 18px; height: 18px; }
+
+    /* One card per outlet, its transfer orders stacked inside. */
+    .stopcard {
+      margin-top: 12px; padding: 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 0.5px solid var(--line);
+      box-shadow: 0 3px 12px rgb(0 0 0 / 0.05);
+    }
+    .stopcard-head { display: flex; align-items: center; gap: 12px; }
+    .stopcard-seq {
+      flex: none;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--brand); color: #fff;
+      font-size: 13px; font-weight: 700;
+    }
+    .stopcard.visited .stopcard-seq { background: #16a34a; }
+    .stopcard-seq svg { width: 16px; height: 16px; }
+    .stopcard-name { font-size: 15px; font-weight: 600; }
+    .stopcard-code { font-size: 12px; color: var(--muted); }
+    .stopcard-grip { margin-left: auto; color: #9ca3af; display: none; }
+    .is-reordering .stopcard-grip { display: block; }
+    .is-reordering .stopcard { cursor: grab; }
+    .stopcard.dragging { opacity: 0.4; }
+
+    .to-tile {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; margin-top: 6px; padding: 8px 10px;
+      border: 0; border-radius: 10px;
+      background: var(--bg);
+      text-align: left; cursor: pointer;
+    }
+    .to-tile:active { background: #eceef0; }
+    .to-plat {
+      flex: none; width: 44px; padding: 6px 0;
+      border-radius: 8px; text-align: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .to-plat.am   { color: #d97706; background: rgb(217 119 6 / 0.11);  border: 1px solid rgb(217 119 6 / 0.35); }
+    .to-plat.pm   { color: #f4a261; background: rgb(244 162 97 / 0.11); border: 1px solid rgb(244 162 97 / 0.35); }
+    .to-plat.defu { color: #2a9d8f; background: rgb(42 157 143 / 0.11); border: 1px solid rgb(42 157 143 / 0.35); }
+    .to-body { flex: 1; min-width: 0; }
+    .to-ref { font-size: 13px; font-weight: 600; }
+    .to-meta { font-size: 12px; color: var(--muted); }
+    .to-tile .chev { flex: none; width: 20px; height: 20px; color: var(--muted); }
+    .to-tile .ok { flex: none; width: 18px; height: 18px; color: #16a34a; }
+
+    /* Line items, a Material modal bottom sheet. */
+    .itemsheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+      max-height: 70%;
+      padding: 16px 16px 26px;
+      border-radius: 18px 18px 0 0;
+      background: #fff;
+      box-shadow: 0 -6px 24px rgb(0 0 0 / 0.22);
+      transform: translateY(110%);
+      transition: transform 200ms cubic-bezier(0.2, 0.8, 0.3, 1);
+      overflow-y: auto;
+    }
+    .itemsheet.show { transform: none; }
+    .itemsheet-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+    .itemsheet-top b { font-size: 16px; }
+    .itemsheet-top span { margin-left: auto; font-size: 13px; color: var(--muted); }
+    .itemrow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+    .itemrow:first-of-type { border-top: 0; }
+    .itemrow div { flex: 1; min-width: 0; }
+    .itemrow .nm { font-size: 14px; }
+    .itemrow .sku { font-size: 12px; color: var(--muted); }
+    .itemrow .qty { font-size: 14px; font-weight: 600; color: var(--brand); }
+
+    .scrim {
+      position: fixed; inset: 0; z-index: 880;
+      background: rgb(0 0 0 / 0.4);
+      opacity: 0; pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+
+    /* ── Profile ──────────────────────────────────────────────────────────
+       A collapsing header over the teal gradient, then the info rows. */
+
+    .pf-head {
+      padding: 26px 16px 22px;
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      color: #fff;
+      display: grid; justify-items: center; gap: 14px;
+    }
+    .pf-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: rgb(255 255 255 / 0.11);
+      border: 2px solid rgb(255 255 255 / 0.31);
+      font-size: 32px; font-weight: 700;
+    }
+    .pf-name { font-size: 20px; font-weight: 700; }
+    .pf-role {
+      margin-top: -8px;
+      padding: 4px 14px; border-radius: 20px;
+      background: rgb(255 255 255 / 0.12);
+      border: 1px solid rgb(255 255 255 / 0.2);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    }
+    .pf-body { padding: 16px 16px 108px; }
+    .pf-info {
+      border-radius: 16px; background: #fff;
+      border: 0.5px solid var(--line);
+      box-shadow: 0 4px 14px rgb(0 0 0 / 0.05);
+      overflow: hidden;
+    }
+    .pf-row {
+      display: flex; align-items: center; gap: 16px;
+      width: 100%; padding: 14px 16px;
+      border: 0; background: none; text-align: left;
+      font: 400 14px Roboto, sans-serif;
+    }
+    .pf-row + .pf-row { border-top: 1px solid var(--line); }
+    .pf-row svg { flex: none; width: 22px; height: 22px; color: var(--muted); }
+    .pf-row .lbl { font-size: 12px; color: var(--muted); }
+    .pf-row .val { font-size: 14px; }
+    .pf-row .go { margin-left: auto; color: var(--muted); }
+    .pf-signout {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; height: 52px; margin-top: 16px;
+      border: 0; border-radius: 14px;
+      background: var(--red); color: #fff;
+      font: 600 15px Roboto, sans-serif; cursor: pointer;
+    }
+    .pf-signout svg { width: 20px; height: 20px; }
+
+    /* ── Floating nav pill ────────────────────────────────────────────────
+       Frosted, rounded, with a highlight that slides under the active tab.
+       Content scrolls underneath it, which is why every screen pads its
+       bottom rather than the bar taking layout space. */
+
+    .navpill {
+      position: absolute;
+      left: 20px; right: 20px; bottom: 12px;
+      z-index: 700;
+      height: 66px;
+      display: flex;
+      border-radius: 30px;
+      background: rgb(255 255 255 / 0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 0.8px solid rgb(255 255 255 / 0.6);
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    }
+    .navpill[hidden] { display: none; }
+    .navpill .slide {
+      position: absolute;
+      top: 8px; bottom: 8px;
+      border-radius: 22px;
+      background: rgb(42 157 143 / 0.14);
+      transition: left 320ms cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .navpill button {
+      position: relative;
+      flex: 1;
+      display: grid; place-content: center; justify-items: center; gap: 3px;
+      border: 0; background: none;
+      color: var(--muted);
+      font: 400 11px Roboto, sans-serif;
+      cursor: pointer;
+    }
+    .navpill button.is-on { color: var(--brand); font-weight: 600; }
+    .navpill svg { width: 23px; height: 23px; transition: transform 260ms ease; }
+    .navpill button.is-on svg { transform: scale(1.12); }
   </style>
 </head>
 <body>
@@ -287,7 +511,7 @@
         </div>
         <div class="field">
           <label for="email">Work email</label>
-          <input id="email" type="email" value="rahim.o@primesupermarket.sg" autocomplete="off">
+          <input id="email" type="email" value="guest14@mail.com" autocomplete="off">
         </div>
         <div class="field">
           <label for="pw">Password</label>
@@ -301,16 +525,17 @@
     </section>
 
     <section class="view" id="view-run">
-      <div class="runcard">
-        <div class="top">
-          <span class="trip" id="trip-id">TR-4417</span>
-          <span class="plate" id="trip-plate">GBA 4821 X</span>
+      <div class="rt-wrap">
+        <div class="rt-card">
+          <div class="rt-card-top">
+            <h2>Today's route</h2>
+            <span class="pill assigned" id="rt-status">Assigned</span>
+          </div>
+          <div class="rt-metrics" id="rt-metrics"></div>
         </div>
-        <div class="meta" id="trip-meta"></div>
-        <div class="bar"><span id="trip-bar"></span></div>
+        <div id="rt-action"></div>
+        <div id="stops"></div>
       </div>
-      <div id="stops"></div>
-      <div class="actions" id="run-actions"></div>
     </section>
 
     <section class="view" id="view-stop"></section>
@@ -323,33 +548,31 @@
     </section>
 
     <section class="view" id="view-me">
-      <div class="who">
-        <div class="avatar">RO</div>
-        <div class="name">Rahim Osman</div>
-        <div class="role">Driver, PSM Logistics</div>
+      <div class="pf-head">
+        <div class="pf-avatar" id="pf-initials">G14</div>
+        <div class="pf-name" id="pf-name">guest14</div>
+        <div class="pf-role" id="pf-role">PSM DRIVER</div>
       </div>
-      <div class="pad">
-        <div class="card">
-          <h2>Today</h2>
-          <div class="rows">
-            <div class="row"><span>Vehicle</span><span>GBA 4821 X, 1.7 t</span></div>
-            <div class="row"><span>Shift started</span><span>06:40</span></div>
-            <div class="row"><span>Stops done</span><span id="me-done">4 of 7</span></div>
-            <div class="row"><span>Distance</span><span>38.4 km</span></div>
+      <div class="pf-body">
+        <div class="pf-info">
+          <div class="pf-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>
+            <div><div class="lbl">Email</div><div class="val" id="pf-email">guest14@mail.com</div></div>
           </div>
-        </div>
-        <div class="card">
-          <h2>This week</h2>
-          <div class="rows">
-            <div class="row"><span>Trips</span><span>11</span></div>
-            <div class="row"><span>Stops</span><span>63</span></div>
-            <div class="row"><span>Short deliveries</span><span>2</span></div>
-            <div class="row"><span>Incidents raised</span><span>1</span></div>
+          <div class="pf-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M12 12v.01"></path></svg>
+            <div><div class="lbl">Role</div><div class="val">psm_driver</div></div>
           </div>
+          <button type="button" class="pf-row" id="pf-lang">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"></path></svg>
+            <div><div class="lbl">Language</div><div class="val" id="pf-langval">English</div></div>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
         </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn ghost" id="signout">Sign out</button>
+        <button type="button" class="pf-signout" id="signout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Sign out
+        </button>
       </div>
     </section>
 
@@ -374,20 +597,20 @@
 
   </div>
 
-  <nav class="navbar" id="navbar" hidden>
+  <nav class="navpill" id="navbar" hidden>
+    <span class="slide" id="nav-slide"></span>
     <button class="is-on" data-go="run">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-      Run
-    </button>
-    <button data-go="map">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-      Map
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m9 20-6-3V4l6 3 6-3 6 3v13l-6 3-6-3z"></path><path d="M9 7v13"></path><path d="M15 4v13"></path></svg>
+      Route
     </button>
     <button data-go="me">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      Me
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      Profile
     </button>
   </nav>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="itemsheet" id="itemsheet"></div>
 
   <div class="sheet" id="sheet">
     <h3 id="sheet-title"></h3>
@@ -402,38 +625,76 @@
 
   <script src="data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="tiles.js"></script>
   <script>
     'use strict';
 
-    // The run the admin side assigned to this driver: route #4417 on the
-    // control center, same stops, same plate, same transfer order refs.
-    var TRIP = DATA.live[0];
+    // The run the dispatcher assigned to this driver. It is still pending, so
+    // the truck reads as idle on the admin board and the driver is the one who
+    // starts it. Same stops, same plate and same transfer order refs as route
+    // #4425 on the portal.
+    var TRIP = DATA.pending;
     var TRIP_LABEL = '#' + TRIP.id;
 
-    var LINES = {
-      'Clementi Ave 3': [['Chilled dairy', 9], ['Dry goods', 12], ['Produce', 8]],
-      'Queenstown Blk 52': [['Chilled dairy', 6], ['Produce', 12]],
-      'Tiong Bahru Plaza': [['Dry goods', 14], ['Frozen', 10]],
-      'Toa Payoh Lor 4': [['Chilled dairy', 7], ['Dry goods', 9]],
-      'Ang Mo Kio Ave 10': [['Dry goods', 18], ['Produce', 11], ['Frozen', 5]],
-      'Yishun Ring Rd': [['Chilled dairy', 10], ['Dry goods', 15]]
+    // What the route payload carries per stop: the outlet, and the transfer
+    // orders dropped there. Line items hang off each order for the sheet.
+    var TOS = {
+      'Clementi Ave 3': [
+        { ref: 'DC-TO000781', platform: 'DC60', shipment: 'AM', pallets: 2, items: [
+          ['Fresh milk 1L', 'MLK-1L', 12], ['Yoghurt tub 500g', 'YOG-500', 9],
+          ['Butter block 250g', 'BTR-250', 8] ] },
+        { ref: 'DF-TO000318', platform: 'DEFU', shipment: null, pallets: 1, items: [
+          ['Leafy greens crate', 'VEG-LEAF', 6], ['Tomato tray', 'VEG-TOM', 4] ] }
+      ],
+      'Queenstown Blk 52': [
+        { ref: 'DC-TO000783', platform: 'DC60', shipment: 'AM', pallets: 2, items: [
+          ['Fresh milk 1L', 'MLK-1L', 10], ['Eggs tray 30s', 'EGG-30', 8] ] }
+      ],
+      'Tiong Bahru Plaza': [
+        { ref: 'DC-TO000785', platform: 'DC60', shipment: 'AM', pallets: 2, items: [
+          ['Rice 5kg', 'RCE-5KG', 14], ['Cooking oil 2L', 'OIL-2L', 10] ] },
+        { ref: 'DF-TO000320', platform: 'DEFU', shipment: null, pallets: 1, items: [
+          ['Frozen prawns 1kg', 'FRZ-PRWN', 7], ['Ice cream tub', 'FRZ-ICE', 5] ] }
+      ],
+      'Toa Payoh Lor 4': [
+        { ref: 'DC-TO000787', platform: 'DC60', shipment: 'PM', pallets: 1, items: [
+          ['Fresh milk 1L', 'MLK-1L', 9], ['Sliced bread', 'BRD-WHL', 7] ] }
+      ],
+      'Ang Mo Kio Ave 10': [
+        { ref: 'DC-TO000789', platform: 'DC60', shipment: 'PM', pallets: 3, items: [
+          ['Rice 5kg', 'RCE-5KG', 18], ['Sugar 2kg', 'SUG-2KG', 11],
+          ['Cooking oil 2L', 'OIL-2L', 9] ] },
+        { ref: 'DF-TO000322', platform: 'DEFU', shipment: null, pallets: 1, items: [
+          ['Frozen chicken 1kg', 'FRZ-CHK', 5] ] }
+      ],
+      'Yishun Ring Rd': [
+        { ref: 'DC-TO000790', platform: 'DC60', shipment: 'PM', pallets: 2, items: [
+          ['Fresh milk 1L', 'MLK-1L', 10], ['Eggs tray 30s', 'EGG-30', 15] ] }
+      ]
     };
 
-    var TIMES = ['07:14', '07:58', '08:36', '09:29', '', ''];
+    var DELIVERY_DATE = '20 Sep';
+    var TIMES = ['', '', '', '', '', ''];
 
     var stops = TRIP.stops.map(function (name, i) {
       var o = DATA.place(name);
-      var lines = LINES[name] || [['Dry goods', 10]];
+      var tos = TOS[name] || [];
       return {
         name: name,
         addr: o.address,
         code: o.code,
         lat: o.lat,
         lng: o.lng,
-        po: 'DC-TO000' + (781 + i),
-        lines: lines,
-        cases: lines.reduce(function (n, l) { return n + l[1]; }, 0),
-        state: i < TRIP.visited ? 'done' : i === TRIP.visited ? 'next' : 'queued',
+        tos: tos,
+        // The confirmation screens still count cases, so keep a flat total.
+        po: tos[0] ? tos[0].ref : '',
+        lines: tos.reduce(function (all, t) {
+          return all.concat(t.items.map(function (it) { return [it[0], it[2]]; }));
+        }, []),
+        cases: tos.reduce(function (n, t) {
+          return n + t.items.reduce(function (m, it) { return m + it[2]; }, 0);
+        }, 0),
+        state: i === 0 ? 'next' : 'queued',
         at: TIMES[i] || '',
         signed: null
       };
@@ -456,11 +717,12 @@
         v.classList.toggle('is-on', v.id === 'view-' + name);
       });
       var chrome = name !== 'signin';
-      view.appbar.hidden = !chrome;
+      // The profile screen draws its own teal header, so the app bar steps aside.
+      view.appbar.hidden = !chrome || name === 'me';
       view.navbar.hidden = !chrome || name === 'stop' || name === 'deliver' || name === 'done';
       view.appbar.classList.toggle('has-back', name === 'stop' || name === 'deliver');
-      view.title.textContent = opts.title || 'Today\'s run';
-      view.sub.textContent = opts.sub || (TRIP_LABEL + ', ' + TRIP.plate);
+      view.title.textContent = opts.title || 'My Route';
+      view.sub.textContent = opts.sub === undefined ? '' : opts.sub;
       document.getElementById('body').scrollTop = 0;
       if (name === 'map') drawMap();
       if (name === 'run') paintRun();
@@ -478,29 +740,219 @@
 
     function done() { return stops.filter(function (s) { return s.state === 'done'; }).length; }
 
+    // 'pending' until the driver starts it, then 'active'. The route only stops
+    // being reorderable once it has started.
+    var routeStatus = 'pending';
+    var orderSource = 'optimised';
+    var reordering = false;
+
+    function done() { return stops.filter(function (s) { return s.state === 'done'; }).length; }
+
+    function icon(path, cls) {
+      return '<svg ' + (cls ? 'class="' + cls + '" ' : '') +
+        'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+    }
+
+    var I = {
+      place: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+      box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>',
+      layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline>',
+      play: '<polygon points="6 3 20 12 6 21 6 3"></polygon>',
+      nav: '<polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>',
+      swap: '<path d="M7 16V4"></path><path d="m3 8 4-4 4 4"></path><path d="M17 8v12"></path><path d="m21 16-4 4-4-4"></path>',
+      check: '<path d="M20 6 9 17l-5-5"></path>',
+      chev: '<path d="m9 18 6-6-6-6"></path>',
+      grip: '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line>'
+    };
+
+    function totalTos() {
+      return stops.reduce(function (n, s) { return n + s.tos.length; }, 0);
+    }
+
+    function totalPallets() {
+      return stops.reduce(function (n, s) {
+        return n + s.tos.reduce(function (m, t) { return m + t.pallets; }, 0);
+      }, 0);
+    }
+
+    function metric(glyph, value, label) {
+      return '<div class="rt-metric">' + icon(glyph) +
+        '<b>' + value + '</b><span>' + label + '</span></div>';
+    }
+
+    function platLabel(t) {
+      if (t.platform === 'DC60') return t.shipment || 'DC60';
+      return t.platform === 'POL' ? 'POL' : 'DEFU';
+    }
+
+    function platClass(t) {
+      return t.shipment === 'AM' ? 'am' : t.shipment === 'PM' ? 'pm' : 'defu';
+    }
+
     function paintRun() {
-      var d = done();
-      document.getElementById('trip-id').textContent = TRIP_LABEL;
-      document.getElementById('trip-plate').textContent = TRIP.plate;
-      document.getElementById('trip-meta').textContent =
-        d + ' of ' + stops.length + ' stops done, ' + (stops.length - d) + ' to go';
-      document.getElementById('trip-bar').style.width = (d / stops.length * 100) + '%';
-      document.getElementById('me-done').textContent = d + ' of ' + stops.length;
+      document.getElementById('rt-status').className =
+        'pill ' + (routeStatus === 'active' ? 'active' : 'assigned');
+      document.getElementById('rt-status').textContent =
+        routeStatus === 'active' ? 'In progress' : 'Assigned';
 
+      document.getElementById('rt-metrics').innerHTML =
+        metric(I.place, stops.length, stops.length === 1 ? 'Stop' : 'Stops') +
+        metric(I.box, totalTos(), totalTos() === 1 ? 'Order' : 'Orders') +
+        metric(I.layers, totalPallets(), 'Pallets');
+
+      // Pending offers Start route and, until it starts, a reorder toggle. Once
+      // it is running the only thing left here is a way back into navigation.
+      document.getElementById('rt-action').innerHTML = routeStatus === 'active'
+        ? '<button type="button" class="rt-start resume" data-act="resume">' +
+            icon(I.nav) + 'Resume navigation</button>'
+        : '<button type="button" class="rt-start" data-act="start">' +
+            icon(I.play) + 'Start route</button>' +
+          '<div class="rt-hint"><p>' +
+            (reordering
+              ? 'Drag the stops into the order you want.'
+              : orderSource === 'manual'
+                ? 'Custom order, Start route will keep it.'
+                : 'Stops will be optimised when you start.') +
+          '</p><button type="button" class="rt-reorder" data-act="reorder">' +
+            icon(reordering ? I.check : I.swap) +
+            (reordering ? 'Done' : 'Reorder') + '</button></div>';
+
+      document.getElementById('stops').className = reordering ? 'is-reordering' : '';
       document.getElementById('stops').innerHTML = stops.map(function (s, i) {
-        return '<button type="button" class="tile ' + s.state + '" data-stop="' + i + '">' +
-          '<span class="seq">' + (i + 1) + '</span>' +
-          '<span class="name">' + s.name + '</span>' +
-          '<span class="when">' + (s.at || (s.state === 'next' ? 'Next' : '')) + '</span>' +
-          '<span class="meta">' + s.cases + ' cases' +
-            (s.signed !== null && s.signed < s.cases ? ', ' + (s.cases - s.signed) + ' short' : '') + '</span>' +
-          '</button>';
+        var visited = s.state === 'done';
+        return '<div class="stopcard' + (visited ? ' visited' : '') + '"' +
+          (reordering ? ' draggable="true"' : '') + ' data-stop="' + i + '">' +
+          '<div class="stopcard-head">' +
+            '<span class="stopcard-seq">' +
+              (visited ? icon(I.check) : (i + 1)) + '</span>' +
+            '<span><span class="stopcard-name">' + s.name + '</span>' +
+              '<span class="stopcard-code" style="display:block;">' + s.code + '</span></span>' +
+            '<span class="stopcard-grip">' + icon(I.grip) + '</span>' +
+          '</div>' +
+          s.tos.map(function (t, n) {
+            var qty = t.items.reduce(function (m, it) { return m + it[2]; }, 0);
+            return '<button type="button" class="to-tile" data-to="' + i + '.' + n + '">' +
+              '<span class="to-plat ' + platClass(t) + '">' + platLabel(t) + '</span>' +
+              '<span class="to-body"><span class="to-ref" style="display:block;">' + t.ref + '</span>' +
+                '<span class="to-meta">' + t.items.length + ' items, ' + qty +
+                ' qty \u00b7 ' + DELIVERY_DATE + '</span></span>' +
+              (visited ? icon(I.check, 'ok') : '') +
+              icon(I.chev, 'chev') +
+              '</button>';
+          }).join('') +
+          '</div>';
       }).join('');
+    }
 
-      document.getElementById('run-actions').innerHTML = d === stops.length
-        ? '<button type="button" class="btn" data-act="finish">Finish run</button>'
-        : '<button type="button" class="btn" data-act="go-next">Go to stop ' + (d + 1) + '</button>' +
-          '<button type="button" class="btn ghost" data-act="raise">Raise an incident</button>';
+    /* The line items behind one transfer order, a modal bottom sheet. */
+
+    var itemSheet = document.getElementById('itemsheet');
+    var scrim = document.getElementById('scrim');
+
+    function openItems(stopIndex, toIndex) {
+      var s = stops[stopIndex];
+      var t = s.tos[toIndex];
+      itemSheet.innerHTML =
+        '<div class="itemsheet-top"><b>' + t.ref + '</b><span>' + s.name + '</span></div>' +
+        t.items.map(function (it) {
+          return '<div class="itemrow"><div><div class="nm">' + it[0] + '</div>' +
+            '<div class="sku">' + it[1] + '</div></div>' +
+            '<div class="qty">' + it[2] + '</div></div>';
+        }).join('');
+      itemSheet.classList.add('show');
+      scrim.classList.add('show');
+    }
+
+    function closeItems() {
+      itemSheet.classList.remove('show');
+      scrim.classList.remove('show');
+    }
+
+    scrim.addEventListener('click', closeItems);
+
+    /* Home actions and stop reordering */
+
+    document.getElementById('view-run').addEventListener('click', function (event) {
+      var to = event.target.closest('[data-to]');
+      if (to) {
+        var parts = to.dataset.to.split('.');
+        openItems(Number(parts[0]), Number(parts[1]));
+        return;
+      }
+
+      var act = event.target.closest('[data-act]');
+      if (!act) return;
+
+      if (act.dataset.act === 'reorder') {
+        reordering = !reordering;
+        paintRun();
+        return;
+      }
+      if (act.dataset.act === 'start') {
+        routeStatus = 'active';
+        paintRun();
+        toast(orderSource === 'manual'
+          ? 'Route planned through your order and started. The truck is now live on the dispatch board.'
+          : 'Stops optimised into the shortest run and the route started. The truck is now live on the dispatch board.');
+        slideNav(document.querySelector('[data-go="run"]'));
+        show('map');
+        return;
+      }
+      if (act.dataset.act === 'resume') {
+        show('map');
+      }
+    });
+
+    // Dragging a stop card while the route is still pending. The order only
+    // sticks until Start route, which is the point: it is local knowledge
+    // applied before OSRM gets a say.
+    var dragFrom = null;
+
+    document.getElementById('stops').addEventListener('dragstart', function (event) {
+      var card = event.target.closest('.stopcard');
+      if (!card || !reordering) return;
+      dragFrom = Number(card.dataset.stop);
+      card.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+    });
+
+    document.getElementById('stops').addEventListener('dragover', function (event) {
+      if (dragFrom !== null) event.preventDefault();
+    });
+
+    document.getElementById('stops').addEventListener('drop', function (event) {
+      var card = event.target.closest('.stopcard');
+      if (!card || dragFrom === null) return;
+      event.preventDefault();
+      var to = Number(card.dataset.stop);
+      if (to !== dragFrom) {
+        stops.splice(to, 0, stops.splice(dragFrom, 1)[0]);
+        orderSource = 'manual';
+        paintRun();
+        toast('New stop order saved. Start route will keep it instead of optimising.');
+      }
+      dragFrom = null;
+    });
+
+    document.getElementById('stops').addEventListener('dragend', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.stopcard'), function (c) {
+        c.classList.remove('dragging');
+      });
+      dragFrom = null;
+    });
+
+    /* The highlight that slides under the active tab. */
+
+    function slideNav(btn) {
+      var bar = document.getElementById('navbar');
+      var tabs = bar.querySelectorAll('[data-go]');
+      Array.prototype.forEach.call(tabs, function (b) { b.classList.remove('is-on'); });
+      btn.classList.add('is-on');
+      var i = Array.prototype.indexOf.call(tabs, btn);
+      var slide = document.getElementById('nav-slide');
+      slide.style.width = 'calc(' + (100 / tabs.length) + '% - 16px)';
+      slide.style.left = 'calc(' + (i * 100 / tabs.length) + '% + 8px)';
     }
 
     /* One stop ------------------------------------------------------------- */
@@ -686,9 +1138,7 @@
     function drawMap() {
       if (!map) {
         map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 12);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-        }).addTo(map);
+        basemap(map);
         map.pins = L.layerGroup().addTo(map);
       }
       map.pins.clearLayers();
@@ -711,6 +1161,8 @@
 
     /* Wiring --------------------------------------------------------------- */
 
+    slideNav(document.querySelector('[data-go="run"]'));
+
     document.getElementById('signin-form').addEventListener('submit', function (event) {
       event.preventDefault();
       show('run');
@@ -718,6 +1170,8 @@
     });
 
     document.getElementById('body').addEventListener('click', function (event) {
+      if (event.target.closest('#view-run')) return;
+
       var tile = event.target.closest('[data-stop]');
       if (tile) { openStop(Number(tile.dataset.stop)); return; }
 
@@ -725,9 +1179,6 @@
       if (!act) return;
 
       switch (act.dataset.act) {
-        case 'go-next':
-          openStop(done());
-          break;
         case 'arrive':
           openDeliver(Number(act.dataset.i));
           break;
@@ -741,9 +1192,6 @@
           sheet('Raise an incident', 'Sends the type, the stop and the truck position to the admins. They see it on the incidents board within seconds.', 'Raise', function () {
             toast('Incident raised against ' + stops[done()].name + '. An admin is on it.');
           });
-          break;
-        case 'finish':
-          finish();
           break;
       }
     });
@@ -762,11 +1210,8 @@
       if (!btn) return;
       Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('is-on'); });
       btn.classList.add('is-on');
-      var where = btn.dataset.go;
-      show(where, {
-        title: where === 'map' ? 'Route' : where === 'me' ? 'Rahim Osman' : 'Today\'s run',
-        sub: where === 'me' ? 'Driver, PSM Logistics' : TRIP_LABEL + ', ' + TRIP.plate
-      });
+      slideNav(btn);
+      show(btn.dataset.go);
     });
 
     document.getElementById('return-depot').addEventListener('click', function () {
@@ -775,6 +1220,33 @@
 
     document.getElementById('signout').addEventListener('click', function () {
       show('signin');
+    });
+
+    // Language names stay in their own script: somebody looking for their
+    // language should not have to read English to find it.
+    var LANGS = [['English', 'English'], ['中文', 'Chinese'],
+                 ['Tiếng Việt', 'Vietnamese'], ['System default', 'System']];
+
+    document.getElementById('pf-lang').addEventListener('click', function () {
+      var current = document.getElementById('pf-langval').textContent;
+      itemSheet.innerHTML = LANGS.map(function (l) {
+        return '<button type="button" class="pf-row" data-lang="' + l[0] + '" style="width:100%;">' +
+          '<div><div class="val">' + l[0] + '</div></div>' +
+          (l[0] === current
+            ? '<svg class="go" viewBox="0 0 24 24" fill="none" stroke="#2a9d8f" stroke-width="2.4" ' +
+              'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>'
+            : '') + '</button>';
+      }).join('');
+      itemSheet.classList.add('show');
+      scrim.classList.add('show');
+    });
+
+    itemSheet.addEventListener('click', function (event) {
+      var pick = event.target.closest('[data-lang]');
+      if (!pick) return;
+      document.getElementById('pf-langval').textContent = pick.dataset.lang;
+      closeItems();
+      toast('The whole app switches language at once, the server’s own text stays as it came.');
     });
 
     /* SOS sheet */

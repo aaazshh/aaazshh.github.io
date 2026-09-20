@@ -58,21 +58,21 @@ var DATA = (function () {
 
   // status: 1 idle, 2 in transit, 3 unavailable, the integers the app stores.
   var vehicles = [
-    { id: 1, plate: 'PSM1001', pallets: 8, cages: 12, tonnes: 2.4, status: 2, driver: 'Rahim Osman', driverId: 11, company: 'PSM Logistics', companyId: 1, created: '12 Mar 2023' },
-    { id: 2, plate: 'PSM1002', pallets: 8, cages: 12, tonnes: 2.4, status: 2, driver: 'Lim Kok Wai', driverId: 12, company: 'PSM Logistics', companyId: 1, created: '04 Jul 2023' },
-    { id: 3, plate: 'PSM1003', pallets: 12, cages: 18, tonnes: 3.5, status: 2, driver: 'Siti Nurhaliza', driverId: 13, company: 'PSM Logistics', companyId: 1, created: '21 Nov 2022' },
-    { id: 4, plate: 'PSM1004', pallets: 12, cages: 18, tonnes: 3.5, status: 2, driver: 'Prakash Menon', driverId: 14, company: 'PSM Logistics', companyId: 1, created: '09 Feb 2024' },
-    { id: 5, plate: 'PSM1005', pallets: 6, cages: 10, tonnes: 1.7, status: 2, driver: 'Daniel Tan', driverId: 15, company: 'PSM Logistics', companyId: 1, created: '17 Jan 2022' },
-    { id: 6, plate: 'PSM1006', pallets: 16, cages: 24, tonnes: 5.0, status: 2, driver: 'Ravi Kumar', driverId: 16, company: 'PSM Logistics', companyId: 1, created: '08 Nov 2023' },
-    { id: 7, plate: 'PSM1007', pallets: 8, cages: 12, tonnes: 2.4, status: 1, driver: 'Jason Koh', driverId: 17, company: 'PSM Logistics', companyId: 1, created: '02 May 2023' },
-    { id: 8, plate: 'PSM1008', pallets: 12, cages: 18, tonnes: 3.5, status: 1, driver: 'Arun Raj', driverId: 18, company: 'PSM Logistics', companyId: 1, created: '28 Sep 2022' },
-    { id: 9, plate: 'PSM1009', pallets: 16, cages: 24, tonnes: 5.0, status: 1, driver: 'Ng Wei Sheng', driverId: 19, company: 'PSM Logistics', companyId: 1, created: '23 Oct 2021' },
-    { id: 10, plate: 'PSM1010', pallets: 6, cages: 10, tonnes: 1.7, status: 1, driver: 'Chee Keong Soh', driverId: 20, company: 'PSM Logistics', companyId: 1, created: '27 Jan 2023' },
-    { id: 11, plate: 'PSM1011', pallets: 8, cages: 12, tonnes: 2.4, status: 1, driver: 'Farah Idris', driverId: 21, company: 'PSM Logistics', companyId: 1, created: '15 Aug 2022' },
+    { id: 1, plate: 'PSM1001', pallets: 8, cages: 12, tonnes: 2.4, status: 2, driver: 'guest6', driverId: 11, company: 'PSM Logistics', companyId: 1, created: '12 Mar 2023' },
+    { id: 2, plate: 'PSM1002', pallets: 8, cages: 12, tonnes: 2.4, status: 2, driver: 'guest7', driverId: 12, company: 'PSM Logistics', companyId: 1, created: '04 Jul 2023' },
+    { id: 3, plate: 'PSM1003', pallets: 12, cages: 18, tonnes: 3.5, status: 2, driver: 'guest8', driverId: 13, company: 'PSM Logistics', companyId: 1, created: '21 Nov 2022' },
+    { id: 4, plate: 'PSM1004', pallets: 12, cages: 18, tonnes: 3.5, status: 2, driver: 'guest9', driverId: 14, company: 'PSM Logistics', companyId: 1, created: '09 Feb 2024' },
+    { id: 5, plate: 'PSM1005', pallets: 6, cages: 10, tonnes: 1.7, status: 2, driver: 'guest10', driverId: 15, company: 'PSM Logistics', companyId: 1, created: '17 Jan 2022' },
+    { id: 6, plate: 'PSM1006', pallets: 16, cages: 24, tonnes: 5.0, status: 2, driver: 'guest11', driverId: 16, company: 'PSM Logistics', companyId: 1, created: '08 Nov 2023' },
+    { id: 7, plate: 'PSM1007', pallets: 8, cages: 12, tonnes: 2.4, status: 1, driver: 'guest12', driverId: 17, company: 'PSM Logistics', companyId: 1, created: '02 May 2023' },
+    { id: 8, plate: 'PSM1008', pallets: 12, cages: 18, tonnes: 3.5, status: 1, driver: 'guest13', driverId: 18, company: 'PSM Logistics', companyId: 1, created: '28 Sep 2022' },
+    { id: 9, plate: 'PSM1009', pallets: 16, cages: 24, tonnes: 5.0, status: 1, driver: 'guest14', driverId: 19, company: 'PSM Logistics', companyId: 1, created: '23 Oct 2021' },
+    { id: 10, plate: 'PSM1010', pallets: 6, cages: 10, tonnes: 1.7, status: 1, driver: 'guest15', driverId: 20, company: 'PSM Logistics', companyId: 1, created: '27 Jan 2023' },
+    { id: 11, plate: 'PSM1011', pallets: 8, cages: 12, tonnes: 2.4, status: 1, driver: 'guest16', driverId: 21, company: 'PSM Logistics', companyId: 1, created: '15 Aug 2022' },
     { id: 12, plate: 'PSM1012', pallets: 12, cages: 18, tonnes: 3.5, status: 3, driver: null, driverId: null, company: 'PSM Logistics', companyId: 1, created: '19 Jul 2022' },
-    { id: 13, plate: 'POL2001', pallets: 4, cages: 8, tonnes: 1.2, status: 2, driver: 'Aisyah Rahman', driverId: 22, company: 'Prime Online', companyId: 2, created: '30 Aug 2023' },
-    { id: 14, plate: 'POL2002', pallets: 4, cages: 8, tonnes: 1.2, status: 1, driver: 'Chua Mei Ling', driverId: 23, company: 'Prime Online', companyId: 2, created: '14 Jun 2023' },
-    { id: 15, plate: 'POL2003', pallets: 6, cages: 10, tonnes: 1.7, status: 1, driver: 'Nurul Huda', driverId: 24, company: 'Prime Online', companyId: 2, created: '06 Dec 2023' },
+    { id: 13, plate: 'POL2001', pallets: 4, cages: 8, tonnes: 1.2, status: 2, driver: 'guest17', driverId: 22, company: 'Prime Online', companyId: 2, created: '30 Aug 2023' },
+    { id: 14, plate: 'POL2002', pallets: 4, cages: 8, tonnes: 1.2, status: 1, driver: 'guest18', driverId: 23, company: 'Prime Online', companyId: 2, created: '14 Jun 2023' },
+    { id: 15, plate: 'POL2003', pallets: 6, cages: 10, tonnes: 1.7, status: 1, driver: 'guest19', driverId: 24, company: 'Prime Online', companyId: 2, created: '06 Dec 2023' },
     { id: 16, plate: 'POL2004', pallets: 4, cages: 8, tonnes: 1.2, status: 3, driver: null, driverId: null, company: 'Prime Online', companyId: 2, created: '05 Mar 2024' }
   ];
 
@@ -88,26 +88,26 @@ var DATA = (function () {
   ];
 
   var users = [
-    { id: 1, name: 'Maram Aashna', email: 'maram@psmlogistics.sg', role: 'super_admin', kind: 'super_admin', company: null, active: 1, created: '08 Jan 2024' },
-    { id: 2, name: 'Lena Fong', email: 'lena.fong@psmlogistics.sg', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 1, created: '14 Feb 2023' },
-    { id: 3, name: 'Marcus Teo', email: 'marcus.teo@psmlogistics.sg', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 1, created: '03 Apr 2023' },
-    { id: 4, name: 'Serene Goh', email: 'serene.goh@psmlogistics.sg', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 0, created: '22 Jun 2023' },
-    { id: 5, name: 'Grace Wong', email: 'grace.wong@primeonline.sg', role: 'pol_admin', kind: 'admin', company: 'Prime Online', active: 1, created: '26 May 2023' },
-    { id: 6, name: 'Benjamin Chia', email: 'ben.chia@primeonline.sg', role: 'pol_admin', kind: 'admin', company: 'Prime Online', active: 1, created: '19 Sep 2023' },
-    { id: 11, name: 'Rahim Osman', email: 'rahim.o@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '12 Mar 2023' },
-    { id: 12, name: 'Lim Kok Wai', email: 'kokwai.l@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '04 Jul 2023' },
-    { id: 13, name: 'Siti Nurhaliza', email: 'siti.n@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '21 Nov 2022' },
-    { id: 14, name: 'Prakash Menon', email: 'prakash.m@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '09 Feb 2024' },
-    { id: 15, name: 'Daniel Tan', email: 'daniel.t@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '17 Jan 2022' },
-    { id: 16, name: 'Ravi Kumar', email: 'ravi.k@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '08 Nov 2023' },
-    { id: 17, name: 'Jason Koh', email: 'jason.k@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '02 May 2023' },
-    { id: 18, name: 'Arun Raj', email: 'arun.r@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '28 Sep 2022' },
-    { id: 19, name: 'Ng Wei Sheng', email: 'weisheng.n@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '23 Oct 2021' },
-    { id: 20, name: 'Chee Keong Soh', email: 'cheekeong.s@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '27 Jan 2023' },
-    { id: 21, name: 'Farah Idris', email: 'farah.i@psmlogistics.sg', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '15 Aug 2022' },
-    { id: 22, name: 'Aisyah Rahman', email: 'aisyah.r@primeonline.sg', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '30 Aug 2023' },
-    { id: 23, name: 'Chua Mei Ling', email: 'meiling.c@primeonline.sg', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '14 Jun 2023' },
-    { id: 24, name: 'Nurul Huda', email: 'nurul.h@primeonline.sg', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '06 Dec 2023' }
+    { id: 1, name: 'Maram Aashna', email: 'maram@mail.com', role: 'super_admin', kind: 'super_admin', company: null, active: 1, created: '08 Jan 2024' },
+    { id: 2, name: 'guest1', email: 'guest1@mail.com', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 1, created: '14 Feb 2023' },
+    { id: 3, name: 'guest2', email: 'guest2@mail.com', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 1, created: '03 Apr 2023' },
+    { id: 4, name: 'guest3', email: 'guest3@mail.com', role: 'psm_admin', kind: 'admin', company: 'PSM Logistics', active: 0, created: '22 Jun 2023' },
+    { id: 5, name: 'guest4', email: 'guest4@mail.com', role: 'pol_admin', kind: 'admin', company: 'Prime Online', active: 1, created: '26 May 2023' },
+    { id: 6, name: 'guest5', email: 'guest5@mail.com', role: 'pol_admin', kind: 'admin', company: 'Prime Online', active: 1, created: '19 Sep 2023' },
+    { id: 11, name: 'guest6', email: 'guest6@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '12 Mar 2023' },
+    { id: 12, name: 'guest7', email: 'guest7@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '04 Jul 2023' },
+    { id: 13, name: 'guest8', email: 'guest8@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '21 Nov 2022' },
+    { id: 14, name: 'guest9', email: 'guest9@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '09 Feb 2024' },
+    { id: 15, name: 'guest10', email: 'guest10@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '17 Jan 2022' },
+    { id: 16, name: 'guest11', email: 'guest11@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '08 Nov 2023' },
+    { id: 17, name: 'guest12', email: 'guest12@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '02 May 2023' },
+    { id: 18, name: 'guest13', email: 'guest13@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '28 Sep 2022' },
+    { id: 19, name: 'guest14', email: 'guest14@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '23 Oct 2021' },
+    { id: 20, name: 'guest15', email: 'guest15@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '27 Jan 2023' },
+    { id: 21, name: 'guest16', email: 'guest16@mail.com', role: 'psm_driver', kind: 'driver', company: 'PSM Logistics', active: 1, created: '15 Aug 2022' },
+    { id: 22, name: 'guest17', email: 'guest17@mail.com', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '30 Aug 2023' },
+    { id: 23, name: 'guest18', email: 'guest18@mail.com', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '14 Jun 2023' },
+    { id: 24, name: 'guest19', email: 'guest19@mail.com', role: 'pol_driver', kind: 'driver', company: 'Prime Online', active: 1, created: '06 Dec 2023' }
   ];
 
   // Driver-raised SOS and breakdown reports. type and status are the portal's own
@@ -120,7 +120,7 @@ var DATA = (function () {
   // still with the rescue truck, never reassigned, stranded.
   var incidents = [
     {
-      id: 2291, type: 'breakdown', status: 'open', plate: 'PSM1012', driver: 'Arun Raj',
+      id: 2291, type: 'breakdown', status: 'open', plate: 'PSM1012', driver: 'guest13',
       raisedMins: 34, lat: 1.33920, lng: 103.69740,
       address: 'PIE towards Tuas, after exit 32, Singapore',
       note: 'Engine warning light, pulled onto the shoulder. Recovery called.',
@@ -134,11 +134,11 @@ var DATA = (function () {
       ]
     },
     {
-      id: 2290, type: 'accident', status: 'acknowledged', plate: 'PSM1004', driver: 'Prakash Menon',
+      id: 2290, type: 'accident', status: 'acknowledged', plate: 'PSM1004', driver: 'guest9',
       raisedMins: 71, lat: 1.43602, lng: 103.80014,
       address: 'Blk 682 Woodlands Dr 62, Singapore 730682',
       note: 'Clipped a bollard reversing into the bay. No injuries, tailgate dented.',
-      routeId: 4420, ackBy: 'Lena Fong',
+      routeId: 4420, ackBy: 'guest1',
       ackSecs: 420, reassignSecs: null, resolveSecs: null, lastDropSecs: null,
       stops: [
         { name: 'Woodlands Dr 62', code: 'WDL682', orders: [{ ref: 'DC-TO000791', pallets: 4, at: '08:14' }], outcome: 'delivered_before', arrived: '08:14' },
@@ -149,12 +149,12 @@ var DATA = (function () {
       ]
     },
     {
-      id: 2288, type: 'breakdown', status: 'reassigned', plate: 'PSM1010', driver: 'Chee Keong Soh',
+      id: 2288, type: 'breakdown', status: 'reassigned', plate: 'PSM1010', driver: 'guest15',
       raisedMins: 148, lat: 1.29503, lng: 103.80612,
       address: 'Blk 52 Stirling Rd, Singapore 141052',
       note: 'Tail lift jammed half down, cannot unload the cages.',
-      routeId: 4412, ackBy: 'Marcus Teo',
-      newRouteId: 4423, newPlate: 'PSM1009', newDriver: 'Ng Wei Sheng', newStatus: 'in progress',
+      routeId: 4412, ackBy: 'guest2',
+      newRouteId: 4423, newPlate: 'PSM1009', newDriver: 'guest14', newStatus: 'in progress',
       rescueStart: '09:05', rescueEnd: null,
       ackSecs: 240, reassignSecs: 1380, resolveSecs: null, lastDropSecs: 5760, rescueDriveSecs: 3900,
       stops: [
@@ -164,11 +164,11 @@ var DATA = (function () {
       ]
     },
     {
-      id: 2287, type: 'other', status: 'resolved', plate: 'POL2001', driver: 'Aisyah Rahman',
+      id: 2287, type: 'other', status: 'resolved', plate: 'POL2001', driver: 'guest17',
       raisedMins: 1140, lat: 1.31604, lng: 103.89802,
       address: '1 Geylang Serai, Singapore 402001',
       note: 'Loading bay taken by a third party truck for 40 minutes.',
-      routeId: 4405, ackBy: 'Grace Wong', resolvedBy: 'Grace Wong',
+      routeId: 4405, ackBy: 'guest4', resolvedBy: 'guest4',
       resolution: 'Bay cleared, run finished 38 minutes late. No reassignment needed.',
       ackSecs: 180, reassignSecs: null, resolveSecs: 3060, lastDropSecs: 2820,
       stops: [
@@ -176,12 +176,12 @@ var DATA = (function () {
       ]
     },
     {
-      id: 2284, type: 'medical', status: 'resolved', plate: 'PSM1005', driver: 'Daniel Tan',
+      id: 2284, type: 'medical', status: 'resolved', plate: 'PSM1005', driver: 'guest10',
       raisedMins: 1620, lat: 1.36248, lng: 103.75617,
       address: 'Hillview Ave, Singapore',
       note: 'Driver felt faint, stopped and called it in.',
-      routeId: 4401, ackBy: 'Lena Fong', resolvedBy: 'Lena Fong',
-      newRouteId: 4402, newPlate: 'PSM1009', newDriver: 'Ng Wei Sheng', newStatus: 'completed',
+      routeId: 4401, ackBy: 'guest1', resolvedBy: 'guest1',
+      newRouteId: 4402, newPlate: 'PSM1009', newDriver: 'guest14', newStatus: 'completed',
       rescueStart: '10:20', rescueEnd: '11:44',
       resolution: 'Relief driver sent out, remaining stops completed by PSM1009.',
       ackSecs: 120, reassignSecs: 900, resolveSecs: 7200, lastDropSecs: 6240, rescueDriveSecs: 5040,
@@ -195,42 +195,51 @@ var DATA = (function () {
   // Routes running right now. next is the stop the truck is heading for.
   var live = [
     {
-      id: 4417, plate: 'PSM1001', driver: 'Rahim Osman', visited: 4, depot: 'Joo Koon Warehouse',
+      id: 4417, plate: 'PSM1001', driver: 'guest6', visited: 4, depot: 'Joo Koon Warehouse',
       at: [1.3521, 103.8298], speed: 46, seenMinsAgo: 0, start: '06:48', end: '12:10',
       stops: ['Clementi Ave 3', 'Queenstown Blk 52', 'Tiong Bahru Plaza', 'Toa Payoh Lor 4', 'Ang Mo Kio Ave 10', 'Yishun Ring Rd']
     },
     {
-      id: 4418, plate: 'PSM1002', driver: 'Lim Kok Wai', visited: 2, depot: 'Defu Warehouse',
+      id: 4418, plate: 'PSM1002', driver: 'guest7', visited: 2, depot: 'Defu Warehouse',
       at: [1.3400, 103.9200], speed: 38, seenMinsAgo: 1, start: '07:02', end: '11:40',
       stops: ['Bedok North St 4', 'Tampines St 81', 'Pasir Ris Dr 6', 'Simei St 3', 'Hougang Ave 8']
     },
     {
-      id: 4419, plate: 'PSM1003', driver: 'Siti Nurhaliza', visited: 4, depot: 'Joo Koon Warehouse',
+      id: 4419, plate: 'PSM1003', driver: 'guest8', visited: 4, depot: 'Joo Koon Warehouse',
       at: [1.3260, 103.7600], speed: 0, seenMinsAgo: 2, start: '06:31', end: '10:55',
       stops: ['Jurong West St 52', 'Boon Lay Way', 'Clementi Ave 3', 'Bukit Batok St 21']
     },
     {
-      id: 4420, plate: 'PSM1004', driver: 'Prakash Menon', visited: 1, depot: 'Defu Warehouse',
+      id: 4420, plate: 'PSM1004', driver: 'guest9', visited: 1, depot: 'Defu Warehouse',
       at: [1.4100, 103.8200], speed: 0, seenMinsAgo: 12, start: '07:20', end: '12:45',
       stops: ['Woodlands Dr 62', 'Admiralty Dr', 'Yishun Ring Rd', 'Ang Mo Kio Ave 10', 'Bishan St 13']
     },
     {
-      id: 4422, plate: 'PSM1006', driver: 'Ravi Kumar', visited: 5, depot: 'Joo Koon Warehouse',
+      id: 4422, plate: 'PSM1006', driver: 'guest11', visited: 5, depot: 'Joo Koon Warehouse',
       at: [1.3800, 103.7600], speed: 52, seenMinsAgo: 0, start: '06:15', end: '13:05',
       stops: ['Bukit Batok St 21', 'Jurong West St 52', 'Boon Lay Way', 'Clementi Ave 3', 'Woodlands Dr 62', 'Admiralty Dr']
     },
     {
-      id: 4423, plate: 'PSM1009', driver: 'Ng Wei Sheng', visited: 2, depot: 'Joo Koon Warehouse',
+      id: 4423, plate: 'PSM1009', driver: 'guest14', visited: 2, depot: 'Joo Koon Warehouse',
       at: [1.2960, 103.8180], speed: 31, seenMinsAgo: 0, start: '09:05', end: '12:30',
       rescueFor: 'PSM1010',
       stops: ['Queenstown Blk 52', 'Tiong Bahru Plaza', 'Toa Payoh Lor 4']
     },
     {
-      id: 4424, plate: 'POL2001', driver: 'Aisyah Rahman', visited: 3, depot: 'Defu Warehouse',
+      id: 4424, plate: 'POL2001', driver: 'guest17', visited: 3, depot: 'Defu Warehouse',
       at: [1.3050, 103.9000], speed: 24, seenMinsAgo: 1, start: '08:10', end: '12:20',
       stops: ['Geylang Serai', 'Bedok North St 4', 'Simei St 3', 'Hougang Ave 8']
     }
   ];
+
+  // Assigned but not started: the dispatcher built it, the driver has not set
+  // off. This is what the driver app opens to, and why PSM1009 still reads as
+  // idle on the board — a pending route is not an active one.
+  var pending = {
+    id: 4425, plate: 'PSM1009', driver: 'guest14', depot: 'Joo Koon Warehouse',
+    stops: ['Clementi Ave 3', 'Queenstown Blk 52', 'Tiong Bahru Plaza',
+            'Toa Payoh Lor 4', 'Ang Mo Kio Ave 10', 'Yishun Ring Rd']
+  };
 
   // Finished trips, with the arrival time at every stop for the playback and the
   // per-stop delivery outcome the Deliveries tab shows. status is the delivery
@@ -239,11 +248,11 @@ var DATA = (function () {
   // driver, which is the whole point of keeping both sides.
   var history = [
     {
-      id: 4412, plate: 'PSM1010', driver: 'Chee Keong Soh', date: '19 Sep 2026', start: '06:44', end: '09:26',
+      id: 4412, plate: 'PSM1010', driver: 'guest15', date: '19 Sep 2026', start: '06:44', end: '09:26',
       avgSpeed: 29, maxSpeed: 71, depot: 'Joo Koon Warehouse',
       stops: [
         { name: 'Queenstown Blk 52', code: 'QTN052', at: '07:58', dwell: 1140, leg: 4440,
-          receipt: { by: 'Siti (outlet)', at: '08:02', note: 'All cages checked in', photos: 2 },
+          receipt: { by: 'guest28 (outlet)', at: '08:02', note: 'All cages checked in', photos: 2 },
           orders: [{ ref: 'DC-TO000772', platform: 'DC60', shipment: 'AM', items: 14, qty: 132, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Tiong Bahru Plaza', code: 'TBH302', at: '09:26', dwell: 900, leg: 4140,
           receipt: null,
@@ -251,7 +260,7 @@ var DATA = (function () {
       ]
     },
     {
-      id: 4405, plate: 'POL2001', driver: 'Aisyah Rahman', date: '19 Sep 2026', start: '13:15', end: '16:02',
+      id: 4405, plate: 'POL2001', driver: 'guest17', date: '19 Sep 2026', start: '13:15', end: '16:02',
       avgSpeed: 26, maxSpeed: 64, depot: 'Defu Warehouse',
       stops: [
         { name: 'Geylang Serai', code: 'GYL001', at: '14:20', dwell: 1500, leg: 2400,
@@ -266,59 +275,59 @@ var DATA = (function () {
       ]
     },
     {
-      id: 4401, plate: 'PSM1005', driver: 'Daniel Tan', date: '19 Sep 2026', start: '06:31', end: '12:08',
+      id: 4401, plate: 'PSM1005', driver: 'guest10', date: '19 Sep 2026', start: '06:31', end: '12:08',
       avgSpeed: 33, maxSpeed: 78, depot: 'Joo Koon Warehouse',
       stops: [
         { name: 'Bukit Batok St 21', code: 'BKB210', at: '07:10', dwell: 1320, leg: 2340,
-          receipt: { by: 'Rosli (outlet)', at: '07:15', note: '', photos: 1 },
+          receipt: { by: 'guest29 (outlet)', at: '07:15', note: '', photos: 1 },
           orders: [{ ref: 'DC-TO000751', platform: 'DC60', shipment: 'AM', items: 21, qty: 204, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Jurong West St 52', code: 'JRW505', at: '08:02', dwell: 1560, leg: 1800,
-          receipt: { by: 'Kamala (outlet)', at: '08:08', note: '', photos: 2 },
+          receipt: { by: 'guest30 (outlet)', at: '08:08', note: '', photos: 2 },
           orders: [{ ref: 'DC-TO000754', platform: 'DC60', shipment: 'AM', items: 18, qty: 176, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Boon Lay Way', code: 'BNL221', at: '08:55', dwell: 1140, leg: 2040,
-          receipt: { by: 'Jeremy (outlet)', at: '08:59', note: '', photos: 1 },
+          receipt: { by: 'guest31 (outlet)', at: '08:59', note: '', photos: 1 },
           orders: [{ ref: 'DF-TO000301', platform: 'DEFU', shipment: 'AM', items: 11, qty: 64, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Clementi Ave 3', code: 'CLE443', at: '09:44', dwell: 1020, leg: 1920,
           receipt: null,
           orders: [{ ref: 'DC-TO000758', platform: 'DC60', shipment: 'PM', items: 16, qty: 143, driver: 'Delivered', status: 'awaiting_confirmation' }] },
         { name: 'Woodlands Dr 62', code: 'WDL682', at: '11:02', dwell: 1380, leg: 3480,
-          receipt: { by: 'Faizal (outlet)', at: '11:09', note: '', photos: 2 },
+          receipt: { by: 'guest32 (outlet)', at: '11:09', note: '', photos: 2 },
           orders: [{ ref: 'DC-TO000762', platform: 'DC60', shipment: 'PM', items: 24, qty: 231, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Admiralty Dr', code: 'ADM465', at: '12:08', dwell: 900, leg: 2580,
-          receipt: { by: 'Wati (outlet)', at: '12:12', note: '', photos: 1 },
+          receipt: { by: 'guest33 (outlet)', at: '12:12', note: '', photos: 1 },
           orders: [{ ref: 'DF-TO000305', platform: 'DEFU', shipment: 'PM', items: 7, qty: 42, driver: 'Delivered', status: 'confirmed' }] }
       ]
     },
     {
-      id: 4398, plate: 'PSM1002', driver: 'Lim Kok Wai', date: '18 Sep 2026', start: '07:02', end: '10:41',
+      id: 4398, plate: 'PSM1002', driver: 'guest7', date: '18 Sep 2026', start: '07:02', end: '10:41',
       avgSpeed: 31, maxSpeed: 69, depot: 'Defu Warehouse',
       stops: [
         { name: 'Bedok North St 4', code: 'BDK087', at: '08:05', dwell: 1260, leg: 2520,
-          receipt: { by: 'Hakim (outlet)', at: '08:10', note: '', photos: 1 },
+          receipt: { by: 'guest34 (outlet)', at: '08:10', note: '', photos: 1 },
           orders: [{ ref: 'DF-TO000288', platform: 'DEFU', shipment: 'AM', items: 13, qty: 97, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Tampines St 81', code: 'TMP826', at: '08:47', dwell: 1080, leg: 1440,
-          receipt: { by: 'Angela (outlet)', at: '08:52', note: '', photos: 1 },
+          receipt: { by: 'guest35 (outlet)', at: '08:52', note: '', photos: 1 },
           orders: [{ ref: 'DF-TO000291', platform: 'DEFU', shipment: 'AM', items: 10, qty: 71, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Pasir Ris Dr 6', code: 'PSR416', at: '09:33', dwell: 960, leg: 1800,
-          receipt: { by: 'Sandra (outlet)', at: '09:41', note: 'Counted twice, still two cases short', photos: 3 },
+          receipt: { by: 'guest36 (outlet)', at: '09:41', note: 'Counted twice, still two cases short', photos: 3 },
           orders: [{ ref: 'DC-TO000744', platform: 'DC60', shipment: 'AM', items: 19, qty: 168, driver: 'Delivered', status: 'disputed', issueType: 'short_qty', issueQty: 2, issueNote: 'Outlet counted 2 cases short' }] },
         { name: 'Simei St 3', code: 'SME248', at: '10:41', dwell: 840, leg: 3120,
-          receipt: { by: 'Terence (outlet)', at: '10:45', note: '', photos: 1 },
+          receipt: { by: 'guest37 (outlet)', at: '10:45', note: '', photos: 1 },
           orders: [{ ref: 'DC-TO000747', platform: 'DC60', shipment: 'PM', items: 12, qty: 105, driver: 'Delivered', status: 'confirmed' }] }
       ]
     },
     {
-      id: 4396, plate: 'PSM1006', driver: 'Ravi Kumar', date: '18 Sep 2026', start: '06:15', end: '11:58',
+      id: 4396, plate: 'PSM1006', driver: 'guest11', date: '18 Sep 2026', start: '06:15', end: '11:58',
       avgSpeed: 35, maxSpeed: 82, depot: 'Joo Koon Warehouse',
       stops: [
         { name: 'Ang Mo Kio Ave 10', code: 'AMK452', at: '07:36', dwell: 1440, leg: 3360,
-          receipt: { by: 'Mei Yee (outlet)', at: '07:42', note: '', photos: 2 },
+          receipt: { by: 'guest38 (outlet)', at: '07:42', note: '', photos: 2 },
           orders: [{ ref: 'DC-TO000731', platform: 'DC60', shipment: 'AM', items: 27, qty: 288, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Bishan St 13', code: 'BSN511', at: '08:41', dwell: 1200, leg: 2460,
-          receipt: { by: 'Raj (outlet)', at: '08:47', note: '', photos: 1 },
+          receipt: { by: 'guest39 (outlet)', at: '08:47', note: '', photos: 1 },
           orders: [{ ref: 'DC-TO000734', platform: 'DC60', shipment: 'AM', items: 15, qty: 122, driver: 'Delivered', status: 'confirmed' }] },
         { name: 'Toa Payoh Lor 4', code: 'TPY079', at: '09:52', dwell: 1320, leg: 2940,
-          receipt: { by: 'Lin (outlet)', at: '09:58', note: 'One tray of eggs cracked', photos: 2 },
+          receipt: { by: 'guest40 (outlet)', at: '09:58', note: 'One tray of eggs cracked', photos: 2 },
           orders: [{ ref: 'DF-TO000279', platform: 'DEFU', shipment: 'AM', items: 8, qty: 55, driver: 'Delivered', status: 'disputed', issueType: 'damaged', issueQty: 1, issueNote: 'One tray of eggs cracked in transit' }] },
         { name: 'Yishun Ring Rd', code: 'YSH846', at: null, dwell: null, leg: 6180,
           receipt: null,
@@ -351,14 +360,14 @@ var DATA = (function () {
   // geo false is a row whose address the geocoder could not pin, which the board
   // refuses to dispatch until somebody fixes it.
   var polOrders = [
-    { ref: 'POL-20260920-0051', customer: 'Tan Wei Ming', address: 'Blk 214 Bishan St 23, #08-142', postal: '570214', slot: 'AM', skus: ['MLK-1L', 'EGG-30', 'RCE-5KG'], items: 3, qty: 9, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0052', customer: 'Nadia Ismail', address: '18 Sunset Way, #02-07', postal: '597071', slot: 'AM', skus: ['VEG-BOX', 'CHK-1KG'], items: 2, qty: 5, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0053', customer: 'Jonathan Lau', address: 'Blk 682 Hougang Ave 8, #11-233', postal: '530682', slot: 'PM', skus: ['MLK-1L', 'BRD-WHL', 'JUI-2L', 'SNK-MIX'], items: 4, qty: 12, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0054', customer: 'Priya Balan', address: 'Blk 416 Pasir Ris Dr 6, #05-88', postal: '510416', slot: 'PM', skus: ['FRZ-PACK', 'ICE-2L'], items: 2, qty: 6, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0055', customer: 'Goh Siew Lan', address: '7 Jalan Kelabu Asap', postal: '278201', slot: 'AM', skus: ['RCE-5KG', 'OIL-2L', 'SUG-2KG'], items: 3, qty: 7, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0056', customer: 'Marcus Ferreira', address: 'Blk 52 Stirling Rd, #14-311', postal: '141052', slot: 'PM', skus: ['VEG-BOX'], items: 1, qty: 2, pallets: 1, geo: true },
-    { ref: 'POL-20260920-0057', customer: 'Hafizah Salleh', address: 'unit 9, lorong 3 (no block given)', postal: '', slot: 'AM', skus: ['MLK-1L', 'EGG-30'], items: 2, qty: 4, pallets: 1, geo: false },
-    { ref: 'POL-20260920-0058', customer: 'Chen Yu Han', address: 'Blk 826 Tampines St 81, #03-19', postal: '520826', slot: 'PM', skus: ['CHK-1KG', 'FRZ-PACK', 'JUI-2L'], items: 3, qty: 8, pallets: 1, geo: true }
+    { ref: 'POL-20260920-0051', customer: 'guest20', address: 'Blk 214 Bishan St 23, #08-142', postal: '570214', slot: 'AM', skus: ['MLK-1L', 'EGG-30', 'RCE-5KG'], items: 3, qty: 9, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0052', customer: 'guest21', address: '18 Sunset Way, #02-07', postal: '597071', slot: 'AM', skus: ['VEG-BOX', 'CHK-1KG'], items: 2, qty: 5, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0053', customer: 'guest22', address: 'Blk 682 Hougang Ave 8, #11-233', postal: '530682', slot: 'PM', skus: ['MLK-1L', 'BRD-WHL', 'JUI-2L', 'SNK-MIX'], items: 4, qty: 12, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0054', customer: 'guest23', address: 'Blk 416 Pasir Ris Dr 6, #05-88', postal: '510416', slot: 'PM', skus: ['FRZ-PACK', 'ICE-2L'], items: 2, qty: 6, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0055', customer: 'guest24', address: '7 Jalan Kelabu Asap', postal: '278201', slot: 'AM', skus: ['RCE-5KG', 'OIL-2L', 'SUG-2KG'], items: 3, qty: 7, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0056', customer: 'guest25', address: 'Blk 52 Stirling Rd, #14-311', postal: '141052', slot: 'PM', skus: ['VEG-BOX'], items: 1, qty: 2, pallets: 1, geo: true },
+    { ref: 'POL-20260920-0057', customer: 'guest26', address: 'unit 9, lorong 3 (no block given)', postal: '', slot: 'AM', skus: ['MLK-1L', 'EGG-30'], items: 2, qty: 4, pallets: 1, geo: false },
+    { ref: 'POL-20260920-0058', customer: 'guest27', address: 'Blk 826 Tampines St 81, #03-19', postal: '520826', slot: 'PM', skus: ['CHK-1KG', 'FRZ-PACK', 'JUI-2L'], items: 3, qty: 8, pallets: 1, geo: true }
   ];
 
   // The sheets somebody has already put through the importer.
@@ -434,7 +443,7 @@ var DATA = (function () {
   return {
     companies: companies, warehouses: warehouses, outlets: outlets, places: places,
     vehicles: vehicles, users: users, roles: roles, incidents: incidents,
-    live: live, history: history,
+    live: live, pending: pending, history: history,
     transferOrders: transferOrders, committedOrders: committedOrders, lockedOrders: lockedOrders,
     polOrders: polOrders, polBatches: polBatches,
     place: place, vehicle: vehicle, coords: coords, routeLine: routeLine,

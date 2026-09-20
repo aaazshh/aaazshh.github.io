@@ -79,6 +79,7 @@
   <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="tiles.js"></script>
   <script>
     'use strict';
 
@@ -165,9 +166,7 @@
     /* ---- map ---- */
 
     var map = L.map('cc-map', { zoomControl: true }).setView([1.3521, 103.8198], 11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 19
-    }).addTo(map);
+    basemap(map);
 
     var keyDiv = null;
     var key = L.control({ position: 'bottomleft' });

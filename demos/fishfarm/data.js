@@ -117,9 +117,9 @@ var DATA = (function () {
   ];
 
   var people = [
-    { name: 'Siti Nurhaliza', role: 'Farm supervisor', farm: 1 },
-    { name: 'Hafiz Yusof', role: 'Farm hand', farm: 1 },
-    { name: 'Ramesh Kumar', role: 'Farm hand', farm: 2 },
+    { name: 'guest8', role: 'Farm supervisor', farm: 1 },
+    { name: 'guest41', role: 'Farm hand', farm: 1 },
+    { name: 'guest42', role: 'Farm hand', farm: 2 },
     { name: 'Maram Aashna', role: 'Admin', farm: null }
   ];
 

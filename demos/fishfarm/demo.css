@@ -1,0 +1,48 @@
+/* argon-dashboard.min.css, brand.css and ff-ocean.css are the real portal's
+   own stylesheets, lifted out of the project. What is left over lives here:
+   the toast that explains what is not wired up, and the two sidebar bits the
+   real app gets from Bootstrap's JS rather than from CSS. */
+
+.demo-note {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 12px);
+  max-width: 460px;
+  padding: 11px 16px;
+  border-radius: 8px;
+  background: #172b4d;
+  color: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 9000;
+}
+.demo-note.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* The collapse arrow Bootstrap would rotate for us. */
+.sidenav .nav-link[data-collapse] { position: relative; }
+.sidenav .nav-link[data-collapse]::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -4px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.5;
+  transition: transform 180ms ease;
+}
+.sidenav .nav-link[data-collapse][aria-expanded="true"]::after {
+  transform: rotate(-135deg);
+  margin-top: -1px;
+}
+
+/* A submenu is a plain list here, so it needs the indent the real one gets
+   from Argon's nav-sm rules. */
+.sidenav .submenu .nav-link { padding-left: 1.75rem; }

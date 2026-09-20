@@ -3,152 +3,298 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home, Fish Farm</title>
+  <title>Daily Report, Fish Farm</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="brand.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+  <link id="pagestyle" href="assets/css/argon-dashboard.min.css" rel="stylesheet">
+  <link href="assets/css/brand.css" rel="stylesheet">
+  <link href="assets/css/ff-ocean.css" rel="stylesheet">
+  <link rel="stylesheet" href="demo.css">
 </head>
-<body data-page="index" data-title="Home" data-sub="Fish Farm">
+<body class="g-sidenav-show bg-gray-100" data-page="index" data-title="Daily Report" data-crumb="Daily Report">
 
   <div id="content">
-    <div class="grid g4" id="stats"></div>
 
-    <div class="grid g2" style="margin-top:16px;">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>7 day dead fish trend</h2><p>Every cage, every farm</p></div>
-          <span class="pill warn" id="spike"></span>
+    <!-- The dashboard's own tabs, the same three reports the CMS had. -->
+    <ul class="nav nav-pills mb-4">
+      <li class="nav-item"><a class="nav-link text-sm active" href="index.html">Daily Report</a></li>
+      <li class="nav-item"><a class="nav-link text-sm" href="cages.html">Map Report</a></li>
+      <li class="nav-item"><a class="nav-link text-sm" href="#" data-unbuilt="Comparison Report">Comparison Report</a></li>
+    </ul>
+
+    <!-- Analytics that go beyond what the legacy CMS could answer. -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+      <span class="text-xs text-secondary text-uppercase font-weight-bold me-1">Insights</span>
+      <a href="performance.html" class="btn btn-sm btn-outline-primary mb-0"><i class="fa fa-scale-balanced me-1"></i> Production Performance</a>
+      <a href="#" data-unbuilt="Cost and Margin" class="btn btn-sm btn-outline-success mb-0"><i class="fa fa-sack-dollar me-1"></i> Cost &amp; Margin</a>
+      <a href="#" data-unbuilt="Environment Impact" class="btn btn-sm btn-outline-info mb-0"><i class="fa fa-magnifying-glass-chart me-1"></i> Environment Impact</a>
+    </div>
+
+    <!-- Alerts are computed, not stored: a mortality spike, a cage nobody fed,
+         an incident still open. -->
+    <div class="row mb-2">
+      <div class="col-12">
+        <div class="card border-0" style="background:transparent;box-shadow:none;">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-bell text-warning me-2"></i>
+            <h6 class="mb-0">Alerts <span class="badge bg-gradient-warning ms-1" id="alert-count">0</span></h6>
+          </div>
+          <div class="row" id="alerts"></div>
         </div>
-        <div class="card-body"><div class="bars" id="dead-bars"></div></div>
       </div>
+    </div>
 
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Feed, 7 day trend</h2><p>Kilos out of the store</p></div>
-          <span class="pill" id="feed-week"></span>
+    <div class="row" id="kpis"></div>
+
+    <div class="row mt-4">
+      <div class="col-lg-7 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">Daily Report, Dead Fish by Farm &amp; Species</h6>
+          </div>
+          <div class="card-body px-0 pt-3 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Farm</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Cage</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Species</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pieces</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cause</th>
+                  </tr>
+                </thead>
+                <tbody id="dead-today"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <div class="card-body"><div class="bars" id="feed-bars"></div></div>
+      </div>
+
+      <div class="col-lg-5 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">7-day Dead Fish Trend</h6>
+          </div>
+          <div class="card-body p-3">
+            <div style="height:180px;"><canvas id="deadTrendChart"></canvas></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="grid g2" style="margin-top:16px;">
-      <div class="card">
-        <div class="card-head"><div><h2>Mortality by species</h2><p>This week, by head count</p></div></div>
-        <div class="card-body"><div id="by-species"></div></div>
+    <div class="row">
+      <div class="col-lg-5 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">Mortality by Species</h6>
+          </div>
+          <div class="card-body p-3">
+            <div style="height:260px;"><canvas id="speciesDonut"></canvas></div>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="card-head"><div><h2>Needs a look</h2><p>What the logs are flagging this morning</p></div></div>
-        <div class="card-body"><div id="attention"></div></div>
+      <div class="col-lg-7 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">Feed, 7-day Trend</h6>
+          </div>
+          <div class="card-body p-3">
+            <div style="height:260px;"><canvas id="feedTrendChart"></canvas></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px;">
-      <div class="card-head">
-        <div><h2>Recent dead fish activity</h2><p>Straight off the app, as the crew log it</p></div>
-        <a class="btn ghost sm" href="mortality.html">See all</a>
+    <div class="row">
+      <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">Recent Dead Fish Activity</h6>
+          </div>
+          <div class="card-body px-0 pt-3 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cage</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Species</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pieces</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reported</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">By</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-dead"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="wrap">
-        <table>
-          <thead><tr><th>Logged</th><th>Cage</th><th>Species</th><th class="num">Count</th><th>Clinical sign</th><th>By</th></tr></thead>
-          <tbody id="recent"></tbody>
-        </table>
+
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0">Quick Actions</h6>
+          </div>
+          <div class="card-body p-3 d-grid gap-2">
+            <a href="#" data-unbuilt="Add Dead Fish" class="btn bg-gradient-danger mb-0"><i class="fa fa-skull me-1"></i> Add Dead Fish</a>
+            <a href="feed.html" class="btn bg-gradient-success mb-0"><i class="fa fa-wheat-awn me-1"></i> Record Feed</a>
+            <a href="#" data-unbuilt="Add Production" class="btn bg-gradient-primary mb-0"><i class="fa fa-water me-1"></i> Add Production</a>
+            <a href="incidents.html" class="btn bg-gradient-warning mb-0"><i class="fa fa-triangle-exclamation me-1"></i> Raise Incident</a>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 
   <script src="data.js"></script>
   <script src="shell.js"></script>
+  <script src="assets/js/ff-ocean.js"></script>
+  <script src="assets/js/ff-ocean-page.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script>
     'use strict';
 
+    var TEAL = '#0b6e8f';
+    var TEAL2 = '#11a8b5';
+
+    /* ---- alerts ---- */
+
+    var alerts = [
+      { level: 'danger', icon: 'fa-skull', title: 'Mortality spike in C-04',
+        detail: '87 pieces on Friday, 3.4 times the 7 day average', link: 'mortality.html' },
+      { level: 'warning', icon: 'fa-wheat-awn', title: 'C-07 not fed today',
+        detail: 'Last feeding recorded 31 hours ago', link: 'feed.html' },
+      { level: 'info', icon: 'fa-triangle-exclamation', title: '1 incident still open',
+        detail: 'Net tear on C-02, reported yesterday', link: 'incidents.html' }
+    ];
+
+    document.getElementById('alert-count').textContent = alerts.length;
+    document.getElementById('alerts').innerHTML = alerts.map(function (a) {
+      return '<div class="col-lg-4 col-md-6 mb-3">' +
+        '<a href="' + a.link + '" class="text-decoration-none">' +
+        '<div class="card h-100"><div class="card-body p-3 d-flex align-items-start">' +
+        '<div class="icon icon-shape icon-sm bg-gradient-' + a.level +
+        ' text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">' +
+        '<i class="fas ' + a.icon + '"></i></div>' +
+        '<div><p class="text-sm font-weight-bold mb-1 text-dark">' + a.title + '</p>' +
+        '<p class="text-xs text-secondary mb-0">' + a.detail + '</p></div>' +
+        '</div></div></a></div>';
+    }).join('');
+
+    /* ---- KPI cards ---- */
+
     var t = DATA.totals();
 
-    var ICON = {
-      fish: '<path d="M3 12c3.5-5 8-7 12-7 2.7 0 4.6 1 6 2-1.4 1-3.3 2-6 2"></path><path d="M3 12c3.5 5 8 7 12 7 2.7 0 4.6-1 6-2-1.4-1-3.3-2-6-2"></path>',
-      dead: '<circle cx="12" cy="12" r="9"></circle><path d="m9 9 2.5 2.5M14.5 9 12 11.5"></path><path d="M9 16h6"></path>',
-      feed: '<path d="M5 7h14l-1.2 12.2A2 2 0 0 1 15.8 21H8.2a2 2 0 0 1-2-1.8z"></path><path d="M9 7V5a3 3 0 0 1 6 0v2"></path>',
-      scale: '<path d="M12 3v18"></path><path d="M5 7h14"></path><path d="m5 7-2.5 6h5z"></path><path d="m19 7-2.5 6h5z"></path>'
-    };
+    var kpis = [
+      { label: 'Active Productions', value: t.active, note: 'ongoing stocking batches', icon: 'fa-water', tone: 'primary' },
+      { label: 'Dead Fish Today', value: t.deadToday, note: 'pieces reported today', icon: 'fa-skull', tone: 'danger' },
+      { label: 'Feed Today', value: t.feedToday.toFixed(2) + ' kg', note: 'total feed dispensed', icon: 'fa-wheat-awn', tone: 'success' },
+      { label: 'Active Species', value: t.species, note: 'distinct fish species', icon: 'fa-fish', tone: 'info' }
+    ];
 
-    function stat(label, value, sub, ico, tone) {
-      return '<div class="card"><div class="stat">' +
-        '<div><div class="label">' + label + '</div><div class="value">' + value + '</div><div class="sub">' + sub + '</div></div>' +
-        '<div class="tile ' + (tone || '') + '"><svg viewBox="0 0 24 24">' + ICON[ico] + '</svg></div>' +
-        '</div></div>';
-    }
-
-    document.getElementById('stats').innerHTML =
-      stat('Active cages', t.active + ' of ' + t.cages, t.species + ' species in the water', 'fish') +
-      stat('Stock on hand', (t.stock / 1000).toFixed(1) + 'k', t.biomass.toLocaleString() + ' kg biomass', 'scale', 'deep') +
-      stat('Dead fish today', t.deadToday, 'Across 2 cages', 'dead', 'bad') +
-      stat('Feed today', t.feedToday + ' kg', 'Morning and noon rounds', 'feed', 'warn');
-
-    function bars(into, values, labels, unit) {
-      var max = Math.max.apply(null, values);
-      document.getElementById(into).innerHTML = values.map(function (v, i) {
-        return '<div><b style="font-size:11.5px;">' + v + (unit || '') + '</b>' +
-          '<i style="height:' + Math.round(v / max * 110) + 'px"></i>' +
-          '<span>' + labels[i] + '</span></div>';
-      }).join('');
-    }
-
-    bars('dead-bars', DATA.deadTrend, DATA.days);
-    bars('feed-bars', DATA.feedTrend, DATA.days);
-
-    var worst = Math.max.apply(null, DATA.deadTrend);
-    document.getElementById('spike').textContent = 'Peak ' + worst + ' on ' + DATA.days[DATA.deadTrend.indexOf(worst)];
-    document.getElementById('feed-week').textContent =
-      DATA.feedTrend.reduce(function (a, b) { return a + b; }, 0).toLocaleString() + ' kg this week';
-
-    // Mortality grouped by species, drawn as a share bar rather than a chart:
-    // seven rows do not need a canvas.
-    var bySpecies = {};
-    DATA.mortality.forEach(function (m) {
-      bySpecies[m.species] = (bySpecies[m.species] || 0) + m.count;
-    });
-    var rows = Object.keys(bySpecies).map(function (k) { return [k, bySpecies[k]]; })
-      .sort(function (a, b) { return b[1] - a[1]; });
-    var most = rows[0][1];
-
-    document.getElementById('by-species').innerHTML = rows.map(function (r) {
-      var f = DATA.fish(r[0]);
-      return '<div style="display:grid;grid-template-columns:1fr auto;gap:4px;margin-bottom:12px;">' +
-        '<div style="font-size:13.5px;">' + r[0] + ' <span class="dim">' + (f ? f.cn : '') + '</span></div>' +
-        '<div class="num" style="font-size:13.5px;font-weight:600;">' + r[1] + '</div>' +
-        '<div style="grid-column:1/3;height:7px;border-radius:4px;background:var(--ff-pale);overflow:hidden;">' +
-          '<span style="display:block;height:100%;width:' + (r[1] / most * 100) + '%;background:linear-gradient(90deg,var(--ff-bright),var(--ff-teal));"></span>' +
-        '</div></div>';
+    document.getElementById('kpis').innerHTML = kpis.map(function (k, i) {
+      return '<div class="col-xl-3 col-sm-6' + (i < 3 ? ' mb-xl-0 mb-4' : '') + '">' +
+        '<div class="card"><div class="card-body p-3"><div class="row">' +
+        '<div class="col-8">' +
+        '<p class="text-sm mb-0 text-uppercase font-weight-bold">' + k.label + '</p>' +
+        '<h5 class="font-weight-bolder mb-0">' + k.value + '</h5>' +
+        '<span class="text-xs text-secondary">' + k.note + '</span>' +
+        '</div>' +
+        '<div class="col-4 text-end">' +
+        '<div class="icon icon-shape bg-gradient-' + k.tone + ' shadow-' + k.tone +
+        ' text-center rounded-circle"><i class="fa ' + k.icon + ' text-lg opacity-10" aria-hidden="true"></i></div>' +
+        '</div></div></div></div></div>';
     }).join('');
 
-    // What the records are actually shouting about this morning.
-    var flags = [];
-    DATA.cages.forEach(function (c) {
-      if (c.status === 'Treatment') flags.push(['bad', 'Cage ' + c.name, 'Under treatment, mortality up three days running']);
-      if (c.status === 'Net repair') flags.push(['warn', 'Cage ' + c.name, 'Net torn, cage isolated until the divers are down']);
-      if (c.status === 'Near harvest') flags.push(['good', 'Cage ' + c.name, c.species + ' at ' + c.avg.toFixed(2) + ' kg, ready to book a harvest']);
-    });
-    DATA.feeds.filter(function (f) { return f.low; }).forEach(function (f) {
-      flags.push(['warn', f.name, 'Down to ' + f.bags + ' bags, about ' + Math.round(f.bags * f.kg / (f.used7 / 7)) + ' days left']);
-    });
+    /* ---- today's dead fish, by farm and species ---- */
 
-    document.getElementById('attention').innerHTML = flags.map(function (f) {
-      return '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--ff-line);">' +
-        '<span class="pill ' + f[0] + '">' + f[1] + '</span>' +
-        '<span style="font-size:13px;line-height:1.5;">' + f[2] + '</span></div>';
-    }).join('');
+    var today = DATA.mortality.filter(function (m) { return m.date.indexOf('Today') === 0; });
 
-    document.getElementById('recent').innerHTML = DATA.mortality.slice(0, 6).map(function (m) {
+    document.getElementById('dead-today').innerHTML = today.map(function (m) {
       return '<tr>' +
-        '<td class="dim">' + m.date + '</td>' +
-        '<td><strong>' + m.cage + '</strong></td>' +
-        '<td>' + m.species + '</td>' +
-        '<td class="num">' + m.count + '</td>' +
-        '<td>' + (m.sign === 'None noted' ? '<span class="dim">' + m.sign + '</span>' : '<span class="pill bad">' + m.sign + '</span>') + '</td>' +
-        '<td class="dim">' + m.by + '</td>' +
+        '<td><p class="text-xs font-weight-bold mb-0">Farm ' + DATA.cage(m.cage).farm + '</p></td>' +
+        '<td class="ps-2"><p class="text-xs font-weight-bold mb-0">' + m.cage + '</p></td>' +
+        '<td class="ps-2"><p class="text-xs text-secondary mb-0">' + m.species + '</p></td>' +
+        '<td class="align-middle text-center"><span class="text-xs font-weight-bold">' + m.count + '</span></td>' +
+        '<td class="align-middle text-center"><span class="badge badge-sm bg-gradient-secondary">' + m.sign + '</span></td>' +
         '</tr>';
     }).join('');
+
+    /* ---- recent activity ---- */
+
+    document.getElementById('recent-dead').innerHTML = DATA.mortality.slice(0, 6).map(function (m) {
+      return '<tr>' +
+        '<td><p class="text-xs font-weight-bold mb-0">' + m.cage + '</p></td>' +
+        '<td class="ps-2"><p class="text-xs text-secondary mb-0">' + m.species + '</p></td>' +
+        '<td class="align-middle text-center"><span class="text-xs font-weight-bold">' + m.count + '</span></td>' +
+        '<td class="align-middle text-center"><span class="text-xs text-secondary">' + m.date + '</span></td>' +
+        '<td class="align-middle text-center"><span class="text-xs text-secondary">' + m.by + '</span></td>' +
+        '</tr>';
+    }).join('');
+
+    /* ---- charts ---- */
+
+    Chart.defaults.font.family = 'Open Sans, sans-serif';
+    Chart.defaults.color = '#67748e';
+
+    new Chart(document.getElementById('deadTrendChart'), {
+      type: 'line',
+      data: {
+        labels: DATA.days,
+        datasets: [{
+          label: 'Pieces', data: DATA.deadTrend,
+          borderColor: '#f5365c', backgroundColor: 'rgba(245,54,92,0.12)',
+          fill: true, tension: 0.4, borderWidth: 3, pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, grid: { borderDash: [4, 4] } }, x: { grid: { display: false } } }
+      }
+    });
+
+    var byspecies = {};
+    DATA.mortality.forEach(function (m) {
+      byspecies[m.species] = (byspecies[m.species] || 0) + m.count;
+    });
+
+    new Chart(document.getElementById('speciesDonut'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(byspecies),
+        datasets: [{
+          data: Object.values(byspecies),
+          backgroundColor: [TEAL, TEAL2, '#5FB4CE', '#F2A65A', '#CF7F9B'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '62%',
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } } }
+      }
+    });
+
+    new Chart(document.getElementById('feedTrendChart'), {
+      type: 'bar',
+      data: {
+        labels: DATA.days,
+        datasets: [{
+          label: 'kg', data: DATA.feedTrend,
+          backgroundColor: TEAL, borderRadius: 4, maxBarThickness: 26
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, grid: { borderDash: [4, 4] } }, x: { grid: { display: false } } }
+      }
+    });
   </script>
 </body>
 </html>

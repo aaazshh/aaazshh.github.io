@@ -6,45 +6,49 @@
   <title>Environment Survey, Fish Farm</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="brand.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+  <link id="pagestyle" href="assets/css/argon-dashboard.min.css" rel="stylesheet">
+  <link href="assets/css/brand.css" rel="stylesheet">
+  <link href="assets/css/ff-ocean.css" rel="stylesheet">
+  <link rel="stylesheet" href="demo.css">
 </head>
-<body data-page="environment" data-title="Environment Survey" data-sub="Records">
+<body class="g-sidenav-show bg-gray-100" data-page="environment" data-title="Environment Survey" data-crumb="Environment Survey">
 
   <div id="content">
     <div class="grid g4" id="stats"></div>
 
     <div class="grid g2" style="margin-top:16px;">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Dissolved oxygen</h2><p>Farm 1, morning reading, mg per litre</p></div>
-          <span class="pill warn">Below 5.0 is a problem</span>
+      <div class="card mb-4">
+        <div class="card-header pb-0 d-flex align-items-start justify-content-between flex-wrap gap-2">
+          <div><h6 class="mb-1">Dissolved oxygen</h6><p class="text-sm text-secondary mb-0">Farm 1, morning reading, mg per litre</p></div>
+          <span class="badge badge-sm bg-gradient-warning">Below 5.0 is a problem</span>
         </div>
         <div class="card-body"><div class="bars" id="o2"></div></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Water temperature</h2><p>Farm 1, morning reading, celsius</p></div>
+      <div class="card mb-4">
+        <div class="card-header pb-0 d-flex align-items-start justify-content-between flex-wrap gap-2">
+          <div><h6 class="mb-1">Water temperature</h6><p class="text-sm text-secondary mb-0">Farm 1, morning reading, celsius</p></div>
         </div>
         <div class="card-body"><div class="bars" id="temp"></div></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <div class="card-head">
-        <div><h2>Survey log</h2><p>Taken off the pontoon at first light, both farms</p></div>
+      <div class="card-header pb-0 d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div><h6 class="mb-1">Survey log</h6><p class="text-sm text-secondary mb-0">Taken off the pontoon at first light, both farms</p></div>
         <div style="display:flex;gap:10px;align-items:flex-end;">
-          <div class="field">
-            <label for="farm">Farm</label>
-            <select id="farm"><option>All farms</option><option>Farm 1</option><option>Farm 2</option></select>
+          <div class="d-flex flex-column">
+            <label for="farm" class="text-xxs text-uppercase text-secondary font-weight-bolder mb-1">Farm</label>
+            <select id="farm" class="form-control form-control-sm"><option>All farms</option><option>Farm 1</option><option>Farm 2</option></select>
           </div>
-          <button type="button" class="btn" data-skip="Adding a survey">Add survey</button>
+          <button type="button" class="btn btn-sm bg-gradient-primary mb-0" data-unbuilt="Adding a survey">Add survey</button>
         </div>
       </div>
-      <div class="wrap">
-        <table>
-          <thead><tr><th>Taken</th><th>Farm</th><th class="num">Temp</th><th class="num">Oxygen</th><th class="num">pH</th><th class="num">Salinity</th><th>Water</th><th>By</th></tr></thead>
+      <div class="table-responsive p-0">
+        <table class="table align-items-center mb-0">
+          <thead><tr><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Taken</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Farm</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Temp</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Oxygen</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">pH</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Salinity</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Water</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">By</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -53,6 +57,8 @@
 
   <script src="data.js"></script>
   <script src="shell.js"></script>
+  <script src="assets/js/ff-ocean.js"></script>
+  <script src="assets/js/ff-ocean-page.js"></script>
   <script>
     'use strict';
 
@@ -65,10 +71,10 @@
       ['pH', latest.ph, 'Sits between 7.8 and 8.3', 'good'],
       ['Salinity', latest.sal + ' ppt', 'Steady this week', 'good']
     ].map(function (s) {
-      return '<div class="card"><div class="stat"><div>' +
+      return '<div class="card mb-4"><div class="stat"><div>' +
         '<div class="label">' + s[0] + '</div><div class="value">' + s[1] + '</div>' +
         '<div class="sub">' + s[2] + '</div></div>' +
-        '<span class="pill ' + s[3] + '" style="margin-left:auto;">' + (s[3] === 'good' ? 'normal' : s[3] === 'warn' ? 'watch' : 'low') + '</span>' +
+        '<span class="badge badge-sm bg-gradient-' + s[3] + '" style="margin-left:auto;">' + (s[3] === 'good' ? 'normal' : s[3] === 'warn' ? 'watch' : 'low') + '</span>' +
         '</div></div>';
     }).join('');
 
@@ -96,18 +102,18 @@
 
       document.getElementById('rows').innerHTML = rows.map(function (s) {
         return '<tr>' +
-          '<td class="dim">' + s.date + '</td>' +
+          '<td class="text-xs text-secondary">' + s.date + '</td>' +
           '<td>Farm ' + s.farm + '</td>' +
-          '<td class="num">' + s.temp.toFixed(1) + '°C</td>' +
-          '<td class="num">' + (s.o2 < 5
-            ? '<span class="pill bad">' + s.o2.toFixed(1) + '</span>'
+          '<td class="text-center text-sm">' + s.temp.toFixed(1) + '°C</td>' +
+          '<td class="text-center text-sm">' + (s.o2 < 5
+            ? '<span class="badge badge-sm bg-gradient-danger">' + s.o2.toFixed(1) + '</span>'
             : s.o2.toFixed(1)) + '</td>' +
-          '<td class="num">' + s.ph.toFixed(1) + '</td>' +
-          '<td class="num">' + s.sal + ' ppt</td>' +
-          '<td>' + (s.turb === 'Clear' ? '<span class="pill good">Clear</span>'
-            : s.turb === 'Murky' ? '<span class="pill bad">Murky</span>'
-            : '<span class="pill warn">' + s.turb + '</span>') + '</td>' +
-          '<td class="dim">' + s.by + '</td>' +
+          '<td class="text-center text-sm">' + s.ph.toFixed(1) + '</td>' +
+          '<td class="text-center text-sm">' + s.sal + ' ppt</td>' +
+          '<td>' + (s.turb === 'Clear' ? '<span class="badge badge-sm bg-gradient-success">Clear</span>'
+            : s.turb === 'Murky' ? '<span class="badge badge-sm bg-gradient-danger">Murky</span>'
+            : '<span class="badge badge-sm bg-gradient-warning">' + s.turb + '</span>') + '</td>' +
+          '<td class="text-xs text-secondary">' + s.by + '</td>' +
           '</tr>';
       }).join('');
     }

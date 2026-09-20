@@ -6,43 +6,47 @@
   <title>Dead Fish, Fish Farm</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="brand.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+  <link id="pagestyle" href="assets/css/argon-dashboard.min.css" rel="stylesheet">
+  <link href="assets/css/brand.css" rel="stylesheet">
+  <link href="assets/css/ff-ocean.css" rel="stylesheet">
+  <link rel="stylesheet" href="demo.css">
 </head>
-<body data-page="mortality" data-title="Dead Fish" data-sub="Operations">
+<body class="g-sidenav-show bg-gray-100" data-page="mortality" data-title="Dead Fish" data-crumb="Dead Fish">
 
   <div id="content">
-    <div class="card">
-      <div class="card-head">
-        <div><h2>Daily report</h2><p>By farm and species, the sheet that used to be filled in by hand</p></div>
-        <button type="button" class="btn ghost" id="export">Export</button>
+    <div class="card mb-4">
+      <div class="card-header pb-0 d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div><h6 class="mb-1">Daily report</h6><p class="text-sm text-secondary mb-0">By farm and species, the sheet that used to be filled in by hand</p></div>
+        <button type="button" class="btn btn-sm btn-outline-primary mb-0" id="export">Export</button>
       </div>
-      <div class="wrap">
-        <table>
-          <thead><tr><th>Farm</th><th>Species</th><th class="num">Today</th><th class="num">Yesterday</th><th class="num">7 days</th><th>Trend</th></tr></thead>
+      <div class="table-responsive p-0">
+        <table class="table align-items-center mb-0">
+          <thead><tr><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Farm</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Species</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Today</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Yesterday</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">7 days</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Trend</th></tr></thead>
           <tbody id="report"></tbody>
         </table>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <div><h2>Records</h2><p>Every log, newest first</p></div>
+    <div class="card mb-4">
+      <div class="card-header pb-0 d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div><h6 class="mb-1">Records</h6><p class="text-sm text-secondary mb-0">Every log, newest first</p></div>
         <div style="display:flex;gap:10px;align-items:flex-end;">
-          <div class="field">
-            <label for="cage">Cage</label>
-            <select id="cage"><option>All cages</option></select>
+          <div class="d-flex flex-column">
+            <label for="cage" class="text-xxs text-uppercase text-secondary font-weight-bolder mb-1">Cage</label>
+            <select id="cage" class="form-control form-control-sm"><option>All cages</option></select>
           </div>
-          <div class="field">
-            <label for="sign">Clinical sign</label>
-            <select id="sign"><option>All signs</option></select>
+          <div class="d-flex flex-column">
+            <label for="sign" class="text-xxs text-uppercase text-secondary font-weight-bolder mb-1">Clinical sign</label>
+            <select id="sign" class="form-control form-control-sm"><option>All signs</option></select>
           </div>
-          <button type="button" class="btn" data-skip="Recording dead fish">Add record</button>
+          <button type="button" class="btn btn-sm bg-gradient-primary mb-0" data-unbuilt="Recording dead fish">Add record</button>
         </div>
       </div>
-      <div class="wrap">
-        <table>
-          <thead><tr><th>Logged</th><th>Cage</th><th>Species</th><th class="num">Count</th><th>Clinical sign</th><th>Remarks</th><th>By</th></tr></thead>
+      <div class="table-responsive p-0">
+        <table class="table align-items-center mb-0">
+          <thead><tr><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Logged</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cage</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Species</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Count</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Clinical sign</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Remarks</th><th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">By</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -51,6 +55,8 @@
 
   <script src="data.js"></script>
   <script src="shell.js"></script>
+  <script src="assets/js/ff-ocean.js"></script>
+  <script src="assets/js/ff-ocean-page.js"></script>
   <script>
     'use strict';
 
@@ -72,13 +78,13 @@
       var same = g.today === g.yest;
       return '<tr>' +
         '<td>Farm ' + g.farm + '</td>' +
-        '<td>' + g.species + ' <span class="dim">' + DATA.fish(g.species).cn + '</span></td>' +
-        '<td class="num">' + g.today + '</td>' +
-        '<td class="num">' + g.yest + '</td>' +
-        '<td class="num">' + g.week + '</td>' +
-        '<td>' + (same ? '<span class="pill grey">level</span>'
-          : up ? '<span class="pill bad">up ' + (g.today - g.yest) + '</span>'
-          : '<span class="pill good">down ' + (g.yest - g.today) + '</span>') + '</td>' +
+        '<td>' + g.species + ' <span class="text-xs text-secondary">' + DATA.fish(g.species).cn + '</span></td>' +
+        '<td class="text-center text-sm">' + g.today + '</td>' +
+        '<td class="text-center text-sm">' + g.yest + '</td>' +
+        '<td class="text-center text-sm">' + g.week + '</td>' +
+        '<td>' + (same ? '<span class="badge badge-sm bg-gradient-secondary">level</span>'
+          : up ? '<span class="badge badge-sm bg-gradient-danger">up ' + (g.today - g.yest) + '</span>'
+          : '<span class="badge badge-sm bg-gradient-success">down ' + (g.yest - g.today) + '</span>') + '</td>' +
         '</tr>';
     }).join('');
 
@@ -109,15 +115,15 @@
 
       document.getElementById('rows').innerHTML = rows.length ? rows.map(function (m) {
         return '<tr>' +
-          '<td class="dim">' + m.date + '</td>' +
+          '<td class="text-xs text-secondary">' + m.date + '</td>' +
           '<td><strong>' + m.cage + '</strong></td>' +
           '<td>' + m.species + '</td>' +
-          '<td class="num">' + m.count + '</td>' +
-          '<td>' + (m.sign === 'None noted' ? '<span class="dim">' + m.sign + '</span>' : '<span class="pill bad">' + m.sign + '</span>') + '</td>' +
-          '<td class="dim">' + (m.note || '-') + '</td>' +
-          '<td class="dim">' + m.by + '</td>' +
+          '<td class="text-center text-sm">' + m.count + '</td>' +
+          '<td>' + (m.sign === 'None noted' ? '<span class="text-xs text-secondary">' + m.sign + '</span>' : '<span class="badge badge-sm bg-gradient-danger">' + m.sign + '</span>') + '</td>' +
+          '<td class="text-xs text-secondary">' + (m.note || '-') + '</td>' +
+          '<td class="text-xs text-secondary">' + m.by + '</td>' +
           '</tr>';
-      }).join('') : '<tr><td colspan="7" class="dim" style="padding:26px;text-align:center;">Nothing matches that.</td></tr>';
+      }).join('') : '<tr><td colspan="7" class="text-xs text-secondary" style="padding:26px;text-align:center;">Nothing matches that.</td></tr>';
     }
 
     cage.addEventListener('change', paint);

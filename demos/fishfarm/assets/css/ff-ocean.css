@@ -1,0 +1,127 @@
+/*!
+ * ff-ocean.css — ocean styling for the login page and the post-login hand-off.
+ * Loads after argon-dashboard.css so it can override the card chrome.
+ */
+
+/* ── Shared ocean backdrop ──────────────────────────────────────────────── */
+
+.ff-ocean-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Sits below page content but above the root background, so it needs no
+   stacking-context changes on the 48 pages it appears behind. */
+.ff-ocean-canvas--behind {
+    z-index: -1;
+}
+
+/* ── Portal-wide reef (static, low intensity) ───────────────────────────── */
+
+/* The wash lives on <html> because Argon paints an opaque colour on <body>
+   (bg-gray-100), which would otherwise cover the z-index:-1 canvas. */
+html.ff-ocean-html {
+    background: linear-gradient(180deg, #F8FBFC 0%, #F1F8FB 50%, #E4F2F7 100%) fixed;
+}
+
+body.ff-ocean-page {
+    background-color: transparent !important;
+}
+
+/* Dark mode gets the deep water instead of the pale wash. */
+html.ff-ocean-html[data-theme="dark"] {
+    background: linear-gradient(180deg, #14283a 0%, #111d2a 50%, #0f1620 100%) fixed;
+}
+
+/* ── Login page ─────────────────────────────────────────────────────────── */
+
+body.ff-login {
+    /* Matches kFfDeepOcean in the Flutter app so portal and app are one world. */
+    background: linear-gradient(180deg, #1C5C8C 0%, #14476E 50%, #0C2E4C 100%) fixed;
+    min-height: 100vh;
+}
+
+body.ff-login .main-content,
+body.ff-login .page-header {
+    position: relative;
+    z-index: 1;
+}
+
+/* Frosted card so the existing dark Argon text stays readable over the water. */
+body.ff-login .card-plain {
+    background: rgba(255, 255, 255, 0.90);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-radius: 22px;
+    box-shadow: 0 18px 48px rgba(6, 26, 44, 0.34);
+    padding: 6px 10px 14px;
+}
+
+body.ff-login .card-plain .card-header {
+    background: transparent;
+}
+
+body.ff-login .form-control {
+    background-color: rgba(255, 255, 255, 0.78);
+    border-radius: 12px;
+}
+
+body.ff-login .form-control:focus {
+    background-color: #fff;
+    border-color: #11a8b5;
+    box-shadow: 0 0 0 2px rgba(17, 168, 181, 0.22);
+}
+
+body.ff-login .theme-btn {
+    border-radius: 12px;
+}
+
+/* Brand panel (right side on ≥lg) — the Prime mark drawing itself over the
+   ocean, on glass. */
+.ff-brand-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    height: 100%;
+    min-height: 420px;
+    margin: 1rem;
+    padding: 2.5rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.ff-brand-logo {
+    width: min(58%, 220px);
+    aspect-ratio: 1 / 1;
+}
+
+.ff-brand-name {
+    font-size: clamp(28px, 3.4vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin: 0;
+}
+
+.ff-brand-tag {
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+body.ff-login .app-auth-footer .copyright {
+    color: rgba(255, 255, 255, 0.72);
+}
+

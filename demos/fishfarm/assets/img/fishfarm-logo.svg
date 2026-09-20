@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Fish Farm">
+  <defs>
+    <linearGradient id="ff" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#11a8b5"/>
+      <stop offset="1" stop-color="#0b6e8f"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#ff)"/>
+  <path d="M14 34c6-9 16-13 25-11 4 1 7 3 9 6-2 3-5 5-9 6-9 2-19-2-25-11z" fill="#fff" opacity="0.96"/>
+  <path d="M14 34l-6-5v10l6-5z" fill="#fff" opacity="0.96"/>
+  <circle cx="40" cy="31" r="1.8" fill="#0b6e8f"/>
+  <path d="M12 44c3 0 3-2 6-2s3 2 6 2 3-2 6-2 3 2 6 2 3-2 6-2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+</svg>

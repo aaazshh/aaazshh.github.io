@@ -1,0 +1,200 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Fish Farm branding + dark mode.
+
+   Loaded after argon-dashboard.css so these rules win. Two jobs:
+   1. Re-skin Argon's default purple to an ocean teal so the portal stops looking
+      like the stock Argon demo.
+   2. A self-contained dark theme toggled by `data-theme="dark"` on <html>
+      (set early by the inline loader in header.php + the toggle in side-menu.php).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+    --ff-teal: #0b6e8f;
+    --ff-teal-2: #11a8b5;
+}
+
+/* ── Accent re-skin (light mode) ─────────────────────────────────────────── */
+.bg-gradient-primary {
+    background-image: linear-gradient(310deg, var(--ff-teal) 0%, var(--ff-teal-2) 100%) !important;
+}
+.btn.bg-gradient-primary,
+.btn-primary {
+    background-image: linear-gradient(310deg, var(--ff-teal) 0%, var(--ff-teal-2) 100%) !important;
+    border: none !important;
+}
+.text-primary { color: var(--ff-teal) !important; }
+.btn-outline-primary {
+    color: var(--ff-teal) !important;
+    border-color: var(--ff-teal) !important;
+}
+.btn-outline-primary:hover {
+    background-color: var(--ff-teal) !important;
+    color: #fff !important;
+}
+.nav-pills .nav-link.active {
+    background-image: linear-gradient(310deg, var(--ff-teal) 0%, var(--ff-teal-2) 100%) !important;
+    color: #fff !important;
+}
+.sidenav .nav-link.active,
+.sidenav .nav-link.active .sidenav-normal,
+.sidenav .nav-link.active .sidenav-mini-icon {
+    color: var(--ff-teal) !important;
+}
+.brand-logo { border-radius: 8px; }
+
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
+html[data-theme="dark"] {
+    --ff-surface: #1b2635;
+    --ff-surface-2: #223044;
+    --ff-bg: #0f1620;
+    --ff-text: #e6edf3;
+    --ff-muted: #9fb0c3;
+    --ff-border: #2c3a4d;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] body.bg-gray-100 {
+    background-color: var(--ff-bg) !important;
+    color: var(--ff-text);
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .sidenav.bg-white,
+html[data-theme="dark"] .sidenav .position-sticky.bg-white {
+    background-color: var(--ff-surface) !important;
+    color: var(--ff-text);
+    box-shadow: none;
+}
+html[data-theme="dark"] .card .card-header,
+html[data-theme="dark"] .card .card-footer {
+    background-color: var(--ff-surface) !important;
+}
+html[data-theme="dark"] .navbar-main,
+html[data-theme="dark"] .navbar-main .breadcrumb-item a,
+html[data-theme="dark"] .navbar-main .nav-link,
+html[data-theme="dark"] .navbar-main h6 { color: var(--ff-text) !important; }
+
+html[data-theme="dark"] .text-dark,
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3,
+html[data-theme="dark"] h4, html[data-theme="dark"] h5, html[data-theme="dark"] h6,
+html[data-theme="dark"] .font-weight-bolder { color: var(--ff-text) !important; }
+html[data-theme="dark"] .text-secondary,
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .text-xs.text-secondary { color: var(--ff-muted) !important; }
+
+/* Bootstrap 5 colours table cells via --bs-table-color, so a plain `.table { color }`
+   loses to it — override the variable and the cells directly. */
+html[data-theme="dark"] .table {
+    color: var(--ff-text);
+    --bs-table-color: var(--ff-text);
+    --bs-table-bg: transparent;
+}
+html[data-theme="dark"] .table > :not(caption) > * > * {
+    color: var(--ff-text);
+    background-color: transparent;
+}
+html[data-theme="dark"] .table thead th { color: var(--ff-muted) !important; border-color: var(--ff-border); }
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] .table th { border-color: var(--ff-border) !important; }
+html[data-theme="dark"] .table tbody tr:hover td { background-color: var(--ff-surface-2); }
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select {
+    background-color: var(--ff-surface-2) !important;
+    border-color: var(--ff-border) !important;
+    color: var(--ff-text) !important;
+}
+html[data-theme="dark"] .form-control::placeholder { color: var(--ff-muted) !important; }
+html[data-theme="dark"] .form-label { color: var(--ff-muted) !important; }
+
+/* All sidebar links incl. submenu items (which live in `ul.nav`, not `.navbar-nav`)
+   and their inner text spans. Active items sit on a white pill → keep them teal. */
+html[data-theme="dark"] .sidenav .nav-link,
+html[data-theme="dark"] .sidenav .nav-link .sidenav-normal,
+html[data-theme="dark"] .sidenav .nav-link .sidenav-mini-icon { color: var(--ff-muted) !important; }
+html[data-theme="dark"] .sidenav .nav-link.active,
+html[data-theme="dark"] .sidenav .nav-link.active .sidenav-normal,
+html[data-theme="dark"] .sidenav .nav-link.active .sidenav-mini-icon { color: var(--ff-teal) !important; }
+html[data-theme="dark"] .sidenav .navbar-brand span { color: var(--ff-text) !important; }
+html[data-theme="dark"] hr.horizontal.dark { background-color: var(--ff-border); }
+html[data-theme="dark"] .border,
+html[data-theme="dark"] .border-radius-xl { border-color: var(--ff-border) !important; }
+
+/* Dashboard tab pills — Argon gives the pill group a light background. */
+html[data-theme="dark"] .nav.nav-pills,
+html[data-theme="dark"] .nav-pills { background-color: var(--ff-surface-2) !important; }
+html[data-theme="dark"] .nav-pills .nav-link { color: var(--ff-muted) !important; }
+html[data-theme="dark"] .nav-pills .nav-link.active { color: #fff !important; }
+
+/* Generic light utility surfaces + overlay components. */
+html[data-theme="dark"] .bg-white { background-color: var(--ff-surface) !important; }
+html[data-theme="dark"] .modal-content { background-color: var(--ff-surface) !important; color: var(--ff-text); }
+html[data-theme="dark"] .modal-header,
+html[data-theme="dark"] .modal-footer { border-color: var(--ff-border) !important; }
+html[data-theme="dark"] .dropdown-menu { background-color: var(--ff-surface-2) !important; border-color: var(--ff-border) !important; }
+html[data-theme="dark"] .dropdown-menu .dropdown-item { color: var(--ff-text) !important; }
+html[data-theme="dark"] .dropdown-menu .dropdown-item:hover { background-color: var(--ff-surface) !important; }
+html[data-theme="dark"] .input-group-text { background-color: var(--ff-surface-2) !important; border-color: var(--ff-border) !important; color: var(--ff-muted) !important; }
+html[data-theme="dark"] .breadcrumb-item.active,
+html[data-theme="dark"] .breadcrumb-item a { color: var(--ff-text) !important; }
+
+/* Pagination */
+html[data-theme="dark"] .page-link { background-color: var(--ff-surface-2) !important; border-color: var(--ff-border) !important; color: var(--ff-text) !important; }
+html[data-theme="dark"] .page-item.disabled .page-link { background-color: var(--ff-surface) !important; color: var(--ff-muted) !important; }
+
+/* Sidebar theme toggle button */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+}
+.theme-toggle .fa-sun { display: none; }
+html[data-theme="dark"] .theme-toggle .fa-sun { display: inline-block; }
+html[data-theme="dark"] .theme-toggle .fa-moon { display: none; }
+
+/* Global search box in the sidebar */
+.sidenav-search .form-control {
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* ── Navigation smoothness ────────────────────────────────────────────────────
+   Every "tab" on the dashboard (Daily / Map / Comparison), on Images, and every
+   list page is a real page navigation, so what the eye reads as a laggy tab
+   animation is the browser tearing down and rebuilding the shell. Two fixes: the
+   blocking third-party CSS/JS is gone from header.php, and the transitions below
+   are narrowed so the repaint is cheap.
+
+   Argon ships `transition: all 0.2s` on .main-content and .sidenav. `all` makes
+   the browser animate layout properties (width/height/margin) on any class
+   change, which forces a full-page reflow mid-transition. Only the sidebar
+   collapse actually needs to move, so restrict it to those properties. */
+.main-content,
+.sidenav {
+    transition: margin-left 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Pills (dashboard + Images categories): paint the state change immediately
+   rather than tweening colour on a element that is about to be replaced. */
+.nav-pills .nav-link {
+    transition: background-color 0.12s ease-out, color 0.12s ease-out;
+}
+
+/* Fade the new page in over one frame-ish. Short enough not to feel like a
+   delay, long enough to hide the paint boundary between navigations. */
+@media (prefers-reduced-motion: no-preference) {
+    .main-content > .container-fluid {
+        animation: ff-page-in 0.14s ease-out both;
+    }
+}
+@keyframes ff-page-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Thumbnail grids: reserve the box so images landing late don't shove the
+   layout around, and let the browser skip decoding off-screen tiles. */
+.ff-thumb {
+    content-visibility: auto;
+    contain-intrinsic-size: 180px;
+}

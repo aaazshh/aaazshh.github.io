@@ -483,9 +483,136 @@
     .navpill button.is-on { color: var(--brand); font-weight: 600; }
     .navpill svg { width: 23px; height: 23px; transition: transform 260ms ease; }
     .navpill button.is-on svg { transform: scale(1.12); }
+
+    /* ── Splash ───────────────────────────────────────────────────────────
+       A dashed arc draws itself, then a line-art truck drives along it with
+       its wheels turning, the endpoints pulse, and the whole thing fades. All
+       of it is one canvas, same geometry and timings as the Flutter painter. */
+
+    .splash {
+      position: absolute; inset: 0; z-index: 800;
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      transition: opacity 700ms ease-in;
+    }
+    .splash canvas { display: block; width: 100%; height: 100%; }
+    .splash.gone { opacity: 0; pointer-events: none; }
+
+    /* ── Sign in ──────────────────────────────────────────────────────────
+       Branding on the teal gradient up top, then a white sheet that curves
+       over it carrying the form. */
+
+    /* The view is not a flex item, so the sheet needs the full height to push
+       its rounded top up and its own background down to the bottom edge. */
+    #view-signin.is-on { display: flex; min-height: 100%; }
+    .signin {
+      flex: 1;
+      display: flex; flex-direction: column;
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+    }
+    .signin-brand {
+      flex: 1;
+      display: grid; place-content: center; justify-items: center; gap: 20px;
+      padding: 40px 32px;
+    }
+    .signin-logo {
+      padding: 18px 28px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 6px 20px rgb(0 0 0 / 0.16);
+    }
+    .signin-logo img { display: block; height: 80px; }
+    .signin-brand h1 {
+      margin: 0;
+      color: #fff; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;
+    }
+
+    .signin-card {
+      flex: none;
+      padding: 32px 28px 36px;
+      border-radius: 32px 32px 0 0;
+      background: #fff;
+      box-shadow: 0 -4px 24px rgb(0 0 0 / 0.2);
+    }
+    .signin-card h2 { margin: 0; font-size: 26px; font-weight: 800; color: var(--navy); }
+    .signin-card .sub { margin: 4px 0 24px; font-size: 13px; color: var(--muted); }
+
+    .tf { position: relative; margin-bottom: 14px; }
+    .tf input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border: 1.2px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg);
+      font: 400 15px Roboto, sans-serif;
+      color: var(--navy);
+    }
+    .tf input:focus { outline: 0; border: 2px solid var(--brand); padding: 13px 15px 13px 43px; }
+    .tf .lead {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; color: var(--brand); pointer-events: none;
+    }
+    .tf .peek {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      display: grid; place-items: center;
+      width: 34px; height: 34px;
+      border: 0; border-radius: 50%; background: none;
+      color: #9ca3af; cursor: pointer;
+    }
+    .tf .peek svg { width: 20px; height: 20px; }
+    .tf label {
+      position: absolute; left: 44px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: var(--muted); pointer-events: none;
+      transition: transform 140ms ease, font-size 140ms ease, color 140ms ease;
+      background: var(--bg); padding: 0 4px;
+    }
+    .tf.filled label, .tf input:focus + label {
+      transform: translateY(-28px); font-size: 12px; color: var(--brand);
+      left: 40px;
+    }
+
+    .signin-go {
+      width: 100%; height: 50px; margin-top: 8px;
+      display: grid; place-items: center;
+      border: 0; border-radius: 12px;
+      background: var(--brand); color: #fff;
+      font: 700 16px Roboto, sans-serif;
+      box-shadow: 0 2px 8px rgb(42 157 143 / 0.31);
+      cursor: pointer;
+    }
+    .signin-go[disabled] { background: rgb(42 157 143 / 0.47); cursor: default; }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgb(255 255 255 / 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 700ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .signin-or {
+      display: flex; align-items: center; gap: 14px;
+      margin: 18px 0;
+      font-size: 12px; color: var(--muted);
+    }
+    .signin-or::before, .signin-or::after {
+      content: ''; flex: 1; height: 1px; background: var(--line);
+    }
+    .signin-ms {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; height: 50px;
+      border: 1.5px solid var(--line); border-radius: 12px;
+      background: #fff; color: var(--navy);
+      font: 600 15px Roboto, sans-serif;
+      cursor: pointer;
+    }
+    .signin-ms .ms { display: grid; grid-template-columns: 8px 8px; gap: 2px; }
+    .signin-ms .ms i { width: 8px; height: 8px; display: block; }
+    .signin-ver { margin: 16px 0 0; text-align: center; font-size: 11.5px; color: #9ca3af; }
   </style>
 </head>
 <body>
+
+  <div class="splash" id="splash"><canvas id="splash-canvas"></canvas></div>
 
   <header class="appbar" id="appbar" hidden>
     <button class="iconbtn back" id="back" aria-label="Back">
@@ -504,23 +631,41 @@
 
     <section class="view is-on" id="view-signin">
       <form class="signin" id="signin-form">
-        <div class="mark">
-          <img src="logo.png" alt="" width="56" height="56" style="border-radius:12px;">
-          <div>Logistics</div>
-          <span>Driver app</span>
+        <div class="signin-brand">
+          <div class="signin-logo"><img src="logo.png" alt=""></div>
+          <h1>Logistics</h1>
         </div>
-        <div class="field">
-          <label for="email">Work email</label>
-          <input id="email" type="email" value="guest14@mail.com" autocomplete="off">
+
+        <div class="signin-card">
+          <h2>Sign In</h2>
+          <p class="sub">Welcome back, enter your credentials</p>
+
+          <div class="tf filled">
+            <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>
+            <input id="email" type="email" value="guest14@mail.com" autocomplete="off">
+            <label for="email">Email</label>
+          </div>
+
+          <div class="tf filled">
+            <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+            <input id="pw" type="password" value="password" autocomplete="off">
+            <label for="pw">Password</label>
+            <button type="button" class="peek" id="peek" aria-label="Show password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle><line x1="3" y1="3" x2="21" y2="21"></line></svg>
+            </button>
+          </div>
+
+          <button type="submit" class="signin-go" id="signin-go">Sign In</button>
+
+          <div class="signin-or">or continue with</div>
+
+          <button type="button" class="signin-ms" id="signin-ms">
+            <span class="ms"><i style="background:#f25022"></i><i style="background:#7fba00"></i><i style="background:#00a4ef"></i><i style="background:#ffb900"></i></span>
+            Sign in with Microsoft
+          </button>
+
+          <p class="signin-ver">v0.1.0 (4)</p>
         </div>
-        <div class="field">
-          <label for="pw">Password</label>
-          <input id="pw" type="password" value="............" autocomplete="off">
-        </div>
-        <button type="submit" class="btn">Sign in</button>
-        <p style="margin:0;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.5;">
-          Single sign on through the IAM service. The token it returns is what every request carries.
-        </p>
       </form>
     </section>
 
@@ -1159,14 +1304,275 @@
       setTimeout(function () { map.invalidateSize(); }, 60);
     }
 
+
+    /* Splash ---------------------------------------------------------------
+       A port of the Flutter painter: one cubic arc, drawn as dashes that
+       advance, then a line-art truck rides along it with its wheels turning
+       and speed lines trailing behind. The endpoints pulse while it rests,
+       then the whole canvas fades. Same geometry, same four beats. */
+
+    (function () {
+      var wrap = document.getElementById('splash');
+      var canvas = document.getElementById('splash-canvas');
+      var ctx = canvas.getContext('2d');
+      var w = 0, h = 0;
+
+      function size() {
+        var dpr = window.devicePixelRatio || 1;
+        w = wrap.clientWidth;
+        h = wrap.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      size();
+      window.addEventListener('resize', size);
+
+      // The arc. Control points stay on one side so there is no S wiggle, and
+      // the vertical spread is small so the truck barely tilts.
+      function arc() {
+        var cx = w / 2, cy = h / 2;
+        return [
+          [cx - w * 0.40, cy + h * 0.12],
+          [cx - w * 0.12, cy + h * 0.15],
+          [cx + w * 0.12, cy - h * 0.07],
+          [cx + w * 0.40, cy - h * 0.12]
+        ];
+      }
+
+      function pointAt(p, t) {
+        var u = 1 - t;
+        var a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+        return [
+          a * p[0][0] + b * p[1][0] + c * p[2][0] + d * p[3][0],
+          a * p[0][1] + b * p[1][1] + c * p[2][1] + d * p[3][1]
+        ];
+      }
+
+      function tangentAt(p, t) {
+        var u = 1 - t;
+        var a = 3 * u * u, b = 6 * u * t, c = 3 * t * t;
+        return [
+          a * (p[1][0] - p[0][0]) + b * (p[2][0] - p[1][0]) + c * (p[3][0] - p[2][0]),
+          a * (p[1][1] - p[0][1]) + b * (p[2][1] - p[1][1]) + c * (p[3][1] - p[2][1])
+        ];
+      }
+
+      function endpoint(x, y, pulse) {
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.beginPath();
+        ctx.arc(x, y, 7 * pulse * 1.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function truck(unit, speedOffset, wheelAngle, opacity) {
+        var bodyW = unit * 1.6, bodyH = unit * 0.90;
+        var cabW = unit * 0.55, cabH = unit * 0.78;
+        var bodyTop = -bodyH / 2, bodyLeft = -bodyW / 2;
+        var wheelR = 10;
+
+        // Lift the whole thing so the wheels sit on the line rather than the
+        // line cutting through the truck's belly.
+        ctx.save();
+        ctx.translate(0, -(bodyH / 2 + 10 + wheelR));
+
+        ctx.strokeStyle = 'rgba(255,255,255,' + opacity + ')';
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.11 * opacity) + ')';
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        function box(x, y, bw, bh, r) {
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + bw, y, x + bw, y + bh, r);
+          ctx.arcTo(x + bw, y + bh, x, y + bh, r);
+          ctx.arcTo(x, y + bh, x, y, r);
+          ctx.arcTo(x, y, x + bw, y, r);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        box(bodyLeft, bodyTop, bodyW, bodyH, 4);
+
+        // Panel line down the cargo side.
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.27 * opacity) + ')';
+        ctx.beginPath();
+        ctx.moveTo(bodyLeft + bodyW * 0.35, bodyTop + 5);
+        ctx.lineTo(bodyLeft + bodyW * 0.35, bodyTop + bodyH - 5);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,' + opacity + ')';
+
+        var cabLeft = bodyLeft + bodyW;
+        box(cabLeft, bodyTop + (bodyH - cabH), cabW, cabH, 6);
+
+        var wheelY = bodyTop + bodyH + 10;
+        [[bodyLeft + bodyW * 0.22, wheelY],
+         [bodyLeft + bodyW * 0.62, wheelY],
+         [cabLeft + cabW * 0.55, wheelY]].forEach(function (pos) {
+          ctx.fillStyle = 'rgba(255,255,255,' + opacity + ')';
+          ctx.beginPath();
+          ctx.arc(pos[0], pos[1], wheelR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(32,122,110,' + opacity + ')';
+          ctx.beginPath();
+          ctx.arc(pos[0], pos[1], wheelR * 0.40, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.save();
+          ctx.translate(pos[0], pos[1]);
+          ctx.rotate(wheelAngle);
+          ctx.strokeStyle = 'rgba(255,255,255,' + opacity + ')';
+          ctx.lineWidth = 1.8;
+          for (var i = 0; i < 4; i++) {
+            var a = i * Math.PI / 4;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a) * wheelR * 0.40, Math.sin(a) * wheelR * 0.40);
+            ctx.lineTo(Math.cos(a) * wheelR * 0.88, Math.sin(a) * wheelR * 0.88);
+            ctx.stroke();
+          }
+          ctx.restore();
+          ctx.lineWidth = 2.2;
+        });
+
+        // Speed lines trailing off the back.
+        [[bodyLeft - 10, bodyTop + bodyH * 0.25, unit * 0.55, 0.80],
+         [bodyLeft - 6, bodyTop + bodyH * 0.52, unit * 0.75, 1.00],
+         [bodyLeft - 12, bodyTop + bodyH * 0.75, unit * 0.45, 0.65]].forEach(function (l) {
+          var shift = speedOffset * 7;
+          ctx.strokeStyle = 'rgba(255,255,255,' + (l[3] * 0.61 * opacity) + ')';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(l[0] - shift, l[1]);
+          ctx.lineTo(l[0] - shift - l[2], l[1]);
+          ctx.stroke();
+        });
+
+        ctx.restore();
+      }
+
+      // Four beats, the same durations the Flutter controllers use.
+      var PATH_MS = 1600, DRIVE_MS = 3200, REST_MS = 1100;
+      var started = null;
+
+      function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+      function easeInOut(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function frame(now) {
+        if (started === null) started = now;
+        var ms = now - started;
+
+        ctx.clearRect(0, 0, w, h);
+        var p = arc();
+
+        var pathT = Math.min(1, ms / PATH_MS);
+        var driveT = Math.min(1, Math.max(0, (ms - PATH_MS) / DRIVE_MS));
+        var drawn = easeOut(pathT);
+        var drive = easeInOut(driveT);
+        var resting = ms > PATH_MS + DRIVE_MS;
+        var pulse = 1 + (resting ? (Math.sin(ms / 900 * Math.PI) * 0.5 + 0.5) * 0.20 : 0);
+
+        // Dashes marching up to however much of the arc has been drawn.
+        ctx.strokeStyle = 'rgba(255,255,255,0.67)';
+        ctx.lineWidth = 2.8;
+        ctx.lineCap = 'round';
+        var steps = 160;
+        var dash = 9, gap = 11, run = 0, pen = true;
+        ctx.beginPath();
+        var prev = pointAt(p, 0);
+        for (var i = 1; i <= steps; i++) {
+          var t = i / steps;
+          if (t > drawn) break;
+          var pt = pointAt(p, t);
+          var seg = Math.hypot(pt[0] - prev[0], pt[1] - prev[1]);
+          if (pen) { ctx.moveTo(prev[0], prev[1]); ctx.lineTo(pt[0], pt[1]); }
+          run += seg;
+          if (pen && run >= dash) { pen = false; run = 0; }
+          else if (!pen && run >= gap) { pen = true; run = 0; }
+          prev = pt;
+        }
+        ctx.stroke();
+
+        endpoint(p[0][0], p[0][1], pulse);
+        if (drive > 0.9) endpoint(p[3][0], p[3][1], pulse);
+
+        if (driveT > 0) {
+          var t2 = 0.06 + drive * 0.88;
+          var pos = pointAt(p, t2);
+          var tan = tangentAt(p, t2);
+          var angle = Math.atan2(tan[1], tan[0]);
+          var cap = Math.PI * 18 / 180;
+          angle = Math.max(-cap, Math.min(cap, angle));
+
+          ctx.save();
+          ctx.translate(pos[0], pos[1]);
+          ctx.rotate(angle);
+          truck(
+            Math.min(w, h) * 0.10,
+            (ms % 700) / 700,
+            (ms % 1100) / 1100 * Math.PI * 2,
+            Math.min(1, driveT / 0.18)
+          );
+          ctx.restore();
+        }
+
+        if (ms < PATH_MS + DRIVE_MS + REST_MS) {
+          requestAnimationFrame(frame);
+        } else {
+          wrap.classList.add('gone');
+          setTimeout(function () { wrap.remove(); }, 750);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }());
+
+    /* Sign in --------------------------------------------------------------- */
+
+    (function () {
+      // The floating label only lifts when there is something to lift for.
+      Array.prototype.forEach.call(document.querySelectorAll('.tf input'), function (input) {
+        function sync() { input.parentNode.classList.toggle('filled', input.value !== ''); }
+        input.addEventListener('input', sync);
+        sync();
+      });
+
+      document.getElementById('peek').addEventListener('click', function () {
+        var pw = document.getElementById('pw');
+        var shown = pw.type === 'text';
+        pw.type = shown ? 'password' : 'text';
+        this.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
+      });
+
+      document.getElementById('signin-ms').addEventListener('click', function () {
+        toast('Microsoft sign in goes through the IAM service, which hands back a token the logistics API swaps for its own.');
+      });
+    }());
+
     /* Wiring --------------------------------------------------------------- */
 
     slideNav(document.querySelector('[data-go="run"]'));
 
     document.getElementById('signin-form').addEventListener('submit', function (event) {
       event.preventDefault();
-      show('run');
-      toast('Signed in. Today\'s run came down with the token.');
+      var go = document.getElementById('signin-go');
+      if (go.disabled) return;
+      go.disabled = true;
+      go.innerHTML = '<span class="spinner"></span>';
+      setTimeout(function () {
+        go.disabled = false;
+        go.textContent = 'Sign In';
+        show('run');
+        toast('Signed in. Today\u2019s run came down with the token.');
+      }, 900);
     });
 
     document.getElementById('body').addEventListener('click', function (event) {

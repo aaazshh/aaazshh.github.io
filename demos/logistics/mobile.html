@@ -58,8 +58,6 @@
       cursor: pointer;
     }
     .iconbtn:active { background: rgb(255 255 255 / 0.18); }
-    .back { display: none; }
-    .has-back .back { display: grid; }
 
     .body { position: relative; flex: 1; overflow-y: auto; }
     .view { display: none; }
@@ -608,6 +606,234 @@
     .signin-ms .ms { display: grid; grid-template-columns: 8px 8px; gap: 2px; }
     .signin-ms .ms i { width: 8px; height: 8px; display: block; }
     .signin-ver { margin: 16px 0 0; text-align: center; font-size: 11.5px; color: #9ca3af; }
+
+    /* ── Navigation (navigation_page.dart) ────────────────────────────────
+       A navigator layout, not a form: a full-bleed map with floating glass
+       overlays on top and a draggable stop sheet over the bottom. */
+
+    #view-map.is-on { position: absolute; inset: 0; display: block; }
+    .nav-map { position: absolute; inset: 0; }
+    #map { height: 100%; }
+
+    .nav-top {
+      position: absolute; left: 0; right: 0; top: 0; z-index: 500;
+      padding: 10px 10px 0;
+    }
+    .glass {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgb(255 255 255 / 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgb(0 0 0 / 0.14);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .glass .cardicon {
+      flex: none;
+      width: 34px; height: 34px; border-radius: 10px;
+      display: grid; place-items: center;
+      background: rgb(42 157 143 / 0.12); color: var(--brand);
+    }
+    .glass .cardicon.ok { background: rgb(22 163 74 / 0.12); color: #16a34a; }
+    .glass .cardicon svg { width: 19px; height: 19px; }
+    .glass .who { flex: 1; min-width: 0; }
+    .glass .who b { display: block; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .glass .who span { display: block; font-size: 12px; color: var(--muted); }
+    .glass .eta { flex: none; text-align: right; }
+    .glass .eta b { display: block; font-size: 16px; font-weight: 700; color: var(--navy); }
+    .glass .eta span { display: block; font-size: 11px; color: #9ca3af; }
+
+    .nav-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+    .nav-controls .left { display: flex; align-items: center; gap: 8px; }
+    .speed {
+      padding: 8px 12px; border-radius: 20px;
+      background: rgb(38 70 83 / 0.88); color: #fff;
+      font-size: 13px; font-weight: 600;
+    }
+    .sos {
+      display: flex; align-items: center; gap: 5px;
+      padding: 8px 12px; border: 0; border-radius: 20px;
+      background: var(--red); color: #fff;
+      font: 800 13px Roboto, sans-serif; letter-spacing: 0.5px;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.26); cursor: pointer;
+    }
+    .sos svg { width: 16px; height: 16px; }
+    .sos.sent { background: #16a34a; font-weight: 700; letter-spacing: 0; }
+    .circlebtn {
+      width: 38px; height: 38px;
+      display: grid; place-items: center;
+      border: 0; border-radius: 50%;
+      background: #fff; color: var(--muted);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.16); cursor: pointer;
+    }
+    .circlebtn.on { color: var(--brand); }
+    .circlebtn svg { width: 19px; height: 19px; }
+
+    /* The stop sheet, draggable between three snap points. */
+    .sheet-stops {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 520;
+      height: 42%;
+      display: flex; flex-direction: column;
+      border-radius: 20px 20px 0 0;
+      border: 0.5px solid var(--line);
+      background: #fff;
+      box-shadow: 0 -4px 20px rgb(0 0 0 / 0.10);
+      transition: height 200ms cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    .sheet-stops.dragging { transition: none; }
+    .sheet-head {
+      flex: none; padding: 8px 16px 10px;
+      border-bottom: 1px solid var(--line);
+      cursor: grab; touch-action: none;
+    }
+    .grabber { width: 36px; height: 4px; margin: 0 auto 10px; border-radius: 2px; background: #d6dade; }
+    .sheet-head-row { display: flex; align-items: center; gap: 10px; }
+    .sheet-head-row b { flex: 1; font-size: 15px; font-weight: 700; }
+    .sheet-head-row button {
+      border: 0; background: none; color: var(--brand);
+      font: 600 13px Roboto, sans-serif; cursor: pointer; padding: 4px 6px;
+    }
+    .sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    .stoprow { border-bottom: 1px solid var(--line); }
+    .stoprow-main { display: flex; align-items: center; gap: 14px; padding: 12px 16px; cursor: pointer; }
+    .stopnum {
+      flex: none; width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--brand); color: #fff; font-size: 11px; font-weight: 600;
+    }
+    .stoprow.done .stopnum { background: #16a34a; }
+    .stoprow-main .txt { flex: 1; min-width: 0; }
+    .stoprow-main .txt b { display: block; font-size: 15px; font-weight: 400; }
+    .stoprow-main .txt span { display: block; font-size: 12px; color: var(--muted); }
+    .stoprow-main .tick { flex: none; color: #c8ccd2; }
+    .stoprow.done .tick { color: #16a34a; }
+    .stoprow-main .tick svg { width: 22px; height: 22px; }
+
+    .ordercheck {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 4px 16px 4px 56px; cursor: pointer;
+    }
+    .ordercheck input { margin: 3px 0 0; width: 17px; height: 17px; accent-color: #16a34a; }
+    .ordercheck .txt b { display: block; font-size: 13px; font-weight: 400; }
+    .ordercheck .txt span { display: block; font-size: 11px; color: var(--muted); }
+
+    .confirmwrap { padding: 4px 16px 12px 56px; }
+    .confirmbtn {
+      width: 100%; padding: 10px;
+      border: 0; border-radius: 8px;
+      background: #16a34a; color: #fff;
+      font: 500 14px Roboto, sans-serif; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .confirmbtn[disabled] { background: #dfe2e6; color: #98a0a8; cursor: default; }
+    .toofar { padding: 0 16px 12px 56px; font-size: 11px; color: var(--muted); }
+
+    .recap { padding: 0 16px 12px 56px; }
+    .recap div { display: flex; align-items: center; gap: 6px; padding: 1px 0; font-size: 12px; color: var(--muted); }
+    .recap svg { flex: none; width: 14px; height: 14px; }
+    .recap .no span { text-decoration: line-through; }
+
+    .completebar {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 560;
+      padding: 16px; background: #fff;
+      box-shadow: 0 -4px 16px rgb(0 0 0 / 0.1);
+    }
+    .completebar button {
+      width: 100%; height: 50px;
+      display: grid; place-items: center;
+      border: 0; border-radius: 10px;
+      background: #16a34a; color: #fff;
+      font: 400 18px Roboto, sans-serif; cursor: pointer;
+    }
+
+    /* ── SOS sheet ───────────────────────────────────────────────────── */
+    .sossheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 940;
+      padding: 16px 18px 18px;
+      border-radius: 20px 20px 0 0;
+      background: #fff;
+      box-shadow: 0 -6px 24px rgb(0 0 0 / 0.22);
+      transform: translateY(110%);
+      transition: transform 220ms cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    .sossheet.show { transform: none; }
+    .sossheet .top { display: flex; align-items: center; gap: 8px; }
+    .sossheet .top svg { width: 22px; height: 22px; color: var(--red); }
+    .sossheet .top b { font-size: 17px; font-weight: 700; }
+    .sossheet p { margin: 4px 0 16px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .sostypes { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sostype {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--line); border-radius: 20px;
+      background: #fff; color: var(--navy);
+      font: 600 13.5px Roboto, sans-serif; cursor: pointer;
+    }
+    .sostype svg { width: 18px; height: 18px; }
+    .sostype.on { background: var(--red); border-color: var(--red); color: #fff; }
+    .sossheet textarea {
+      width: 100%; margin-top: 14px; padding: 10px 12px;
+      border: 1px solid #b6bcc4; border-radius: 4px;
+      font: 400 14px Roboto, sans-serif; resize: none;
+    }
+    .sossheet textarea:focus { outline: 0; border-color: var(--brand); }
+    .sossend {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; margin-top: 14px; padding: 14px;
+      border: 0; border-radius: 6px;
+      background: var(--red); color: #fff;
+      font: 700 15px Roboto, sans-serif; cursor: pointer;
+    }
+    .sossend svg { width: 18px; height: 18px; }
+
+    /* ── Arrival dialog ──────────────────────────────────────────────── */
+    .dialog-scrim {
+      position: fixed; inset: 0; z-index: 960;
+      display: grid; place-items: center; padding: 30px;
+      background: rgb(0 0 0 / 0.42);
+      opacity: 0; pointer-events: none; transition: opacity 180ms ease;
+    }
+    .dialog-scrim.show { opacity: 1; pointer-events: auto; }
+    .dialog {
+      width: 100%; max-width: 320px;
+      padding: 22px 24px 12px;
+      border-radius: 6px; background: #fff;
+    }
+    .dialog h3 { margin: 0 0 12px; font-size: 20px; font-weight: 500; }
+    .dialog p { margin: 0 0 18px; font-size: 14px; color: #5f6368; line-height: 1.55; white-space: pre-line; }
+    .dialog .row { display: flex; justify-content: flex-end; gap: 8px; }
+    .dialog .row button {
+      padding: 10px 16px; border: 0; border-radius: 4px;
+      background: none; color: var(--muted);
+      font: 500 14px Roboto, sans-serif; cursor: pointer;
+    }
+    .dialog .row button.yes { background: #16a34a; color: #fff; }
+
+    /* ── Route complete ──────────────────────────────────────────────── */
+    .complete {
+      min-height: 100%;
+      display: grid; place-content: center; justify-items: center;
+      padding: 36px;
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      text-align: center;
+    }
+    .complete .ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: rgb(255 255 255 / 0.09);
+      border: 2px solid rgb(255 255 255 / 0.47);
+      color: #fff;
+    }
+    .complete .ring svg { width: 66px; height: 66px; }
+    .complete h2 { margin: 36px 0 0; font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .complete p { margin: 10px 0 0; font-size: 16px; color: rgb(255 255 255 / 0.78); }
+    .complete button {
+      width: 100%; height: 54px; margin-top: 56px;
+      border: 0; border-radius: 14px;
+      background: #fff; color: var(--brand);
+      font: 700 17px Roboto, sans-serif; cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -615,9 +841,6 @@
   <div class="splash" id="splash"><canvas id="splash-canvas"></canvas></div>
 
   <header class="appbar" id="appbar" hidden>
-    <button class="iconbtn back" id="back" aria-label="Back">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
-    </button>
     <div style="flex:1;min-width:0;">
       <h1 id="title">Today's run</h1>
       <div class="sub" id="sub"></div>
@@ -683,13 +906,45 @@
       </div>
     </section>
 
-    <section class="view" id="view-stop"></section>
-
-    <section class="view" id="view-deliver"></section>
-
     <section class="view" id="view-map">
-      <div class="map-wrap"><div id="map"></div></div>
-      <button class="fab" id="sos">SOS</button>
+      <div class="nav-map"><div id="map"></div></div>
+
+      <div class="nav-top">
+        <div class="glass" id="next-card"></div>
+        <div class="nav-controls">
+          <div class="left">
+            <span class="speed" id="speed">0 km/h</span>
+            <button type="button" class="sos" id="sos-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.3 18a2 2 0 0 0 1.7 3h16a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v5M12 17.5h.01"></path></svg>
+              SOS
+            </button>
+          </div>
+          <div class="left">
+            <button type="button" class="circlebtn on" id="follow-btn" aria-label="Recenter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
+            </button>
+            <button type="button" class="circlebtn" id="nav-profile" aria-label="Profile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-stops" id="stop-sheet">
+        <div class="sheet-head" id="sheet-head">
+          <div class="grabber"></div>
+          <div class="sheet-head-row">
+            <b id="sheet-count">0/0 stops</b>
+            <button type="button" id="sheet-reorder">Reorder</button>
+            <button type="button" id="sheet-refresh">Refresh</button>
+          </div>
+        </div>
+        <div class="sheet-body" id="sheet-body"></div>
+      </div>
+
+      <div class="completebar" id="complete-bar" hidden>
+        <button type="button" id="complete-btn">Complete Route</button>
+      </div>
     </section>
 
     <section class="view" id="view-me">
@@ -722,21 +977,13 @@
     </section>
 
     <section class="view" id="view-done">
-      <div class="done-wrap">
-        <div class="tick">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+      <div class="complete">
+        <div class="ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
         </div>
-        <h2>Run complete</h2>
-        <p>Seven stops, all signed for. The admin board has the times and the audit log has the case counts.</p>
-      </div>
-      <div class="pad">
-        <div class="card">
-          <h2>Summary</h2>
-          <div class="rows" id="summary"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn" id="return-depot">Return to depot</button>
+        <h2>Route Complete!</h2>
+        <p id="done-count">0 stops delivered</p>
+        <button type="button" id="done-btn">Done</button>
       </div>
     </section>
 
@@ -755,16 +1002,32 @@
   </nav>
 
   <div class="scrim" id="scrim"></div>
-  <div class="itemsheet" id="itemsheet"></div>
 
-  <div class="sheet" id="sheet">
-    <h3 id="sheet-title"></h3>
-    <p id="sheet-text"></p>
-    <div class="pair">
-      <button type="button" class="btn ghost" data-sheet="cancel">Cancel</button>
-      <button type="button" class="btn warn" id="sheet-go">Send</button>
+  <div class="sossheet" id="sos-sheet">
+    <div class="top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.3 18a2 2 0 0 0 1.7 3h16a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v5M12 17.5h.01"></path></svg>
+      <b>Report an emergency</b>
+    </div>
+    <p>Dispatch will be alerted, your truck marked out of service and this route ended. Any stops you have not delivered will be reassigned to another truck.</p>
+    <div class="sostypes" id="sos-types"></div>
+    <textarea id="sos-note" rows="2" maxlength="500" placeholder="Add a note (optional), e.g. flat tyre on PIE"></textarea>
+    <button type="button" class="sossend" id="sos-send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"></path></svg>
+      Send SOS
+    </button>
+  </div>
+
+  <div class="dialog-scrim" id="arrival-scrim">
+    <div class="dialog">
+      <h3>Reached?</h3>
+      <p id="arrival-body"></p>
+      <div class="row">
+        <button type="button" id="arrival-no">Not yet</button>
+        <button type="button" class="yes" id="arrival-yes">Yes, I've reached</button>
+      </div>
     </div>
   </div>
+  <div class="itemsheet" id="itemsheet"></div>
 
   <div class="toast" id="toast"></div>
 
@@ -847,7 +1110,6 @@
 
     var map = null;
     var here = 'signin';
-    var current = 0;
     var view = {
       appbar: document.getElementById('appbar'),
       navbar: document.getElementById('navbar'),
@@ -862,14 +1124,15 @@
         v.classList.toggle('is-on', v.id === 'view-' + name);
       });
       var chrome = name !== 'signin';
-      // The profile screen draws its own teal header, so the app bar steps aside.
-      view.appbar.hidden = !chrome || name === 'me';
-      view.navbar.hidden = !chrome || name === 'stop' || name === 'deliver' || name === 'done';
-      view.appbar.classList.toggle('has-back', name === 'stop' || name === 'deliver');
+      // The profile screen draws its own teal header and the navigation screen
+      // is full bleed, so the app bar steps aside for both. The nav pill goes
+      // too while navigating, the way pushing a page hides it on the phone.
+      view.appbar.hidden = !chrome || name === 'me' || name === 'map' || name === 'done';
+      view.navbar.hidden = !chrome || name === 'map' || name === 'done';
       view.title.textContent = opts.title || 'My Route';
       view.sub.textContent = opts.sub === undefined ? '' : opts.sub;
       document.getElementById('body').scrollTop = 0;
-      if (name === 'map') drawMap();
+      if (name === 'map') paintNav();
       if (name === 'run') paintRun();
     }
 
@@ -894,9 +1157,12 @@
     function done() { return stops.filter(function (s) { return s.state === 'done'; }).length; }
 
     function icon(path, cls) {
-      return '<svg ' + (cls ? 'class="' + cls + '" ' : '') +
-        'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-        'stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+      // A second argument that looks like a colour paints the stroke; anything
+      // else is treated as a class, which is how the route card uses it.
+      var colour = cls && cls.charAt(0) === '#';
+      return '<svg ' + (cls && !colour ? 'class="' + cls + '" ' : '') +
+        'viewBox="0 0 24 24" fill="none" stroke="' + (colour ? cls : 'currentColor') + '" ' +
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
     }
 
     var I = {
@@ -908,7 +1174,13 @@
       swap: '<path d="M7 16V4"></path><path d="m3 8 4-4 4 4"></path><path d="M17 8v12"></path><path d="m21 16-4 4-4-4"></path>',
       check: '<path d="M20 6 9 17l-5-5"></path>',
       chev: '<path d="m9 18 6-6-6-6"></path>',
-      grip: '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line>'
+      grip: '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line>',
+      checkCircle: '<circle cx="12" cy="12" r="10"></circle><path d="m8 12 3 3 5-6"></path>',
+      circle: '<circle cx="12" cy="12" r="9"></circle>',
+      cancel: '<circle cx="12" cy="12" r="10"></circle><path d="m9 9 6 6M15 9l-6 6"></path>',
+      wrench: '<path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 0 1 5.4-5.4l-2.5 2.5 2.1 2.1 2.5-2.5a4 4 0 0 1-5.1-5.1z"></path>',
+      crash: '<path d="M5 17h14"></path><path d="M6 17v-4l2-5h8l2 5v4"></path><circle cx="8" cy="18" r="1.6"></circle><circle cx="16" cy="18" r="1.6"></circle><path d="m12 3-1.5 3h3L12 9"></path>',
+      question: '<circle cx="12" cy="12" r="10"></circle><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7"></path><path d="M12 17h.01"></path>'
     };
 
     function totalTos() {
@@ -1100,210 +1372,514 @@
       slide.style.left = 'calc(' + (i * 100 / tabs.length) + '% + 8px)';
     }
 
-    /* One stop ------------------------------------------------------------- */
+    /* Navigation -----------------------------------------------------------
+       The driver's working screen once a route starts: a full-bleed map with
+       floating overlays, and a stop sheet that drags between three heights.
+       Deliveries are ticked off inline on the stop rather than behind another
+       screen, which is what the real page does. */
 
-    function openStop(i) {
-      current = i;
-      var s = stops[i];
+    var NAV = {
+      following: true,
+      speed: 0,
+      here: null,          // the truck's position
+      sosType: 'breakdown',
+      sosActive: false,
+      reordering: false,
+      checks: {}           // stopIndex -> { orderRef: delivered }
+    };
 
-      document.getElementById('view-stop').innerHTML =
-        '<div class="pad">' +
-          '<div class="card">' +
-            '<h2>Delivery address</h2>' +
-            '<div class="text">' + s.addr + '</div>' +
-          '</div>' +
-          '<div class="card">' +
-            '<h2>Manifest, ' + s.po + '</h2>' +
-            '<div class="rows">' +
-              s.lines.map(function (l) {
-                return '<div class="row"><span>' + l[0] + '</span><span>' + l[1] + ' cases</span></div>';
-              }).join('') +
-              '<div class="row total"><span>Total</span><span>' + s.cases + ' cases</span></div>' +
-            '</div>' +
-          '</div>' +
-          (s.state === 'done' ? '<div class="card"><h2>Signed for</h2><div class="rows">' +
-            '<div class="row"><span>Arrived</span><span>' + s.at + '</span></div>' +
-            '<div class="row"><span>Accepted</span><span>' + (s.signed === null ? s.cases : s.signed) + ' cases</span></div>' +
-            '</div></div>' : '') +
-        '</div>' +
-        '<div class="actions">' +
-          (s.state === 'done'
-            ? '<button type="button" class="btn" disabled>Delivered ' + s.at + '</button>'
-            : '<button type="button" class="btn" data-act="arrive" data-i="' + i + '">Arrived at stop</button>' +
-              '<button type="button" class="btn ghost" data-act="navigate">Navigate</button>') +
-        '</div>';
-
-      show('stop', { title: s.name, sub: 'Stop ' + (i + 1) + ' of ' + stops.length });
+    // Every order starts ticked: the common case is that it all went in.
+    function checksFor(i) {
+      if (!NAV.checks[i]) {
+        NAV.checks[i] = {};
+        stops[i].tos.forEach(function (t) { NAV.checks[i][t.ref] = true; });
+      }
+      return NAV.checks[i];
     }
 
-    /* Handing over --------------------------------------------------------- */
-
-    function openDeliver(i) {
-      current = i;
-      var s = stops[i];
-
-      document.getElementById('view-deliver').innerHTML =
-        '<div class="pad">' +
-          '<div class="card">' +
-            '<h2>Cases accepted</h2>' +
-            '<div class="count">' +
-              '<button type="button" data-step="-1" aria-label="One less">-</button>' +
-              '<input id="accepted" type="text" inputmode="numeric" value="' + s.cases + '">' +
-              '<button type="button" data-step="1" aria-label="One more">+</button>' +
-              '<span class="of">of ' + s.cases + ' sent</span>' +
-            '</div>' +
-            '<div class="short" id="short" hidden></div>' +
-          '</div>' +
-          '<div class="card">' +
-            '<h2>Outlet signature</h2>' +
-            '<div class="sign">' +
-              '<canvas id="pad" width="600" height="260"></canvas>' +
-              '<div class="hint"><span id="sign-hint">Sign inside the box</span><button type="button" id="clear">Clear</button></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="actions">' +
-          '<button type="button" class="btn" id="confirm" disabled>Confirm delivery</button>' +
-          '<button type="button" class="btn ghost" data-act="back-stop">Back</button>' +
-        '</div>';
-
-      show('deliver', { title: 'Hand over', sub: s.name });
-      wirePad(s);
+    function metres(a, b) {
+      var R = 6371000;
+      var dLat = (b[0] - a[0]) * Math.PI / 180;
+      var dLng = (b[1] - a[1]) * Math.PI / 180;
+      var la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
+      var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return 2 * R * Math.asin(Math.sqrt(h));
     }
 
-    function wirePad(s) {
-      var canvas = document.getElementById('pad');
-      var ctx = canvas.getContext('2d');
-      var drawing = false;
-      var signed = false;
+    // The same geofence the app uses before it will let a stop be confirmed.
+    var ARRIVAL_RADIUS_M = 80;
 
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 3.2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+    function distanceTo(s) {
+      return NAV.here ? metres(NAV.here, [s.lat, s.lng]) : null;
+    }
 
-      function at(event) {
-        var r = canvas.getBoundingClientRect();
-        return [
-          (event.clientX - r.left) * (canvas.width / r.width),
-          (event.clientY - r.top) * (canvas.height / r.height)
-        ];
+    function inRange(s) {
+      var d = distanceTo(s);
+      return d === null || d <= ARRIVAL_RADIUS_M;
+    }
+
+    function nextStop() {
+      for (var i = 0; i < stops.length; i++) {
+        if (stops[i].state !== 'done') return i;
+      }
+      return -1;
+    }
+
+    function visitedCount() {
+      return stops.filter(function (s) { return s.state === 'done'; }).length;
+    }
+
+    /* ---- the next stop card ---- */
+
+    function paintNextCard() {
+      var i = nextStop();
+      var el = document.getElementById('next-card');
+
+      if (i === -1) {
+        el.innerHTML =
+          '<span class="cardicon ok">' + icon(I.check) + '</span>' +
+          '<div class="who"><b>All stops complete</b></div>';
+        return;
       }
 
-      canvas.addEventListener('pointerdown', function (event) {
-        drawing = true;
-        canvas.setPointerCapture(event.pointerId);
-        var p = at(event);
-        ctx.beginPath();
-        ctx.moveTo(p[0], p[1]);
-        event.preventDefault();
-      });
-
-      canvas.addEventListener('pointermove', function (event) {
-        if (!drawing) return;
-        var p = at(event);
-        ctx.lineTo(p[0], p[1]);
-        ctx.stroke();
-        if (!signed) {
-          signed = true;
-          document.getElementById('confirm').disabled = false;
-          document.getElementById('sign-hint').textContent = 'Signed';
-        }
-      });
-
-      canvas.addEventListener('pointerup', function () { drawing = false; });
-      canvas.addEventListener('pointercancel', function () { drawing = false; });
-
-      document.getElementById('clear').addEventListener('click', function () {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        signed = false;
-        document.getElementById('confirm').disabled = true;
-        document.getElementById('sign-hint').textContent = 'Sign inside the box';
-      });
-
-      var input = document.getElementById('accepted');
-
-      function sync() {
-        var n = Math.max(0, Math.min(s.cases, Number(input.value) || 0));
-        input.value = n;
-        var short = document.getElementById('short');
-        short.hidden = n === s.cases;
-        short.textContent = (s.cases - n) + ' case' + (s.cases - n === 1 ? '' : 's') +
-          ' short. This raises a short delivery against ' + s.po + ' and the outlet signs for what arrived.';
+      var s = stops[i];
+      var d = distanceTo(s);
+      // A rough ETA off the remaining distance at the speed being driven.
+      var mins = d === null ? null : Math.max(0, Math.round(d / 1000 / 28 * 60));
+      var clock = '';
+      if (mins !== null) {
+        var at = new Date(Date.now() + mins * 60000);
+        clock = ('0' + at.getHours()).slice(-2) + ':' + ('0' + at.getMinutes()).slice(-2);
       }
 
-      input.addEventListener('input', sync);
-      document.querySelector('.count').addEventListener('click', function (event) {
-        var btn = event.target.closest('[data-step]');
-        if (!btn) return;
-        input.value = Number(input.value || 0) + Number(btn.dataset.step);
-        sync();
-      });
+      el.innerHTML =
+        '<span class="cardicon">' + icon(I.nav) + '</span>' +
+        '<div class="who"><b>' + s.name + '</b>' +
+        '<span>Next stop \u00b7 ' + s.tos.length + (s.tos.length === 1 ? ' order' : ' orders') + '</span></div>' +
+        (mins === null ? '' :
+          '<div class="eta"><b>' + (mins <= 0 ? 'Now' : mins + ' min') + '</b><span>' + clock + '</span></div>');
+    }
 
-      document.getElementById('confirm').addEventListener('click', function () {
-        var accepted = Number(input.value) || 0;
-        s.signed = accepted;
-        s.state = 'done';
-        s.at = clockNow();
-        if (stops[current + 1]) stops[current + 1].state = 'next';
+    /* ---- the stop sheet ---- */
 
-        show('run');
-        if (accepted < s.cases) {
-          toast('Signed for ' + accepted + ' of ' + s.cases + '. Short delivery logged against ' + s.po + '.');
+    function paintSheet() {
+      document.getElementById('sheet-count').textContent =
+        visitedCount() + '/' + stops.length + ' stops';
+
+      var body = document.getElementById('sheet-body');
+
+      if (NAV.reordering) {
+        var pending = stops.filter(function (s) { return s.state !== 'done'; });
+        body.innerHTML =
+          '<p style="margin:0;padding:10px 16px 6px;font-size:12px;color:var(--muted);">' +
+          'Drag a stop to change the order you deliver in. The route redraws and the outlet is told as soon as you drop it.</p>' +
+          stops.map(function (s, i) {
+            var done = s.state === 'done';
+            return '<div class="stoprow' + (done ? ' done' : '') + '"' +
+              (done ? '' : ' draggable="true" data-drag="' + i + '"') + '>' +
+              '<div class="stoprow-main">' +
+                '<span class="stopnum">' + (i + 1) + '</span>' +
+                '<span class="txt"><b>' + s.name + '</b>' +
+                '<span>' + s.tos.length + (s.tos.length === 1 ? ' order' : ' orders') + '</span></span>' +
+                (done ? '' : '<span class="tick">' + icon(I.grip) + '</span>') +
+              '</div></div>';
+          }).join('');
+        return;
+      }
+
+      body.innerHTML = stops.map(function (s, i) {
+        var done = s.state === 'done';
+        var d = distanceTo(s);
+        var ok = inRange(s);
+
+        var sub;
+        if (done) {
+          var delivered = s.tos.filter(function (t) { return t.delivered !== false; }).length;
+          sub = 'Delivered ' + delivered + '/' + s.tos.length + (s.at ? ' \u00b7 ' + s.at : '');
         } else {
-          toast('Delivered. The control center shows the stop as done straight away.');
+          var mins = d === null ? null : Math.max(0, Math.round(d / 1000 / 28 * 60));
+          sub = mins === null ? '' : (mins <= 0 ? 'Now' : mins + ' min');
         }
-        if (done() === stops.length) setTimeout(finish, 900);
+
+        var row = '<div class="stoprow' + (done ? ' done' : '') + '" data-stop="' + i + '">' +
+          '<div class="stoprow-main" data-tap="' + i + '">' +
+            '<span class="stopnum">' + (i + 1) + '</span>' +
+            '<span class="txt"><b>' + s.name + '</b>' +
+            (sub ? '<span>' + sub + '</span>' : '') + '</span>' +
+            '<span class="tick">' + icon(done ? I.checkCircle : I.circle) + '</span>' +
+          '</div>';
+
+        if (!done && s.tos.length) {
+          var checks = checksFor(i);
+          row += s.tos.map(function (t) {
+            var qty = t.items.reduce(function (n, it) { return n + it[2]; }, 0);
+            return '<label class="ordercheck">' +
+              '<input type="checkbox" data-check="' + i + '.' + t.ref + '"' +
+              (checks[t.ref] ? ' checked' : '') + '>' +
+              '<span class="txt"><b>' + t.ref + '</b>' +
+              '<span>' + t.items.length + ' items \u00b7 ' + qty + ' qty</span></span></label>';
+          }).join('');
+
+          row += '<div class="confirmwrap"><button type="button" class="confirmbtn" data-confirm="' + i + '"' +
+            (ok ? '' : ' disabled') + '>Confirm &amp; mark reached</button></div>';
+
+          if (!ok && d !== null) {
+            row += '<div class="toofar">Move closer to confirm, ' + Math.round(d) + ' m away</div>';
+          }
+        }
+
+        if (done && s.tos.length) {
+          row += '<div class="recap">' + s.tos.map(function (t) {
+            var yes = t.delivered !== false;
+            return '<div' + (yes ? '' : ' class="no"') + '>' +
+              icon(yes ? I.checkCircle : I.cancel, yes ? '#16a34a' : '#dc2626') +
+              '<span>' + t.ref + '</span></div>';
+          }).join('') + '</div>';
+        }
+
+        return row + '</div>';
+      }).join('');
+    }
+
+    function paintNav() {
+      paintNextCard();
+      paintSheet();
+      drawMap();
+
+      var allDone = visitedCount() === stops.length;
+      document.getElementById('complete-bar').hidden = !allDone;
+      document.getElementById('stop-sheet').style.bottom = allDone ? '82px' : '0';
+    }
+
+    /* ---- confirming a stop ---- */
+
+    function confirmStop(i) {
+      var s = stops[i];
+      var checks = checksFor(i);
+      s.tos.forEach(function (t) { t.delivered = checks[t.ref] !== false; });
+      s.state = 'done';
+      s.at = clockNow();
+      if (stops[i + 1]) stops[i + 1].state = 'next';
+
+      var short = s.tos.filter(function (t) { return t.delivered === false; }).length;
+      paintNav();
+      toast(short
+        ? s.name + ' marked reached, ' + short + ' order(s) flagged not delivered. Dispatch sees it on the audit log.'
+        : s.name + ' marked reached. The outlet is told and dispatch sees the arrival.');
+
+      if (visitedCount() === stops.length) {
+        setTimeout(function () {
+          document.getElementById('done-count').textContent =
+            stops.length + (stops.length === 1 ? ' stop delivered' : ' stops delivered');
+        }, 0);
+      }
+    }
+
+    /* ---- the arrival prompt ---- */
+
+    var arrivalFor = null;
+
+    function askArrival(i) {
+      arrivalFor = i;
+      document.getElementById('arrival-body').textContent =
+        'You appear to have reached ' + stops[i].name + '.\nMark as reached?';
+      document.getElementById('arrival-scrim').classList.add('show');
+    }
+
+    document.getElementById('arrival-no').addEventListener('click', function () {
+      document.getElementById('arrival-scrim').classList.remove('show');
+      arrivalFor = null;
+    });
+    document.getElementById('arrival-yes').addEventListener('click', function () {
+      document.getElementById('arrival-scrim').classList.remove('show');
+      if (arrivalFor !== null) confirmStop(arrivalFor);
+      arrivalFor = null;
+    });
+
+    /* ---- the sheet's own drag, between the three snap heights ---- */
+
+    (function () {
+      var sheet = document.getElementById('stop-sheet');
+      var head = document.getElementById('sheet-head');
+      var SNAPS = [16, 42, 90];
+      var drag = null;
+
+      head.addEventListener('pointerdown', function (event) {
+        drag = { y: event.clientY, from: sheet.getBoundingClientRect().height };
+        sheet.classList.add('dragging');
+        head.setPointerCapture(event.pointerId);
       });
+
+      head.addEventListener('pointermove', function (event) {
+        if (!drag) return;
+        var h = drag.from + (drag.y - event.clientY);
+        var pct = Math.max(10, Math.min(94, h / window.innerHeight * 100));
+        sheet.style.height = pct + '%';
+      });
+
+      function settle() {
+        if (!drag) return;
+        drag = null;
+        sheet.classList.remove('dragging');
+        var pct = sheet.getBoundingClientRect().height / window.innerHeight * 100;
+        var best = SNAPS[0];
+        SNAPS.forEach(function (sn) {
+          if (Math.abs(sn - pct) < Math.abs(best - pct)) best = sn;
+        });
+        sheet.style.height = best + '%';
+      }
+
+      head.addEventListener('pointerup', settle);
+      head.addEventListener('pointercancel', settle);
+    }());
+
+    /* ---- sheet actions ---- */
+
+    document.getElementById('sheet-body').addEventListener('change', function (event) {
+      var box = event.target.closest('[data-check]');
+      if (!box) return;
+      var parts = box.dataset.check.split('.');
+      checksFor(Number(parts[0]))[parts[1]] = box.checked;
+    });
+
+    document.getElementById('sheet-body').addEventListener('click', function (event) {
+      var go = event.target.closest('[data-confirm]');
+      if (go && !go.disabled) {
+        go.disabled = true;
+        go.innerHTML = '<span class="spinner" style="width:18px;height:18px;"></span>';
+        var i = Number(go.dataset.confirm);
+        setTimeout(function () { confirmStop(i); }, 700);
+        return;
+      }
+
+      var tap = event.target.closest('[data-tap]');
+      if (!tap) return;
+      var n = Number(tap.dataset.tap);
+      var s = stops[n];
+
+      if (s.state === 'done') {
+        // Un-marking is correcting a mistake, so it is allowed from anywhere.
+        s.tos.forEach(function (t) { delete t.delivered; });
+        s.state = n === nextStop() ? 'next' : 'queued';
+        delete NAV.checks[n];
+        paintNav();
+        return;
+      }
+      if (!inRange(s)) {
+        toast('Move closer to confirm, ' + Math.round(distanceTo(s)) + ' m from ' + s.name + '.');
+        return;
+      }
+      askArrival(n);
+    });
+
+    document.getElementById('sheet-refresh').addEventListener('click', function () {
+      paintNav();
+      toast('Route refreshed. Nothing new from dispatch.');
+    });
+
+    document.getElementById('sheet-reorder').addEventListener('click', function () {
+      NAV.reordering = !NAV.reordering;
+      this.textContent = NAV.reordering ? 'Done' : 'Reorder';
+      paintSheet();
+    });
+
+    // Dragging a pending stop into a new position. The route redraws behind it.
+    var dragFrom = null;
+    document.getElementById('sheet-body').addEventListener('dragstart', function (event) {
+      var row = event.target.closest('[data-drag]');
+      if (!row) return;
+      dragFrom = Number(row.dataset.drag);
+      event.dataTransfer.effectAllowed = 'move';
+    });
+    document.getElementById('sheet-body').addEventListener('dragover', function (event) {
+      if (dragFrom !== null) event.preventDefault();
+    });
+    document.getElementById('sheet-body').addEventListener('drop', function (event) {
+      var row = event.target.closest('[data-drag]');
+      if (!row || dragFrom === null) return;
+      event.preventDefault();
+      var to = Number(row.dataset.drag);
+      if (to !== dragFrom) {
+        stops.splice(to, 0, stops.splice(dragFrom, 1)[0]);
+        NAV.checks = {};
+        paintNav();
+        toast('Stop order changed. The route redraws and the outlet is told.');
+      }
+      dragFrom = null;
+    });
+
+    /* ---- controls ---- */
+
+    document.getElementById('follow-btn').addEventListener('click', function () {
+      NAV.following = !NAV.following;
+      this.classList.toggle('on', NAV.following);
+      if (NAV.following && NAV.here && map) map.panTo(NAV.here);
+    });
+
+    document.getElementById('nav-profile').addEventListener('click', function () {
+      slideNav(document.querySelector('[data-go="me"]'));
+      show('me');
+    });
+
+    document.getElementById('complete-btn').addEventListener('click', function () {
+      var btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+      setTimeout(function () {
+        btn.disabled = false;
+        btn.textContent = 'Complete Route';
+        document.getElementById('done-count').textContent =
+          stops.length + (stops.length === 1 ? ' stop delivered' : ' stops delivered');
+        show('done');
+      }, 800);
+    });
+
+    document.getElementById('done-btn').addEventListener('click', function () {
+      routeStatus = 'pending';
+      stops.forEach(function (s, i) {
+        s.state = i === 0 ? 'next' : 'queued';
+        s.at = '';
+        s.tos.forEach(function (t) { delete t.delivered; });
+      });
+      NAV.checks = {};
+      NAV.sosActive = false;
+      paintRun();
+      slideNav(document.querySelector('[data-go="run"]'));
+      show('run');
+    });
+
+    /* ---- SOS ---- */
+
+    var SOS_TYPES = [
+      { key: 'breakdown', label: 'Breakdown', icon: I.wrench },
+      { key: 'accident', label: 'Accident', icon: I.crash },
+      { key: 'other', label: 'Other', icon: I.question }
+    ];
+
+    function paintSosTypes() {
+      document.getElementById('sos-types').innerHTML = SOS_TYPES.map(function (t) {
+        return '<button type="button" class="sostype' + (NAV.sosType === t.key ? ' on' : '') +
+          '" data-sos="' + t.key + '">' + icon(t.icon) + t.label + '</button>';
+      }).join('');
     }
+    paintSosTypes();
 
-    function clockNow() {
-      var d = new Date();
-      return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-    }
+    var sosSheet = document.getElementById('sos-sheet');
 
-    function finish() {
-      var short = stops.reduce(function (n, s) {
-        return n + (s.signed !== null ? s.cases - s.signed : 0);
-      }, 0);
-      var sent = stops.reduce(function (n, s) { return n + s.cases; }, 0);
+    document.getElementById('sos-btn').addEventListener('click', function () {
+      if (NAV.sosActive) return;
+      sosSheet.classList.add('show');
+      scrim.classList.add('show');
+    });
 
-      document.getElementById('summary').innerHTML =
-        '<div class="row"><span>Trip</span><span>' + TRIP_LABEL + '</span></div>' +
-        '<div class="row"><span>Stops</span><span>' + stops.length + '</span></div>' +
-        '<div class="row"><span>Cases out</span><span>' + sent + '</span></div>' +
-        '<div class="row"><span>Signed for</span><span>' + (sent - short) + '</span></div>' +
-        '<div class="row total"><span>Short</span><span>' + short + '</span></div>';
+    document.getElementById('sos-types').addEventListener('click', function (event) {
+      var b = event.target.closest('[data-sos]');
+      if (!b) return;
+      NAV.sosType = b.dataset.sos;
+      paintSosTypes();
+    });
 
-      show('done', { title: 'Run complete', sub: TRIP_LABEL });
-    }
+    document.getElementById('sos-send').addEventListener('click', function () {
+      sosSheet.classList.remove('show');
+      scrim.classList.remove('show');
+      NAV.sosActive = true;
 
-    /* Map ------------------------------------------------------------------ */
+      var btn = document.getElementById('sos-btn');
+      btn.classList.add('sent');
+      btn.innerHTML = icon(I.checkCircle) + 'Help on the way';
+
+      var left = stops.filter(function (s) { return s.state !== 'done'; }).length;
+      toast('SOS raised. The truck is out of service, this route is closed, and the ' +
+        left + ' stop(s) still to do go back to dispatch to reassign.');
+    });
+
+    /* ---- the map ---- */
 
     function drawMap() {
       if (!map) {
-        map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 12);
+        map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 13);
         basemap(map);
         map.pins = L.layerGroup().addTo(map);
       }
       map.pins.clearLayers();
 
       var line = stops.map(function (s) { return [s.lat, s.lng]; });
-      L.polyline(line, { color: '#2a9d8f', weight: 4 }).addTo(map.pins);
+      L.polyline(line, { color: '#2a9d8f', weight: 5, opacity: 0.9 }).addTo(map.pins);
+
+      // A teardrop pin with a white casing, its tip on the coordinate.
       stops.forEach(function (s, i) {
-        var fill = s.state === 'done' ? '#2a9d8f' : s.state === 'next' ? '#d97706' : '#94a3b8';
+        var done = s.state === 'done';
+        var fill = done ? '#16a34a' : s.state === 'next' ? '#f4a261' : '#2a9d8f';
         L.marker([s.lat, s.lng], {
           icon: L.divIcon({
-            className: '', iconSize: [24, 24], iconAnchor: [12, 12],
-            html: '<div style="width:24px;height:24px;border-radius:50%;background:' + fill +
-              ';color:#fff;font:700 12px/24px Roboto,sans-serif;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.35)">' + (i + 1) + '</div>'
+            className: '', iconSize: [30, 38], iconAnchor: [15, 38],
+            html: '<div style="width:30px;height:38px;position:relative;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))">' +
+              '<div style="position:absolute;inset:0 0 6px 0;border-radius:50% 50% 50% 50%/58% 58% 42% 42%;background:#fff"></div>' +
+              '<div style="position:absolute;left:50%;bottom:2px;width:0;height:0;margin-left:-5px;' +
+              'border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff"></div>' +
+              '<div style="position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:' + fill +
+              ';color:#fff;font:700 11px/22px Roboto,sans-serif;text-align:center">' + (i + 1) + '</div></div>'
           })
-        }).bindPopup('<strong>' + s.name + '</strong><br>' + s.cases + ' cases').addTo(map.pins);
+        }).bindPopup('<strong>' + s.name + '</strong><br>' + s.addr).addTo(map.pins);
       });
-      map.fitBounds(L.polyline(line).getBounds(), { padding: [34, 34] });
+
+      if (NAV.here) {
+        L.marker(NAV.here, {
+          icon: L.divIcon({
+            className: '', iconSize: [0, 0], iconAnchor: [0, 0],
+            html: '<div class="cc-driver-avatar"><span class="cc-driver-disc" style="background:#264653">' +
+              '<img src="assets/vehicles/truck.png" alt="" onerror="this.style.display=\'none\'"></span>' +
+              '<span class="cc-driver-pin" style="background:#264653">' + TRIP.plate + '</span></div>'
+          }),
+          zIndexOffset: 1000
+        }).addTo(map.pins);
+      }
+
+      if (!map.fitted) {
+        map.fitBounds(L.polyline(line).getBounds(), { padding: [50, 50] });
+        map.fitted = true;
+      }
       setTimeout(function () { map.invalidateSize(); }, 60);
     }
 
+    /* The GPS the driver app would be reporting. The truck creeps towards the
+       stop it is heading for, and the arrival prompt fires when it lands
+       inside the geofence, the same trigger the real screen uses. */
+    setInterval(function () {
+      if (document.querySelector('.view.is-on').id !== 'view-map') return;
+
+      var i = nextStop();
+      if (i === -1) { NAV.speed = 0; document.getElementById('speed').textContent = '0 km/h'; return; }
+
+      var target = [stops[i].lat, stops[i].lng];
+      if (!NAV.here) NAV.here = [stops[0].lat - 0.02, stops[0].lng - 0.02];
+
+      NAV.here = [
+        NAV.here[0] + (target[0] - NAV.here[0]) * 0.12,
+        NAV.here[1] + (target[1] - NAV.here[1]) * 0.12
+      ];
+
+      var away = metres(NAV.here, target);
+      NAV.speed = away > 400 ? 38 + Math.round(Math.sin(Date.now() / 3000) * 8) : Math.round(away / 30);
+      document.getElementById('speed').textContent = NAV.speed + ' km/h';
+
+      if (NAV.following && map) map.panTo(NAV.here, { animate: true, duration: 0.8 });
+
+      paintNextCard();
+      paintSheet();
+      drawMap();
+
+      if (away <= ARRIVAL_RADIUS_M && arrivalFor === null &&
+          !document.getElementById('arrival-scrim').classList.contains('show')) {
+        askArrival(i);
+      }
+    }, 2500);
+
+    function clockNow() {
+      var d = new Date();
+      return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+    }
 
     /* Splash ---------------------------------------------------------------
        A port of the Flutter painter: one cubic arc, drawn as dashes that
@@ -1583,38 +2159,6 @@
       }, 900);
     });
 
-    document.getElementById('body').addEventListener('click', function (event) {
-      if (event.target.closest('#view-run')) return;
-
-      var tile = event.target.closest('[data-stop]');
-      if (tile) { openStop(Number(tile.dataset.stop)); return; }
-
-      var act = event.target.closest('[data-act]');
-      if (!act) return;
-
-      switch (act.dataset.act) {
-        case 'arrive':
-          openDeliver(Number(act.dataset.i));
-          break;
-        case 'navigate':
-          toast('Hands the stop to the phone\'s navigation app.');
-          break;
-        case 'back-stop':
-          openStop(current);
-          break;
-        case 'raise':
-          sheet('Raise an incident', 'Sends the type, the stop and the truck position to the admins. They see it on the incidents board within seconds.', 'Raise', function () {
-            toast('Incident raised against ' + stops[done()].name + '. An admin is on it.');
-          });
-          break;
-      }
-    });
-
-    document.getElementById('back').addEventListener('click', function () {
-      if (here === 'deliver') openStop(current);
-      else show('run');
-    });
-
     document.getElementById('refresh').addEventListener('click', function () {
       toast('Run refreshed. Nothing new from the admin board.');
     });
@@ -1626,10 +2170,6 @@
       btn.classList.add('is-on');
       slideNav(btn);
       show(btn.dataset.go);
-    });
-
-    document.getElementById('return-depot').addEventListener('click', function () {
-      toast('Heading back to Joo Koon. The trip closes when the truck is back.');
     });
 
     document.getElementById('signout').addEventListener('click', function () {
@@ -1661,32 +2201,6 @@
       document.getElementById('pf-langval').textContent = pick.dataset.lang;
       closeItems();
       toast('The whole app switches language at once, the server’s own text stays as it came.');
-    });
-
-    /* SOS sheet */
-    var sheetEl = document.getElementById('sheet');
-    var sheetGo = null;
-
-    function sheet(title, text, label, go) {
-      document.getElementById('sheet-title').textContent = title;
-      document.getElementById('sheet-text').textContent = text;
-      document.getElementById('sheet-go').textContent = label;
-      sheetGo = go;
-      sheetEl.classList.add('show');
-    }
-
-    document.getElementById('sos').addEventListener('click', function () {
-      sheet('Send an SOS', 'Every admin on duty gets a push with your position and the truck. Use it for a breakdown, an accident or anything unsafe.', 'Send SOS', function () {
-        toast('SOS sent. Admins have your position and the trip.');
-      });
-    });
-
-    sheetEl.addEventListener('click', function (event) {
-      if (event.target.closest('[data-sheet="cancel"]')) sheetEl.classList.remove('show');
-      if (event.target.closest('#sheet-go')) {
-        sheetEl.classList.remove('show');
-        if (sheetGo) sheetGo();
-      }
     });
 
     paintRun();

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incidents, Fish Farm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body data-page="incidents" data-title="Incidents" data-sub="Records">
+
+  <div id="content">
+    <div class="grid split">
+      <div class="card">
+        <div class="card-head"><div><h2>Raised</h2><p id="open-count"></p></div></div>
+        <div class="card-body" style="padding:0 0 8px;"><div id="list"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h2 id="title">.</h2><p id="sub">.</p></div>
+          <span class="pill" id="state"></span>
+        </div>
+        <div class="card-body" id="detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var TONE = { 'Open': 'bad', 'In progress': 'warn', 'Closed': 'grey' };
+    var here = 0;
+
+    function paintList() {
+      document.getElementById('open-count').textContent =
+        DATA.incidents.filter(function (i) { return i.status !== 'Closed'; }).length + ' still open';
+
+      document.getElementById('list').innerHTML = DATA.incidents.map(function (inc, i) {
+        return '<button type="button" data-i="' + i + '" style="display:grid;gap:3px;width:100%;padding:13px 18px;border:0;border-bottom:1px solid var(--ff-line);border-left:3px solid ' +
+          (i === here ? 'var(--ff-teal)' : 'transparent') + ';background:' + (i === here ? 'var(--ff-paler)' : 'none') + ';text-align:left;cursor:pointer;">' +
+          '<span style="font-size:14px;font-weight:600;">' + inc.id + ', ' + inc.type + '</span>' +
+          '<span class="dim" style="font-size:12.5px;">Cage ' + inc.cage + ', ' + inc.raised + '</span>' +
+          '<span><span class="pill ' + TONE[inc.status] + '">' + inc.status + '</span></span>' +
+          '</button>';
+      }).join('');
+    }
+
+    function open(i) {
+      here = i;
+      var inc = DATA.incidents[i];
+
+      document.getElementById('title').textContent = inc.id + ', ' + inc.type;
+      document.getElementById('sub').textContent = 'Raised by ' + inc.by + ', ' + inc.raised;
+      var state = document.getElementById('state');
+      state.textContent = inc.status;
+      state.className = 'pill ' + TONE[inc.status];
+
+      var cage = DATA.cage(inc.cage);
+      document.getElementById('detail').innerHTML =
+        '<p style="margin:0 0 16px;font-size:14.5px;line-height:1.65;">' + inc.note + '</p>' +
+        '<table><tbody>' +
+          (cage ? '<tr><td class="dim" style="width:150px;">Cage</td><td><strong>' + cage.name + '</strong>, Farm ' + cage.farm +
+            (cage.species ? ', ' + cage.species : '') + '</td></tr>' +
+            '<tr><td class="dim">Stock at risk</td><td>' + cage.stock.toLocaleString() + ' fish, ' +
+            Math.round(cage.stock * cage.avg).toLocaleString() + ' kg</td></tr>'
+            : '<tr><td class="dim" style="width:150px;">Where</td><td>' + inc.cage + '</td></tr>') +
+          '<tr><td class="dim">Type</td><td>' + inc.type + '</td></tr>' +
+          '<tr><td class="dim">Raised</td><td>' + inc.raised + '</td></tr>' +
+          '<tr><td class="dim">Raised by</td><td>' + inc.by + '</td></tr>' +
+        '</tbody></table>' +
+        (inc.status === 'Closed' ? '' :
+          '<div style="display:flex;gap:10px;margin-top:18px;">' +
+            '<button type="button" class="btn" data-close="' + i + '">Close incident</button>' +
+            '<button type="button" class="btn ghost" data-skip="Attaching a photo">Attach photo</button>' +
+          '</div>');
+
+      paintList();
+    }
+
+    document.getElementById('list').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-i]');
+      if (btn) open(Number(btn.dataset.i));
+    });
+
+    document.getElementById('detail').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-close]');
+      if (!btn) return;
+      var inc = DATA.incidents[Number(btn.dataset.close)];
+      inc.status = 'Closed';
+      inc.note += ' Closed by Maram Aashna.';
+      open(Number(btn.dataset.close));
+      window.flash(inc.id + ' closed. The crew who raised it get a notification on the app.');
+    });
+
+    open(0);
+  </script>
+</body>
+</html>

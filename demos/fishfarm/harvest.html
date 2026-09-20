@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harvest and Sales, Fish Farm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body data-page="harvest" data-title="Harvest and Sales" data-sub="Operations">
+
+  <div id="content">
+    <div class="grid g4" id="stats"></div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-head">
+        <div><h2>Harvests</h2><p>Pulled at first light, weighed on the pontoon, out on the boat by six</p></div>
+        <button type="button" class="btn" data-skip="Recording a harvest">Record harvest</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Pulled</th><th>Cage</th><th>Species</th><th class="num">Weight</th><th class="num">Pieces</th><th class="num">Avg</th><th>Condition</th><th>Buyer</th><th class="num">Value</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-head"><div><h2>Ready to book</h2><p>Cages at market weight</p></div></div>
+        <div class="card-body"><div id="ready"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h2>Where it went</h2><p>By buyer, this fortnight</p></div></div>
+        <div class="card-body"><div id="buyers"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    function value(h) {
+      var f = DATA.fish(h.species);
+      // Live fish fetch more than ice chilled, which is why the condition is
+      // on the record at all.
+      return Math.round(h.kg * f.price * (h.type === 'Live' ? 1.15 : 1));
+    }
+
+    var kg = DATA.harvests.reduce(function (n, h) { return n + h.kg; }, 0);
+    var money = DATA.harvests.reduce(function (n, h) { return n + value(h); }, 0);
+
+    document.getElementById('stats').innerHTML = [
+      ['Harvested', kg.toLocaleString() + ' kg', 'Last fortnight'],
+      ['Value', '$' + money.toLocaleString(), 'At the price each buyer pays'],
+      ['Pieces', DATA.harvests.reduce(function (n, h) { return n + h.pcs; }, 0).toLocaleString(), 'Counted out of the net'],
+      ['Live share', Math.round(DATA.harvests.filter(function (h) { return h.type === 'Live'; })
+        .reduce(function (n, h) { return n + h.kg; }, 0) / kg * 100) + '%', 'The rest goes out ice chilled']
+    ].map(function (s) {
+      return '<div class="card"><div class="stat"><div>' +
+        '<div class="label">' + s[0] + '</div><div class="value">' + s[1] + '</div><div class="sub">' + s[2] + '</div>' +
+        '</div></div></div>';
+    }).join('');
+
+    document.getElementById('rows').innerHTML = DATA.harvests.map(function (h) {
+      return '<tr>' +
+        '<td class="dim">' + h.date + '</td>' +
+        '<td><strong>' + h.cage + '</strong></td>' +
+        '<td>' + h.species + ' <span class="dim">' + DATA.fish(h.species).cn + '</span></td>' +
+        '<td class="num">' + h.kg + ' kg</td>' +
+        '<td class="num">' + h.pcs + '</td>' +
+        '<td class="num dim">' + (h.kg / h.pcs).toFixed(2) + ' kg</td>' +
+        '<td>' + (h.type === 'Live' ? '<span class="pill good">Live</span>' : '<span class="pill">Ice chilled</span>') + '</td>' +
+        '<td>' + h.buyer + '</td>' +
+        '<td class="num">$' + value(h).toLocaleString() + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var ready = DATA.cages.filter(function (c) { return c.status === 'Near harvest'; });
+    document.getElementById('ready').innerHTML = ready.map(function (c) {
+      var f = DATA.fish(c.species);
+      return '<div style="display:grid;grid-template-columns:1fr auto;gap:3px;padding:11px 0;border-bottom:1px solid var(--ff-line);">' +
+        '<div style="font-size:14px;font-weight:600;">Cage ' + c.name + ' <span class="dim" style="font-weight:400;">Farm ' + c.farm + '</span></div>' +
+        '<div><span class="pill good">' + c.avg.toFixed(2) + ' kg</span></div>' +
+        '<div class="dim" style="font-size:12.5px;">' + c.species + ', ' + c.stock.toLocaleString() + ' fish</div>' +
+        '<div class="num dim" style="font-size:12.5px;">about $' + Math.round(c.stock * c.avg * f.price).toLocaleString() + '</div>' +
+        '</div>';
+    }).join('') || '<p class="dim" style="margin:0;">Nothing at weight this week.</p>';
+
+    var buyers = {};
+    DATA.harvests.forEach(function (h) {
+      buyers[h.buyer] = (buyers[h.buyer] || 0) + h.kg;
+    });
+    var most = Math.max.apply(null, Object.keys(buyers).map(function (k) { return buyers[k]; }));
+
+    document.getElementById('buyers').innerHTML = Object.keys(buyers)
+      .sort(function (a, b) { return buyers[b] - buyers[a]; })
+      .map(function (k) {
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:4px;margin-bottom:13px;">' +
+          '<div style="font-size:13.5px;">' + k + '</div>' +
+          '<div class="num" style="font-size:13.5px;font-weight:600;">' + buyers[k] + ' kg</div>' +
+          '<div style="grid-column:1/3;height:7px;border-radius:4px;background:var(--ff-pale);overflow:hidden;">' +
+            '<span style="display:block;height:100%;width:' + (buyers[k] / most * 100) + '%;background:linear-gradient(90deg,var(--ff-bright),var(--ff-teal));"></span>' +
+          '</div></div>';
+      }).join('');
+  </script>
+</body>
+</html>

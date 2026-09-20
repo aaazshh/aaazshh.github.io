@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Fish, Fish Farm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body data-page="mortality" data-title="Dead Fish" data-sub="Operations">
+
+  <div id="content">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>Daily report</h2><p>By farm and species, the sheet that used to be filled in by hand</p></div>
+        <button type="button" class="btn ghost" id="export">Export</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Farm</th><th>Species</th><th class="num">Today</th><th class="num">Yesterday</th><th class="num">7 days</th><th>Trend</th></tr></thead>
+          <tbody id="report"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div><h2>Records</h2><p>Every log, newest first</p></div>
+        <div style="display:flex;gap:10px;align-items:flex-end;">
+          <div class="field">
+            <label for="cage">Cage</label>
+            <select id="cage"><option>All cages</option></select>
+          </div>
+          <div class="field">
+            <label for="sign">Clinical sign</label>
+            <select id="sign"><option>All signs</option></select>
+          </div>
+          <button type="button" class="btn" data-skip="Recording dead fish">Add record</button>
+        </div>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Logged</th><th>Cage</th><th>Species</th><th class="num">Count</th><th>Clinical sign</th><th>Remarks</th><th>By</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    /* Daily report, grouped the way the paper sheet was. */
+    var group = {};
+    DATA.mortality.forEach(function (m) {
+      var c = DATA.cage(m.cage);
+      var key = c.farm + '|' + m.species;
+      if (!group[key]) group[key] = { farm: c.farm, species: m.species, today: 0, yest: 0, week: 0 };
+      group[key].week += m.count;
+      if (m.date.indexOf('Today') === 0) group[key].today += m.count;
+      if (m.date.indexOf('Yesterday') === 0) group[key].yest += m.count;
+    });
+
+    document.getElementById('report').innerHTML = Object.keys(group).map(function (k) {
+      return group[k];
+    }).sort(function (a, b) { return b.week - a.week; }).map(function (g) {
+      var up = g.today > g.yest;
+      var same = g.today === g.yest;
+      return '<tr>' +
+        '<td>Farm ' + g.farm + '</td>' +
+        '<td>' + g.species + ' <span class="dim">' + DATA.fish(g.species).cn + '</span></td>' +
+        '<td class="num">' + g.today + '</td>' +
+        '<td class="num">' + g.yest + '</td>' +
+        '<td class="num">' + g.week + '</td>' +
+        '<td>' + (same ? '<span class="pill grey">level</span>'
+          : up ? '<span class="pill bad">up ' + (g.today - g.yest) + '</span>'
+          : '<span class="pill good">down ' + (g.yest - g.today) + '</span>') + '</td>' +
+        '</tr>';
+    }).join('');
+
+    /* Filters */
+    var cage = document.getElementById('cage');
+    var sign = document.getElementById('sign');
+
+    DATA.mortality.map(function (m) { return m.cage; }).filter(function (v, i, a) { return a.indexOf(v) === i; })
+      .sort().forEach(function (v) {
+        var o = document.createElement('option');
+        o.textContent = v;
+        cage.appendChild(o);
+      });
+
+    DATA.mortality.map(function (m) { return m.sign; }).filter(function (v, i, a) { return a.indexOf(v) === i; })
+      .forEach(function (v) {
+        var o = document.createElement('option');
+        o.textContent = v;
+        sign.appendChild(o);
+      });
+
+    function paint() {
+      var rows = DATA.mortality.filter(function (m) {
+        if (cage.value !== 'All cages' && m.cage !== cage.value) return false;
+        if (sign.value !== 'All signs' && m.sign !== sign.value) return false;
+        return true;
+      });
+
+      document.getElementById('rows').innerHTML = rows.length ? rows.map(function (m) {
+        return '<tr>' +
+          '<td class="dim">' + m.date + '</td>' +
+          '<td><strong>' + m.cage + '</strong></td>' +
+          '<td>' + m.species + '</td>' +
+          '<td class="num">' + m.count + '</td>' +
+          '<td>' + (m.sign === 'None noted' ? '<span class="dim">' + m.sign + '</span>' : '<span class="pill bad">' + m.sign + '</span>') + '</td>' +
+          '<td class="dim">' + (m.note || '-') + '</td>' +
+          '<td class="dim">' + m.by + '</td>' +
+          '</tr>';
+      }).join('') : '<tr><td colspan="7" class="dim" style="padding:26px;text-align:center;">Nothing matches that.</td></tr>';
+    }
+
+    cage.addEventListener('change', paint);
+    sign.addEventListener('change', paint);
+    paint();
+
+    document.getElementById('export').addEventListener('click', function () {
+      window.flash('The portal writes this sheet out as a spreadsheet for the monthly report.');
+    });
+  </script>
+</body>
+</html>

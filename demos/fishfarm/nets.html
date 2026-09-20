@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Net Management, Fish Farm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body data-page="nets" data-title="Net Management" data-sub="Records">
+
+  <div id="content">
+    <div class="grid g3" id="stats"></div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-head">
+        <div><h2>Net log</h2><p>Broken, changed and washed, all three in one place because they follow each other</p></div>
+        <div style="display:flex;gap:6px;" id="tabs">
+          <button type="button" class="btn ghost sm on" data-kind="All">All</button>
+          <button type="button" class="btn ghost sm" data-kind="Broken">Broken</button>
+          <button type="button" class="btn ghost sm" data-kind="Change">Change</button>
+          <button type="button" class="btn ghost sm" data-kind="Wash">Wash</button>
+        </div>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Kind</th><th>Logged</th><th>Cage</th><th>Net size</th><th>What happened</th><th>State</th><th>By</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><h2>Wash due</h2><p>Nets foul in about three weeks in this water, so the log doubles as the schedule</p></div></div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cage</th><th>Last washed</th><th class="num">Days ago</th><th>Due</th></tr></thead>
+          <tbody id="due"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var KIND = { 'Broken': 'bad', 'Change': 'warn', 'Wash': '' };
+    var STATE = { 'Open': 'bad', 'Done': 'good', 'Closed': 'grey' };
+
+    var counts = { Broken: 0, Change: 0, Wash: 0 };
+    DATA.nets.forEach(function (n) { counts[n.kind] += 1; });
+
+    document.getElementById('stats').innerHTML = [
+      ['Open tears', DATA.nets.filter(function (n) { return n.kind === 'Broken' && n.state === 'Open'; }).length, 'Cage isolated until it is patched'],
+      ['Changes this month', counts.Change, 'Grading and fouling'],
+      ['Washes this month', counts.Wash, 'On the three week cycle']
+    ].map(function (s) {
+      return '<div class="card"><div class="stat"><div>' +
+        '<div class="label">' + s[0] + '</div><div class="value">' + s[1] + '</div><div class="sub">' + s[2] + '</div>' +
+        '</div></div></div>';
+    }).join('');
+
+    var want = 'All';
+
+    function paint() {
+      var rows = DATA.nets.filter(function (n) { return want === 'All' || n.kind === want; });
+      document.getElementById('rows').innerHTML = rows.map(function (n) {
+        return '<tr>' +
+          '<td><span class="pill ' + KIND[n.kind] + '">' + n.kind + '</span></td>' +
+          '<td class="dim">' + n.date + '</td>' +
+          '<td><strong>' + n.cage + '</strong></td>' +
+          '<td class="dim">' + n.size + '</td>' +
+          '<td>' + (n.note || '<span class="dim">Routine</span>') + '</td>' +
+          '<td><span class="pill ' + STATE[n.state] + '">' + n.state + '</span></td>' +
+          '<td class="dim">' + n.by + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    document.getElementById('tabs').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-kind]');
+      if (!btn) return;
+      want = btn.dataset.kind;
+      Array.prototype.forEach.call(this.children, function (b) { b.classList.remove('on'); });
+      btn.classList.add('on');
+      paint();
+    });
+
+    paint();
+
+    // Turn the wash records into a schedule: whatever was washed longest ago is
+    // what the crew should be looking at next.
+    var AGO = { 'Today': 0, 'Yesterday': 1 };
+
+    function daysAgo(date) {
+      var head = date.split(' ')[0];
+      if (AGO[head] !== undefined) return AGO[head];
+      return Number(head);
+    }
+
+    var washed = {};
+    DATA.nets.filter(function (n) { return n.kind === 'Wash' || n.kind === 'Change'; })
+      .forEach(function (n) {
+        var d = daysAgo(n.date);
+        if (washed[n.cage] === undefined || d < washed[n.cage]) washed[n.cage] = d;
+      });
+
+    document.getElementById('due').innerHTML = DATA.cages.filter(function (c) { return c.stock > 0; })
+      .map(function (c) {
+        var d = washed[c.name] === undefined ? 24 + (c.name.charCodeAt(1) % 6) : washed[c.name];
+        return { name: c.name, days: d };
+      })
+      .sort(function (a, b) { return b.days - a.days; })
+      .map(function (r) {
+        return '<tr>' +
+          '<td><strong>' + r.name + '</strong></td>' +
+          '<td class="dim">' + (r.days === 0 ? 'Today' : r.days === 1 ? 'Yesterday' : r.days + ' days ago') + '</td>' +
+          '<td class="num">' + r.days + '</td>' +
+          '<td>' + (r.days >= 21 ? '<span class="pill bad">Overdue</span>'
+            : r.days >= 14 ? '<span class="pill warn">This week</span>'
+            : '<span class="pill good">Clean</span>') + '</td>' +
+          '</tr>';
+      }).join('');
+
+    document.getElementById('due').addEventListener('click', function () {});
+  </script>
+</body>
+</html>

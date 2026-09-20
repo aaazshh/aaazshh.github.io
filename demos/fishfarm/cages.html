@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cage Map, Fish Farm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body data-page="cages" data-title="Cage Map" data-sub="Operations">
+
+  <div id="content">
+    <div class="grid split">
+
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <div><h2 id="cage-name">Cage A1</h2><p id="cage-sub">Farm 1</p></div>
+          </div>
+          <div class="wrap"><table><tbody id="cage-detail"></tbody></table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><h2>Last logged here</h2><p>Straight from the crew's app</p></div></div>
+          <div class="card-body"><div id="cage-log"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Farm layout</h2><p>Boxes sit where the map editor put them, so the screen matches the walkways</p></div>
+          <div class="field">
+            <label for="farm">Farm</label>
+            <select id="farm"><option value="1">Farm 1</option><option value="2">Farm 2</option></select>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="map" id="map"></div>
+          <div class="legend">
+            <span><i style="background:#0b6e8f"></i>Growing</span>
+            <span><i style="background:#17a67b"></i>Near harvest</span>
+            <span><i style="background:#c96a0e"></i>Net repair</span>
+            <span><i style="background:#b8322e"></i>Treatment</span>
+            <span><i style="background:#93a5b4"></i>Empty</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-head"><div><h2>All cages</h2><p>Both farms, stock as of this morning</p></div></div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cage</th><th>Farm</th><th>Species</th><th class="num">Stock</th><th class="num">Avg weight</th><th class="num">Biomass</th><th>Stocked</th><th>Status</th></tr></thead>
+          <tbody id="all"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    'use strict';
+
+    var TONE = {
+      'Growing': '', 'Near harvest': 'good', 'Net repair': 'warn',
+      'Treatment': 'bad', 'Empty': 'empty'
+    };
+    var PILL = {
+      'Growing': '', 'Near harvest': 'good', 'Net repair': 'warn',
+      'Treatment': 'bad', 'Empty': 'grey'
+    };
+
+    var picked = 'A1';
+
+    function drawMap() {
+      var farm = Number(document.getElementById('farm').value);
+      document.getElementById('map').innerHTML = DATA.cages.filter(function (c) {
+        return c.farm === farm;
+      }).map(function (c) {
+        return '<button type="button" class="cagebox ' + TONE[c.status] + (c.name === picked ? ' on' : '') +
+          '" data-cage="' + c.name + '" style="left:' + c.x + '%;top:' + c.y + '%;width:' + c.w + '%;height:' + c.h + '%;">' +
+          '<b>' + c.name + '</b>' +
+          '<span>' + (c.stock ? (c.stock / 1000).toFixed(1) + 'k' : 'empty') + '</span>' +
+          '</button>';
+      }).join('');
+    }
+
+    function row(k, v) {
+      return '<tr><td class="dim" style="width:140px;">' + k + '</td><td>' + v + '</td></tr>';
+    }
+
+    function pick(name) {
+      picked = name;
+      var c = DATA.cage(name);
+      var f = c.species ? DATA.fish(c.species) : null;
+
+      document.getElementById('cage-name').textContent = 'Cage ' + c.name;
+      document.getElementById('cage-sub').textContent = 'Farm ' + c.farm + ', internal name ' + c.name;
+
+      document.getElementById('cage-detail').innerHTML = c.stock
+        ? row('Species', c.species + ' <span class="dim">' + f.cn + '</span>') +
+          row('Stock', c.stock.toLocaleString() + ' fish') +
+          row('Average weight', c.avg.toFixed(2) + ' kg') +
+          row('Biomass', Math.round(c.stock * c.avg).toLocaleString() + ' kg') +
+          row('Value at market', '$' + Math.round(c.stock * c.avg * f.price).toLocaleString()) +
+          row('Stocked', c.stocked) +
+          row('Status', '<span class="pill ' + PILL[c.status] + '">' + c.status + '</span>')
+        : row('Status', '<span class="pill grey">Empty</span>') +
+          row('Ready for', 'Fallowing until the next stocking');
+
+      var log = [];
+      DATA.feedings.filter(function (x) { return x.cage === name; })
+        .forEach(function (x) { log.push([x.date + ', ' + x.session.toLowerCase(), 'Fed ' + x.kg + ' kg of ' + x.feed, x.by]); });
+      DATA.mortality.filter(function (x) { return x.cage === name; })
+        .forEach(function (x) { log.push([x.date, x.count + ' dead, ' + x.sign.toLowerCase(), x.by]); });
+      DATA.nets.filter(function (x) { return x.cage === name; })
+        .forEach(function (x) { log.push([x.date, x.kind.toLowerCase() + ' net, ' + x.size, x.by]); });
+      DATA.harvests.filter(function (x) { return x.cage === name; })
+        .forEach(function (x) { log.push([x.date, 'Harvested ' + x.kg + ' kg, ' + x.type.toLowerCase(), x.by]); });
+
+      document.getElementById('cage-log').innerHTML = log.length
+        ? log.slice(0, 7).map(function (l) {
+            return '<div style="display:grid;grid-template-columns:1fr auto;gap:2px;padding:9px 0;border-bottom:1px solid var(--ff-line);">' +
+              '<span style="font-size:13px;">' + l[1] + '</span>' +
+              '<span class="dim" style="font-size:12px;">' + l[2] + '</span>' +
+              '<span class="dim" style="grid-column:1/3;font-size:11.5px;">' + l[0] + '</span></div>';
+          }).join('')
+        : '<p class="dim" style="margin:0;font-size:13px;">Nothing logged against this cage yet.</p>';
+
+      drawMap();
+    }
+
+    document.getElementById('map').addEventListener('click', function (event) {
+      var box = event.target.closest('[data-cage]');
+      if (box) pick(box.dataset.cage);
+    });
+
+    document.getElementById('farm').addEventListener('change', function () {
+      var first = DATA.cages.filter(function (c) { return c.farm === Number(this.value); }, this)[0];
+      pick(first.name);
+    });
+
+    document.getElementById('all').innerHTML = DATA.cages.map(function (c) {
+      return '<tr>' +
+        '<td><button type="button" class="btn ghost sm" data-cage="' + c.name + '">' + c.name + '</button></td>' +
+        '<td class="dim">Farm ' + c.farm + '</td>' +
+        '<td>' + (c.species ? c.species + ' <span class="dim">' + DATA.fish(c.species).cn + '</span>' : '<span class="dim">Fallow</span>') + '</td>' +
+        '<td class="num">' + (c.stock ? c.stock.toLocaleString() : '-') + '</td>' +
+        '<td class="num">' + (c.avg ? c.avg.toFixed(2) + ' kg' : '-') + '</td>' +
+        '<td class="num">' + (c.stock ? Math.round(c.stock * c.avg).toLocaleString() + ' kg' : '-') + '</td>' +
+        '<td class="dim">' + (c.stocked || '-') + '</td>' +
+        '<td><span class="pill ' + PILL[c.status] + '">' + c.status + '</span></td>' +
+        '</tr>';
+    }).join('');
+
+    document.getElementById('all').addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-cage]');
+      if (!btn) return;
+      var c = DATA.cage(btn.dataset.cage);
+      document.getElementById('farm').value = String(c.farm);
+      pick(c.name);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    pick('A1');
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+/* argon-dashboard.css, list-styles.css, select2 and the DataTables styles are
+   the IAM portal's own. This file only adds the note that explains what is
+   not wired up in the walkthrough. */
+
+.demo-note {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 12px);
+  max-width: 460px;
+  padding: 11px 16px;
+  border-radius: 8px;
+  background: #172b4d;
+  color: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 9000;
+}
+.demo-note.show { opacity: 1; transform: translate(-50%, 0); }

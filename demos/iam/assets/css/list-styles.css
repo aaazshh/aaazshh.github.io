@@ -1,0 +1,67 @@
+/* Z-index management for modals and sidebar */
+.modal-backdrop {
+  z-index: 1050 !important;
+}
+
+.modal {
+  z-index: 1055 !important;
+}
+
+/* This ensures the sidebar sits below the modal backdrop */
+.g-sidenav-show .sidenav {
+  z-index: 1045 !important;
+}
+
+/* Make sure the modal is visible when open */
+body.modal-open {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Table styling with single header line */
+.data-table {
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  border-left: none;
+  border-right: none;
+}
+
+.data-table td {
+  border: none;
+  border-bottom: 1px solid #f1f1f1; /* Light gray border */
+}
+
+.data-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Subtle alternating row coloring */
+.data-table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.data-table tr:nth-child(even),
+table.dataTable.stripe tbody tr.even,
+table.dataTable.display tbody tr.even,
+#users_list tr:nth-child(even),
+#orders_list tr:nth-child(even),
+#roles_list tr:nth-child(even) {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.04
+  ) !important; /* Slightly darker and !important to override DataTables */
+}
+.cancelled-text {
+  color: red;
+}
+.table.table-bordered tbody tr:last-child td {
+  border-width: 0 var(--bs-border-width);
+}
+

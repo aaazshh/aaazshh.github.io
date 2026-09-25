@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Users List</title>
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+  <link id="pagestyle" href="assets/css/argon-dashboard.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+  <style>
+    .sidenav {
+      background-color: white;
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/list-styles.css">
+  <style>
+    .toast-container {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 99999 !important;
+        pointer-events: none !important;
+    }
+
+    .toast {
+        pointer-events: auto !important;
+        background: white !important;
+        padding: 16px 20px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        display: flex !important;
+        align-items: center !important;
+        border-left: 4px !important;
+        margin-bottom: 10px !important;
+        min-width: 300px !important;
+        transform: translateX(400px);
+        opacity: 0;
+        animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    .toast.success {
+        border-left-color: #22c55e;
+    }
+
+    .toast.error {
+        border-left-color: #ef4444;
+    }
+
+    .toast.warning {
+        border-left-color: #f59e0b;
+    }
+
+    .toast.info {
+        border-left-color: #3b82f6;
+    }
+
+    .toast.hiding {
+        animation: slideOut 0.3s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+
+    .toast-icon {
+        margin-right: 10px;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #333;
+    }
+
+    .toast-message {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        line-height: 1;
+        text-align: center;
+        transform: translateY(-5px);
+    }
+
+    .toast-close:hover {
+        background: #f5f5f5;
+        color: #333;
+        transform: none;
+        box-shadow: none;
+        transform: translateY(-5px);
+    }
+
+    #excelUpload {
+        color: transparent;
+        display: none;
+    }
+
+  </style>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <script src="menu.js"></script>
+  <script src="data.js"></script>
+  <script src="shell.js"></script>
+  <script src="js/users.js"></script>
+  <script src="assets/js/core/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/core/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <script src="assets/js/core/popper.min.js"></script>
+  <script src="assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <link href="assets/css/select2.min.css" rel="stylesheet">
+  <script src="assets/js/plugins/select2.min.js"></script>
+  <script src="assets/js/argon-dashboard.min.js"></script>
+  <link rel="stylesheet" href="assets/css/dataTables.bootstrap5.css">
+  <script src="assets/js/core/dataTables.js"></script>
+  <script src="assets/js/core/dataTables.bootstrap5.js"></script>
+  <script src="assets/js/core/dataTables.scrollToTop.min.js"></script>
+  <script>Shell.start();</script>
+</body>
+</html>

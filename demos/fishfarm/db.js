@@ -567,9 +567,10 @@ var FF = (function () {
     all: function (table) { return T[table].filter(function (r) { return !r.deleted_at; }); },
     insert: function (table, r) {
       r.status_id = r.status_id === undefined ? 1 : r.status_id;
+      r.created_by = r.created_by || 2;
       r.created_at = r.created_at || nowStamp();
       r.deleted_at = null;
-      return record({ t: 'i', table: table, r: r, id: nextId(table) }) ;
+      return record({ t: 'i', table: table, r: r });
     },
     update: function (table, id, patch) {
       patch.updated_at = nowStamp();

@@ -1,0 +1,6 @@
+esagg
+common
+gp
+penetration
+pricing
+reports

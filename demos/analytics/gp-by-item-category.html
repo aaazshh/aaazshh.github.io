@@ -1,0 +1,1292 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="mock/world.js"></script>
+    <script src="mock/net.js"></script>
+    <script src="mock/esagg.js"></script>
+    <script src="mock/common.js"></script>
+    <script src="mock/gp.js"></script>
+    <script src="mock/penetration.js"></script>
+    <script src="mock/pricing.js"></script>
+    <script src="mock/reports.js"></script>
+    <link rel="stylesheet" href="demo.css">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="./assets/img/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+</head>    <title>GP By Item Category (Monthly Matrix)</title>
+    <style>
+    .btn-outline-green {
+        border: 1px solid rgb(12, 99, 38);
+        color: rgb(12, 99, 38);
+    }
+    .btn-outline-green:hover {
+        background-color: rgb(12, 99, 38);
+        color: white;
+    }
+
+    /* Responsive Horizontal Scroll Container */
+    .matrix-table-container {
+        width: 100%;
+        overflow-x: auto;
+        max-height: 75vh;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+
+    .portal-matrix-table {
+        font-size: 0.8rem !important;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 3200px;
+    }
+
+    .portal-matrix-table th, 
+    .portal-matrix-table td {
+        padding: 6px 8px !important;
+        white-space: nowrap !important;
+        text-align: right;
+        border-right: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* ─── STICKY POSITIONS & Z-INDEX LAYERS ───────────────────────── */
+
+    /* 1. All sticky header rows (Vertically Sticky) */
+    .portal-matrix-table thead tr.sticky-header th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #e9ecef !important;
+    }
+
+    /* Second header row offset */
+    .portal-matrix-table thead tr.sticky-header-row2 th {
+        position: sticky;
+        top: 29px; /* Adjusts for row 1 height */
+        z-index: 9;
+        background-color: #f1f3f5 !important;
+    }
+
+    /* 2. First Column (Horizontally Sticky Data Cells) */
+    .portal-matrix-table .sticky-col {
+        position: sticky;
+        left: 0;
+        background-color: #ffffff !important;
+        z-index: 5;
+        text-align: left !important;
+        min-width: 220px;
+        font-weight: 600;
+    }
+
+    /* 3. Top-Left Corner Header ("Item Category")
+       Must stick BOTH Top (0) and Left (0) with HIGHEST z-index! */
+    .portal-matrix-table thead th.sticky-corner {
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 20 !important; /* Above all other headers & data cells */
+        background-color: #e9ecef !important;
+        text-align: left !important;
+        min-width: 220px;
+    }
+
+    /* 4. Bottom-Left Grand Total Sticky Cell */
+    .portal-matrix-table tr.grand-total-row td.sticky-col {
+        position: sticky !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        z-index: 15 !important;
+        background-color: #212529 !important;
+        color: #ffffff !important;
+    }
+
+    /* 5. Sticky Grand Total Row (Bottom) */
+    .portal-matrix-table tr.grand-total-row td {
+        position: sticky;
+        bottom: 0;
+        z-index: 8;
+        background-color: #212529 !important;
+        color: #ffffff !important;
+    }
+
+    /* Month Group Highlights */
+    .month-header {
+        background-color: #e2e3e5 !important;
+        text-align: center !important;
+        font-weight: bold;
+    }
+    .month-header-alt {
+        background-color: #d6d8db !important;
+        text-align: center !important;
+        font-weight: bold;
+    }
+    .total-header {
+        background-color: #0c6326 !important;
+        color: white !important;
+        text-align: center !important;
+        font-weight: bold;
+    }
+    .total-col {
+        background-color: #f0fdf4 !important;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
+
+    
+<html>
+
+<head>
+</head>
+
+<body>
+    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Sticky header section -->
+        <div class="position-sticky top-0 z-index-sticky bg-white">
+            <div class="sidenav-header">
+                <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+                    aria-hidden="true" id="iconSidenav"></i>
+                <a class="navbar-brand m-0" href="#">
+                    <img src="./assets/img/logos/prime-logo.jpg" class="navbar-brand-img h-100" alt="main_logo">
+                    <span class="ms-1 font-weight-bold">Analytic Dashboard</span>
+                </a>
+            </div>
+
+            <hr class="horiznavbl dark mt-0">
+        </div>
+
+        <!-- Scrollable menu section -->
+        <div class="overflow-auto" style="max-height: calc(100vh - 170px);">
+            <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 3.293l6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+                                    <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+                                </svg>
+                            </div>
+                            <span class="nav-link-text">Home</span>
+                        </a>
+                    </li>
+                                            <li class="nav-item has-submenu"> <!-- Users -->
+                            <a class="nav-link" href="#manageUsers" data-bs-toggle="collapse" data-bs-target="#manageUsers"
+                                aria-controls="manageUsers">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Users</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+                                                        <div id="manageUsers" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="users-list.html">
+                                            <span class="sidenav-mini-icon">UL</span>
+                                            <span class="sidenav-normal">Users List</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            
+                        <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageStatistics" data-bs-toggle="collapse" data-bs-target="#manageStatistics"
+                                aria-controls="manageStatistics" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Statistics</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageStatistics" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="overview.html">
+                                            <span class="sidenav-mini-icon">OV</span>
+                                            <span class="sidenav-normal">Overview</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="comparison.html">
+                                            <span class="sidenav-mini-icon">CP</span>
+                                            <span class="sidenav-normal">Comparison</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="graphs.html">
+                                            <span class="sidenav-mini-icon">GR</span>
+                                            <span class="sidenav-normal">Graph</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="product-mapping.html">
+                                            <span class="sidenav-mini-icon">MP</span>
+                                            <span class="sidenav-normal">Product Mapping</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#basket-insights.php">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="basket-summary.html">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="pricing-insights.html">
+                                            <span class="sidenav-mini-icon">PI</span>
+                                            <span class="sidenav-normal">Price Insights</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#forecast.php">
+                                            <span class="sidenav-mini-icon">FC</span>
+                                            <span class="sidenav-normal">Revenue Forecast</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- Customer Insights hidden from sidebar; file kept intact -->
+                                                                        <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#stock-risk-insights.php">
+                                            <span class="sidenav-mini-icon">SRI</span>
+                                            <span class="sidenav-normal">Stock Risk Insights</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#store-performance.php">
+                                            <span class="sidenav-mini-icon">SP</span>
+                                            <span class="sidenav-normal">Store Performance</span>
+                                        </a>
+                                    </li> -->
+
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="share-of-basket-report.html">
+                                            <span class="sidenav-mini-icon">SB</span>
+                                            <span class="sidenav-normal">Share of Basket</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#retail-intelligence.php">
+                                            <span class="sidenav-mini-icon">RI</span>
+                                            <span class="sidenav-normal">Retail Intelligence</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#operational-intelligence.php">
+                                            <span class="sidenav-mini-icon">OI</span>
+                                            <span class="sidenav-normal">Operational Intelligence</span>
+                                        </a>
+                                    </li> -->
+                                </ul>
+                            </div>
+                        </li>
+
+
+                    
+                                            <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
+                                aria-controls="manageReports" aria-expanded="true">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
+                                        <path d="M4 0h5.5L14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5 1v3h3L9 1z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Reports</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                                <ul class="nav ms-4">
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
+                                            aria-controls="basketReports" aria-expanded=""
+                                            id="basketReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="basketFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="basketFolderIconFull"></i>
+                                                Basket Reports
+                                            </span>
+                                        </a>
+                                        
+                                        <div id="basketReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="basket-summary.html">
+                                                        <span class="sidenav-mini-icon">BS</span>
+                                                        <span class="sidenav-normal">Basket Summary</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="penetration-report.html">
+                                                        <span class="sidenav-mini-icon">PR</span>
+                                                        <span class="sidenav-normal">Penetration Report</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="share-of-basket-report.html">
+                                                        <span class="sidenav-mini-icon">SB</span>
+                                                        <span class="sidenav-normal">Share of Basket</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
+                                            aria-controls="gpReports" aria-expanded=""
+                                            id="gpReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
+                                                Gross Profit Reports
+                                            </span>
+                                        </a>
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-report-summary.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Summary Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-item-report.html">
+                                                        <span class="sidenav-mini-icon">IR</span>
+                                                        <span class="sidenav-normal">Item Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-category-report.html">
+                                                        <span class="sidenav-mini-icon">CR</span>
+                                                        <span class="sidenav-normal">Category Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <!-- transaction report -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#transactionReports" data-bs-toggle="collapse" data-bs-target="#transactionReports"
+                                            aria-controls="transactionReports" aria-expanded=""
+                                            id="transactionReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="transactionFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="transactionFolderIconFull"></i>
+                                                Transaction Reports
+                                            </span>
+                                        </a>
+                                        <div id="transactionReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <!-- POS Report is a folder: the dashboard plus the line-level
+                                                     drill-down that sits behind its numbers. -->
+                                                <li class="nav-item has-submenu">
+                                                    <a class="nav-link no-collapse-arrow pos-reports-toggle" href="#posReports" data-bs-toggle="collapse" data-bs-target="#posReports"
+                                                        aria-controls="posReports" aria-expanded=""
+                                                        id="posReportsToggle">
+                                                        <span class="sidenav-mini-icon"><i class="fa fa-folder" id="posFolderIcon"></i></span>
+                                                        <span class="sidenav-normal">
+                                                            <i class="fa fa-folder me-1" id="posFolderIconFull"></i>
+                                                            POS Report
+                                                        </span>
+                                                    </a>
+                                                    <div id="posReports" class="collapse submenu submenu-3 ">
+                                                        <ul class="nav ms-3">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link " href="pos-transction-report.html">
+                                                                    <span class="sidenav-mini-icon">POSD</span>
+                                                                    <span class="sidenav-normal">POS Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link " href="pos-detailed-transaction-report.html">
+                                                                    <span class="sidenav-mini-icon">PDT</span>
+                                                                    <span class="sidenav-normal">Detailed Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                                                                                <li class="nav-item">
+                                                    <a class="nav-link " href="mobile-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">MR</span>
+                                                        <span class="sidenav-normal">Mobile Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- point reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#pointReports" data-bs-toggle="collapse" data-bs-target="#pointReports"
+                                            aria-controls="pointReports" aria-expanded=""
+                                            id="pointReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="pointFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="pointFolderIconFull"></i>
+                                                Point Reports
+                                            </span>
+                                        </a>
+                                        <div id="pointReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-list.html">
+                                                        <span class="sidenav-mini-icon">PL</span>
+                                                        <span class="sidenav-normal">Member Point List</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">PA</span>
+                                                        <span class="sidenav-normal">Point Analytics Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- game reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gameReports" data-bs-toggle="collapse" data-bs-target="#gameReports"
+                                            aria-controls="gameReports" aria-expanded=""
+                                            id="gameReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gameFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gameFolderIconFull"></i>
+                                                Game Reports
+                                            </span>
+                                        </a>
+                                        <div id="gameReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-utilisation.html">
+                                                        <span class="sidenav-mini-icon">GU</span>
+                                                        <span class="sidenav-normal">Game Utilisation</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-winning.html">
+                                                        <span class="sidenav-mini-icon">GW</span>
+                                                        <span class="sidenav-normal">Game Winning</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#supplierReports" data-bs-toggle="collapse" data-bs-target="#supplierReports"
+                                            aria-controls="supplierReports" aria-expanded=""
+                                            id="supplierReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                Supplier Reports
+                                            </span>
+                                        </a>
+                                        <div id="supplierReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="supplier-consignment-report.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Consignment Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="vendor_default_commission-list.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Vendor Commission Rate</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#jetReports" data-bs-toggle="collapse" data-bs-target="#jetReports"
+                                            aria-controls="jetReports" aria-expanded="true"
+                                            id="jetReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder-open me-1" id="supplierFolderIconFull"></i>
+                                                Jet Reports
+                                            </span>
+                                        </a>
+                                        <div id="jetReports" class="collapse submenu submenu-2 show">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="abc-analysis-report.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">ABC Analysis Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-master-listing.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Product Master Listing</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="retail-item-sales.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Retail Item Sales</span>
+                                                    </a>
+                                                </li>
+                                                <!-- <li class="nav-item">
+                                                    <a class="nav-link " href="#stock-movement-report.php">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Stock Movement Report</span>
+                                                    </a>
+                                                </li> -->
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-report-item-cat.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Report By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" href="gp-by-item-category.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">GP By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-claim-vendor.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Claim From Vendor</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                    </li>
+
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#customerReports" data-bs-toggle="collapse" data-bs-target="#customerReports"
+                                            aria-controls="customerReports" aria-expanded=""
+                                            id="customerReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="customerFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="customerFolderIconFull"></i>
+                                                Customer Report
+                                            </span>
+                                        </a>
+                                        <div id="customerReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="no-sale-report.html">
+                                                        <span class="sidenav-mini-icon">NS</span>
+                                                        <span class="sidenav-normal">No Sales Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="weekly-customer-product-report.html">
+                                                        <span class="sidenav-mini-icon">EW</span>
+                                                        <span class="sidenav-normal">Customer Consistency Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="customer-behaviour-report.html">
+                                                        <span class="sidenav-mini-icon">CB</span>
+                                                        <span class="sidenav-normal">Customer Behaviour Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-frequency-behaviour.html">
+                                                        <span class="sidenav-mini-icon">PF</span>
+                                                        <span class="sidenav-normal">Product Frequency Behaviour</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            <!-- <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageSales" data-bs-toggle="collapse" data-bs-target="#manageSales"
+                                aria-controls="manageSales" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Sales</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageSales" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#transaction-by-month.php">
+                                            <span class="sidenav-mini-icon">TBM</span>
+                                            <span class="sidenav-normal">Transactions</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li> -->
+                    
+
+                </ul>
+            </div>
+        </div>
+        <style>
+            .navbar-vertical .navbar-nav .nav-link.no-collapse-arrow::after { display: none !important; }
+            /* Third-level folder: green so the nested POS group reads as a folder
+               rather than another report link. */
+            .pos-reports-toggle .fa-folder,
+            .pos-reports-toggle .fa-folder-open { color: rgb(12, 99, 38); }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const sidebarScrollContainer = document.querySelector('.sidenav .overflow-auto');
+
+                if (sidebarScrollContainer) {
+                    const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+                    if (savedScrollPosition !== null) {
+                        sidebarScrollContainer.scrollTop = parseInt(savedScrollPosition);
+                    }
+
+                    sidebarScrollContainer.addEventListener('scroll', function() {
+                        sessionStorage.setItem('sidebarScrollPosition', this.scrollTop);
+                    });
+                }
+            });
+        </script>
+        <script src="./assets/js/core/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const gpCollapse  = document.getElementById('gpReports');
+                const gpIconMini  = document.getElementById('gpFolderIcon');
+                const gpIconFull  = document.getElementById('gpFolderIconFull');
+                const basketCollapse  = document.getElementById('basketReports');
+                const basketIconMini  = document.getElementById('basketFolderIcon');
+                const basketIconFull  = document.getElementById('basketFolderIconFull');
+                const transactionCollapse  = document.getElementById('transactionReports');
+                const transactionMini  = document.getElementById('transactionFolderIcon');
+                const transactionIconFull  = document.getElementById('transactionFolderIconFull');
+                const posCollapse  = document.getElementById('posReports');
+                const posMini  = document.getElementById('posFolderIcon');
+                const posIconFull  = document.getElementById('posFolderIconFull');
+                const pointCollapse  = document.getElementById('pointReports');
+                const pointMini  = document.getElementById('pointFolderIcon');
+                const pointIconFull  = document.getElementById('pointFolderIconFull');
+                const gameCollapse  = document.getElementById('gameReports');
+                const gameMini  = document.getElementById('gameFolderIcon');
+                const gameIconFull  = document.getElementById('gameFolderIconFull');
+                const supplierCollapse  = document.getElementById('supplierReports');
+                const supplierMini  = document.getElementById('supplierFolderIcon');
+                const supplierIconFull  = document.getElementById('supplierFolderIconFull');
+                const customerCollapse  = document.getElementById('customerReports');
+                const customerMini  = document.getElementById('customerFolderIcon');
+                const customerIconFull  = document.getElementById('customerFolderIconFull');
+                function setFolder(open) {
+                    [gpIconMini, gpIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setBasketFolder(open) {
+                    [basketIconMini, basketIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setTransFolder(open) {
+                    [transactionMini, transactionIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPosFolder(open) {
+                    [posMini, posIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPointFolder(open) {
+                    [pointMini, pointIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setGameFolder(open) {
+                    [gameMini, gameIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setSupplierFolder(open) {
+                    [supplierMini, supplierIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setCustomerFolder(open) {
+                    [customerMini, customerIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                if (gpCollapse) {
+                    gpCollapse.addEventListener('show.bs.collapse', function () { setFolder(true);  });
+                    gpCollapse.addEventListener('hide.bs.collapse', function () { setFolder(false); });
+                }
+                if (basketCollapse) {
+                    basketCollapse.addEventListener('show.bs.collapse', function () { setBasketFolder(true);  });
+                    basketCollapse.addEventListener('hide.bs.collapse', function () { setBasketFolder(false); });
+                }
+                // Bootstrap's collapse events bubble, so the POS folder nested
+                // inside Transaction Reports would otherwise close its parent's
+                // icon on every toggle. Only react to this element's own event.
+                function ownCollapse(element, handler) {
+                    return function (event) {
+                        if (event.target !== element) return;
+                        handler();
+                    };
+                }
+                if (transactionCollapse) {
+                    transactionCollapse.addEventListener('show.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(true);  }));
+                    transactionCollapse.addEventListener('hide.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(false); }));
+                }
+                if (posCollapse) {
+                    posCollapse.addEventListener('show.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(true);  }));
+                    posCollapse.addEventListener('hide.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(false); }));
+                }
+                if (pointCollapse) {
+                    pointCollapse.addEventListener('show.bs.collapse', function () { setPointFolder(true);  });
+                    pointCollapse.addEventListener('hide.bs.collapse', function () { setPointFolder(false); });
+                }
+                if (gameCollapse) {
+                    gameCollapse.addEventListener('show.bs.collapse', function () { setGameFolder(true);  });
+                    gameCollapse.addEventListener('hide.bs.collapse', function () { setGameFolder(false); });
+                }
+                if (supplierCollapse) {
+                    supplierCollapse.addEventListener('show.bs.collapse', function () { setSupplierFolder(true);  });
+                    supplierCollapse.addEventListener('hide.bs.collapse', function () { setSupplierFolder(false); });
+                }
+                if (customerCollapse) {
+                    customerCollapse.addEventListener('show.bs.collapse', function () { setCustomerFolder(true);  });
+                    customerCollapse.addEventListener('hide.bs.collapse', function () { setCustomerFolder(false); });
+                }
+            });
+        </script>
+    </aside>
+</body>
+
+</html>
+
+
+    <main class="main-content position-relative border-radius-lg">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
+    <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                <li class="breadcrumb-item text-sm text-white active">Jet Reports | GP By Item Category</li>
+            </ol>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+            <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+            </div>
+            <ul class="navbar-nav  justify-content-end">
+                <li class="nav-item d-flex align-items-center">
+                    <a href="#logout.php" class="nav-link text-white font-weight-bold px-0">
+                        <i class="fa fa-user me-sm-1"></i>
+                        <span class="d-sm-inline d-none">Maram Aashna | Log Out</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+        <div class="container-fluid py-4">
+            <div class="report-page-block">
+
+                <!-- Filters Card -->
+                <div class="card mb-4 screen-only">
+                    <div class="card-header pb-0">
+                        <h5 class="mb-0">GP Report Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="filterForm">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-2">
+                                    <label class="form-label mb-1">Select Year</label>
+                                    <select class="form-select form-select-sm" id="yearSelect" name="year">
+                                                                                    <option value="2026" selected>2026</option>
+                                                                                    <option value="2025" >2025</option>
+                                                                                    <option value="2024" >2024</option>
+                                                                                    <option value="2023" >2023</option>
+                                                                                    <option value="2022" >2022</option>
+                                                                                    <option value="2021" >2021</option>
+                                                                            </select>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label class="form-label mb-1">Item Category</label>
+                                    <select class="form-control form-control-sm" name="item_category" id="itemCategorySelect">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label mb-1">Outlet / Store</label>
+                                    <select class="form-control form-control-sm" name="store_no" id="storeNoSelect">
+                                        <option value="">All Outlets</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 d-flex justify-content-md-end align-items-end flex-wrap gap-2">
+                                    <button type="button" id="resetBtn" class="btn btn-outline-green mb-0">Reset</button>
+                                    <button type="submit" class="btn btn-primary mb-0" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
+                                        Apply Filters
+                                    </button>
+                                    <button type="button" id="exportExcelBtn" class="btn btn-info mb-0" style="background-color: rgb(12,99,38); border-color: #17a2b8; color: white;">
+                                        Export Excel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Matrix Table Card -->
+                <div class="card mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Gross Profit by Item Category (<span id="yearLabel">2026</span>)</h6> 
+                    </div>
+                    <div class="card-body p-0">
+                        
+                        <div class="matrix-table-container">
+                            <table class="table table-bordered align-middle portal-matrix-table mb-0">
+                                <thead>
+                                    <!-- Top Header Row -->
+                                    <tr class="sticky-header">
+                                        <th class="sticky-corner" rowspan="2">Item Category</th>
+                                                                                    <th colspan="4" class="month-header">Jan</th>
+                                                                                    <th colspan="4" class="month-header-alt">Feb</th>
+                                                                                    <th colspan="4" class="month-header">Mar</th>
+                                                                                    <th colspan="4" class="month-header-alt">Apr</th>
+                                                                                    <th colspan="4" class="month-header">May</th>
+                                                                                    <th colspan="4" class="month-header-alt">Jun</th>
+                                                                                    <th colspan="4" class="month-header">Jul</th>
+                                                                                    <th colspan="4" class="month-header-alt">Aug</th>
+                                                                                    <th colspan="4" class="month-header">Sep</th>
+                                                                                    <th colspan="4" class="month-header-alt">Oct</th>
+                                                                                    <th colspan="4" class="month-header">Nov</th>
+                                                                                    <th colspan="4" class="month-header-alt">Dec</th>
+                                                                                <th colspan="4" class="total-header">FULL YEAR TOTAL</th>
+                                    </tr>
+
+                                    <!-- Sub Header Row: Metrics per Month -->
+                                    <tr class="sticky-header-row2">
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                                    <th style="min-width: 110px;">Sales ($)</th>
+                                            <th style="min-width: 110px;">Cost ($)</th>
+                                            <th style="min-width: 110px;">Profit ($)</th>
+                                            <th style="min-width: 75px;">Profit %</th>
+                                                                            </tr>
+                                </thead>
+                                <tbody id="gpMatrixReportBody">
+                                    <tr>
+                                        <td colspan="53" class="text-center py-4 text-muted">Click <strong>Apply Filters</strong> to generate the monthly GP matrix.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> 
+        </div>
+    </main>
+    <script>Api.restoreForms();</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// Helper: HTML Escaping
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Format Currency & Percent
+    function fmt(v) {
+        if (!v || v === 0) return '0.00';
+        return parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtPct(v) {
+        if (v === null || v === undefined) return '0.0%';
+        const cls = v < 0 ? 'text-danger fw-bold' : '';
+        return `<span class="${cls}">${parseFloat(v).toFixed(1)}%</span>`;
+    }
+
+    // ─── Render Engine for Monthly Matrix ────────────────────────────────────────
+    function renderGPMatrix(categoriesData) {
+        const tbody = document.getElementById('gpMatrixReportBody');
+        if (!categoriesData || categoriesData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="53" class="text-center py-4 text-muted">No records found for the selected year.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        
+        // Totals tracker across all categories
+        const grandTotals = Array.from({ length: 13 }, () => ({ sales: 0, cost: 0, profit: 0 }));
+
+        categoriesData.forEach(cat => {
+            html += `<tr>`;
+            html += `<td class="sticky-col">${escapeHtml(cat.category_name)}</td>`;
+
+            let yrSales = 0, yrCost = 0, yrProfit = 0;
+
+            // Render 12 months
+            for (let m = 1; m <= 12; m++) {
+                const mData = cat.months?.[m] || { sales: 0, cost: 0, profit: 0 };
+
+                html += `<td>${fmt(mData.sales)}</td>`;
+                html += `<td>${fmt(mData.cost)}</td>`;
+                html += `<td class="${mData.profit < 0 ? 'text-danger' : ''}">${fmt(mData.profit)}</td>`;
+                html += `<td>${fmtPct(mData.profit_pct)}</td>`;
+
+                // Accumulate Year totals for this Category
+                yrSales += mData.sales;
+                yrCost += mData.cost;
+                yrProfit += mData.profit;
+
+                // Accumulate Grand Totals per Month
+                grandTotals[m - 1].sales += mData.sales;
+                grandTotals[m - 1].cost += mData.cost;
+                grandTotals[m - 1].profit += mData.profit;
+            }
+
+            // Full Year Totals for this Category
+            const yrMargin = yrSales > 0 ? (yrProfit / yrSales) * 100 : 0;
+            html += `<td class="total-col">${fmt(yrSales)}</td>`;
+            html += `<td class="total-col">${fmt(yrCost)}</td>`;
+            html += `<td class="total-col ${yrProfit < 0 ? 'text-danger' : ''}">${fmt(yrProfit)}</td>`;
+            html += `<td class="total-col">${fmtPct(yrMargin)}</td>`;
+
+            grandTotals[12].sales += yrSales;
+            grandTotals[12].cost += yrCost;
+            grandTotals[12].profit += yrProfit;
+
+            html += `</tr>`;
+        });
+
+        // Render Grand Total Row
+        // Render Grand Total Row
+        html += `<tr class="fw-bold grand-total-row">`;
+        html += `<td class="sticky-col">GRAND TOTAL</td>`;
+
+        for (let i = 0; i < 13; i++) {
+            const gt = grandTotals[i];
+            const gtMargin = gt.sales > 0 ? (gt.profit / gt.sales) * 100 : 0;
+            html += `<td>${fmt(gt.sales)}</td>`;
+            html += `<td>${fmt(gt.cost)}</td>`;
+            html += `<td>${fmt(gt.profit)}</td>`;
+            html += `<td>${fmtPct(gtMargin)}</td>`;
+        }
+        html += `</tr>`;
+
+        tbody.innerHTML = html;
+    }
+
+    function fetchMatrixData() {
+        const year = $('#yearSelect').val();
+        const cat = $('#itemCategorySelect').val();
+        const store = $('#storeNoSelect').val();
+
+        $('#yearLabel').text(year);
+        $('#gpMatrixReportBody').html('<tr><td colspan="53" class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading 12-Month Matrix...</td></tr>');
+
+        fetch(`api.php?action=gp-matrix-by-category&year=${year}&item_category=${encodeURIComponent(cat)}&store_no=${encodeURIComponent(store)}`)
+            .then(res => res.json())
+            .then(data => {
+                renderGPMatrix(data.categories || []);
+            })
+            .catch(err => {
+                console.error('API Fetch Error:', err);
+                $('#gpMatrixReportBody').html(`<tr><td colspan="53" class="text-danger p-3">Failed to load data: ${escapeHtml(err.message)}</td></tr>`);
+            });
+    }
+
+    $(document).ready(function() {
+        // Load Dropdown Options
+        fetch('api.php?action=gp-matrix-by-category&sub_action=get-filters')
+            .then(res => res.json())
+            .then(data => {
+                let storeOpts = '<option value="">All Outlets</option>';
+                (data.stores || []).forEach(s => {
+                    storeOpts += `<option value="${escapeHtml(s.id)}">${escapeHtml(s.text)}</option>`;
+                });
+                $('#storeNoSelect').html(storeOpts);
+
+                let catOpts = '<option value="">All Categories</option>';
+                (data.categories || []).forEach(c => {
+                    catOpts += `<option value="${escapeHtml(c.id)}">${escapeHtml(c.text)}</option>`;
+                });
+                $('#itemCategorySelect').html(catOpts);
+            })
+            .catch(err => console.error("Error loading matrix filters:", err));
+
+        // Initial Data Load on Page Open
+        fetchMatrixData();
+
+        // Form Submit Listener
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            fetchMatrixData();
+        });
+
+        // Reset Button Handler
+        $('#resetBtn').on('click', function() {
+            $('#filterForm')[0].reset();
+            fetchMatrixData();
+        });
+    });
+    // ─── Export GP Matrix to Excel ────────────────────────────────────────────────
+    function exportMatrixToExcel() {
+        const year = $('#yearSelect').val();
+        const cat = $('#itemCategorySelect').val();
+        const store = $('#storeNoSelect').val();
+
+        const exportBtn = document.getElementById('exportExcelBtn');
+        const originalText = exportBtn ? exportBtn.innerHTML : '';
+        if (exportBtn) exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+
+        fetch(`api.php?action=gp-matrix-by-category&year=${year}&item_category=${encodeURIComponent(cat)}&store_no=${encodeURIComponent(store)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (exportBtn) exportBtn.innerHTML = originalText;
+
+                const categoriesData = data.categories || [];
+
+                if (categoriesData.length === 0) {
+                    alert('No matrix data found to export.');
+                    return;
+                }
+
+                // 1. Build Header Row 1 (Months with Colspan 4)
+                // We send array of objects describing header row 1 to PHP
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                // 2. Build Header Row 2 (Sub-headers: Sales, Cost, Profit, Profit %)
+                const subHeaders = ['Item Category'];
+                for (let i = 0; i < 13; i++) { // 12 months + 1 Full Year Total
+                    subHeaders.push('Sales ($)', 'Cost ($)', 'Profit ($)', 'Profit %');
+                }
+
+                // 3. Build Row Data
+                const grandTotals = Array.from({ length: 13 }, () => ({ sales: 0, cost: 0, profit: 0 }));
+                const rows = [];
+
+                categoriesData.forEach(c => {
+                    const row = [c.category_name || '-'];
+                    let yrSales = 0, yrCost = 0, yrProfit = 0;
+
+                    for (let m = 1; m <= 12; m++) {
+                        const mData = c.months?.[m] || { sales: 0, cost: 0, profit: 0 };
+                        
+                        row.push(
+                            fmt(mData.sales),
+                            fmt(mData.cost),
+                            fmt(mData.profit),
+                            parseFloat(mData.profit_pct || 0).toFixed(1) + '%'
+                        );
+
+                        yrSales += mData.sales;
+                        yrCost += mData.cost;
+                        yrProfit += mData.profit;
+
+                        grandTotals[m - 1].sales += mData.sales;
+                        grandTotals[m - 1].cost += mData.cost;
+                        grandTotals[m - 1].profit += mData.profit;
+                    }
+
+                    // Full Year Total for Category
+                    const yrMargin = yrSales > 0 ? (yrProfit / yrSales) * 100 : 0;
+                    row.push(
+                        fmt(yrSales),
+                        fmt(yrCost),
+                        fmt(yrProfit),
+                        yrMargin.toFixed(1) + '%'
+                    );
+
+                    grandTotals[12].sales += yrSales;
+                    grandTotals[12].cost += yrCost;
+                    grandTotals[12].profit += yrProfit;
+
+                    rows.push(row);
+                });
+
+                // 4. Append Grand Total Row
+                const gtRow = ['GRAND TOTAL'];
+                for (let i = 0; i < 13; i++) {
+                    const gt = grandTotals[i];
+                    const gtMargin = gt.sales > 0 ? (gt.profit / gt.sales) * 100 : 0;
+                    gtRow.push(
+                        fmt(gt.sales),
+                        fmt(gt.cost),
+                        fmt(gt.profit),
+                        gtMargin.toFixed(1) + '%'
+                    );
+                }
+                rows.push(gtRow);
+
+                // 5. Build and Submit POST Form
+                const tablePayload = {
+                    sub_headers: subHeaders,
+                    rows: rows
+                };
+
+                let form = document.createElement("form");
+                form.method = "POST";
+                form.action = "#export-gp-by-item-category-excel.php";
+                form.target = "_blank";
+
+                const payload = {
+                    year: year,
+                    category_filter: $('#itemCategorySelect option:selected').text(),
+                    store_filter: $('#storeNoSelect option:selected').text(),
+                    table_json_data: JSON.stringify(tablePayload)
+                };
+
+                for (const key in payload) {
+                    if (payload.hasOwnProperty(key)) {
+                        let input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = key;
+                        input.value = payload[key];
+                        form.appendChild(input);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            })
+            .catch(err => {
+                if (exportBtn) exportBtn.innerHTML = originalText;
+                console.error('Matrix Export Error:', err);
+                alert('Failed to export matrix data: ' + err.message);
+            });
+    }
+
+    // Attach click listener in $(document).ready()
+    $(document).ready(function() {
+        $('#exportExcelBtn').on('click', exportMatrixToExcel);
+    });
+</script>
+</body>
+</html>

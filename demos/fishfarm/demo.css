@@ -1,7 +1,6 @@
-/* argon-dashboard.min.css, brand.css and ff-ocean.css are the real portal's
-   own stylesheets, lifted out of the project. What is left over lives here:
-   the toast that explains what is not wired up, and the two sidebar bits the
-   real app gets from Bootstrap's JS rather than from CSS. */
+/* argon-dashboard.min.css, brand.css and ff-ocean.css are the real portal's own
+   stylesheets. This file only adds the note that explains what is not wired up
+   in the walkthrough, and the placeholder that stands in for uploaded photos. */
 
 .demo-note {
   position: fixed;
@@ -22,27 +21,21 @@
 }
 .demo-note.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* The collapse arrow Bootstrap would rotate for us. */
-.sidenav .nav-link[data-collapse] { position: relative; }
-.sidenav .nav-link[data-collapse]::after {
-  content: '';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  margin-top: -4px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: rotate(45deg);
-  opacity: 0.5;
-  transition: transform 180ms ease;
+/* Uploaded photos are not part of the walkthrough, so each thumbnail slot
+   shows the file it points at instead. */
+.ff-thumb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 180px;
+  background: #f8f9fa;
+  color: #8392ab;
+  font-size: 11px;
+  text-align: center;
+  padding: 0 12px;
+  word-break: break-all;
 }
-.sidenav .nav-link[data-collapse][aria-expanded="true"]::after {
-  transform: rotate(-135deg);
-  margin-top: -1px;
-}
-
-/* A submenu is a plain list here, so it needs the indent the real one gets
-   from Argon's nav-sm rules. */
-.sidenav .submenu .nav-link { padding-left: 1.75rem; }
+.ff-thumb-empty i { font-size: 26px; opacity: 0.6; }
+html[data-theme="dark"] .ff-thumb-empty { background: rgba(255, 255, 255, 0.04); }

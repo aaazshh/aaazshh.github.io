@@ -17,6 +17,8 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/pages/customer-behaviour-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -944,164 +946,7 @@
 </nav>
 
 
-        <div class="container-fluid py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5 class="mb-1">Customer Behaviour Report</h5>
-                            <p class="text-sm mb-0">Identify which customers repeatedly purchase selected products and review their buying habits over time.</p>
-                        </div>
-                        <div class="card-body">
-                            <form method="get" class="row g-3 customer-filter-form" id="customerFilterForm">
-                                <input type="hidden" name="period_type" value="monthly">
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Date From</label>
-                                    <input type="date" class="form-control" name="date_from" id="mainDateFrom" value="2026-07-01">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Date To</label>
-                                    <input type="date" class="form-control" name="date_to" id="mainDateTo" value="2026-09-25">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Member ID</label>
-                                    <input type="text" class="form-control" name="member_id" inputmode="numeric" pattern="[0-9]*" value="" placeholder="Optional">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Item No</label>
-                                    <input type="text" class="form-control" name="product_sku" value="" placeholder="Optional">
-                                </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
-                                    <label class="form-label">Category</label>
-                                    <select class="form-control customer-category-select" name="category" data-placeholder="Search category">
-                                        <option value="">All Categories</option>
-                                                                            </select>
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Transaction Frequency</label>
-                                    <input type="number" class="form-control" name="min_repeat" min="2" max="999" value="2">
-                                </div>
-                                <div class="col-xl-1 col-lg-2 col-md-6 customer-filter-action">
-                                    <button type="submit" class="btn btn-primary w-100 mb-0" style="background-color: rgb(12,99,38);">Run</button>
-                                </div>
-                            </form>
-
-                            <p class="text-xs text-muted mt-3 mb-0">
-                                Source index: repeat. Category options and category filtering use prod-crm-outlet-transactions.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            
-            <div class="row mb-4">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card customer-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Total Customers</p>
-                            <h4>0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card customer-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Total Repeat Purchases</p>
-                            <h4>0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card customer-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Avg Repeat Purchases / Customer</p>
-                            <h4>0.0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                                            <div class="card customer-summary-card">
-                            <div class="card-body">
-                                <p class="text-sm mb-1">Most Frequent Repeat Customer</p>
-                                <h4>-</h4>
-                                <div class="customer-muted">0 repeat purchases</div>
-                            </div>
-                        </div>
-                                    </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-xl-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Repeat Purchases Over Time</h6>
-                            <p class="text-sm mb-0">Summed repeat purchases across the selected filters.</p>
-                        </div>
-                        <div class="card-body">
-                                                            <p class="text-sm text-muted mb-0">No repeat purchase trend data matched the selected filters.</p>
-                                                    </div>
-                    </div>
-                </div>
-                <div class="col-xl-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0 d-flex justify-content-between align-items-start gap-3">
-                            <div>
-                                <h6 class="mb-0">Shopping Basket Distribution</h6>
-                                <p class="text-sm mb-0">Category share of the customer's full basket within the selected date range.</p>
-                            </div>
-                                                    </div>
-                        <div class="card-body">
-                                                            <p class="text-sm text-muted mb-0">Select a customer to view their shopping basket distribution.</p>
-                                                    </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center customer-table-toolbar">
-                    <div>
-                        <h6 class="mb-0">Repeat Purchase Customers</h6>
-                        <p class="text-sm mb-0">
-                            Showing 0 of 0 matching rows.
-                                                    </p>
-                    </div>
-                    <form method="get" class="customer-period-filter" id="customerPeriodFilterForm">
-                        <input type="hidden" name="date_from" id="periodDateFrom" value="2026-07-01">
-                        <input type="hidden" name="date_to" id="periodDateTo" value="2026-09-25">
-                        <input type="hidden" name="member_id" value="">
-                        <input type="hidden" name="product_sku" value="">
-                        <input type="hidden" name="category" value="">
-                        <input type="hidden" name="min_repeat" value="2">
-                        <label class="form-label text-xs text-muted">Period Type</label>
-                        <div class="d-flex gap-2">
-                            <select class="form-control" name="period_type" id="periodTypeFilter">
-                                <option value="weekly" >Weekly</option>
-                                <option value="monthly" selected>Monthly</option>
-                            </select>
-                            <button type="button" class="btn btn-outline-secondary btn-sm mb-0" id="periodFilterResetBtn">Reset</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-3">
-                        <table class="table align-items-center mb-0 customer-table" id="customerBehaviourTable">
-                            <thead>
-                                <tr>
-                                    <th>Member ID</th>
-                                    <th>Item NO</th>
-                                    <th>Product Name</th>
-                                    <th>Period</th>
-                                    <th class="text-end">Repeat Purchase Count</th>
-                                    <th>Last Purchase</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid py-4"><script>document.write(PM.main());document.currentScript.remove()</script>
         </div>
 
         <footer class="footer pt-3">
@@ -1501,8 +1346,8 @@
                 });
             }
 
-            const repeatTrendLabels = [];
-            const repeatTrendValues = [];
+            const repeatTrendLabels = PM.trendLabels;
+            const repeatTrendValues = PM.trendValues;
             const repeatTrendCanvas = document.getElementById('repeatPurchaseTrendChart');
             const mainDateFrom = document.getElementById('mainDateFrom');
             const mainDateTo = document.getElementById('mainDateTo');

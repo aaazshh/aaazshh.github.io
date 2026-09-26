@@ -126,3 +126,48 @@ var Crm = (function () {
   C.gamePlays = function () { games(); return plays; };
   C.winnings = function () { games(); return wins; };
 })(Crm);
+
+// prod-customer-repeat-purchases: per member, product and week or month, how
+// many receipts carried the product. Built from the last 120 days of member
+// receipts the first time a page asks for it.
+(function (C) {
+  'use strict';
+  var W = World;
+  var built = {};
+  function weekStart(d) { var x = W.parse(d), dow = (x.getDay() + 6) % 7; x.setDate(x.getDate() - dow); return W.ymd(x); }
+  function isoWeek(d) {
+    var x = W.parse(d); x.setDate(x.getDate() + 3 - (x.getDay() + 6) % 7);
+    var y = x.getFullYear(), jan4 = new Date(y, 0, 4);
+    var wk = 1 + Math.round(((x - jan4) / 86400000 - 3 + (jan4.getDay() + 6) % 7) / 7);
+    return y + '-W' + W.pad(wk);
+  }
+  C.repeatIndex = function (type) {
+    if (built[type]) return built[type];
+    var map = {}, docs = [];
+    W.days(W.ymd(W.addDays(new Date(), -120)), W.TODAY).forEach(function (d) {
+      var ws = weekStart(d), key = type === 'weekly' ? isoWeek(d) : d.slice(0, 7);
+      W.STORES.forEach(function (s) {
+        var seen = {};
+        W.dayLines(s, d).forEach(function (l) {
+          if (!l.member_id) return;
+          var k = l.member_id + '|' + l.item_no + '|' + key;
+          if (seen[k + l.receipt_no]) return;
+          seen[k + l.receipt_no] = 1;
+          var doc = map[k];
+          if (!doc) {
+            var start = type === 'weekly' ? ws : d.slice(0, 7) + '-01', end;
+            if (type === 'weekly') end = W.ymd(W.addDays(W.parse(ws), 6));
+            else { var e = W.parse(start); e.setMonth(e.getMonth() + 1); e.setDate(0); end = W.ymd(e); }
+            doc = map[k] = { member_id: parseInt(l.member_id.slice(1), 10), product_sku: l.item_no, product_name: l.name, period_type: type,
+              period_key: key, period_start: start, period_end: end, month: ws.slice(0, 7), txn_count: 0, last_seen: '', category: l.item_category_code };
+            if (type === 'monthly') doc.month = key;
+            docs.push(doc);
+          }
+          doc.txn_count++;
+          if (l.datetime > doc.last_seen) doc.last_seen = l.datetime;
+        });
+      });
+    });
+    return (built[type] = docs);
+  };
+})(Crm);

@@ -17,6 +17,8 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/pages/product-frequency-behaviour.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -816,144 +818,7 @@
 </nav>
 
 
-        <div class="container-fluid py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5 class="mb-1">Product Frequency Behaviour</h5>
-                            <p class="text-sm mb-0">Review products and categories that customers repeatedly purchase before drilling into individual customer behaviour.</p>
-                        </div>
-                        <div class="card-body">
-                            <form method="get" class="row g-3 frequency-filter-form">
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Period Type</label>
-                                    <select class="form-control" name="period_type">
-                                        <option value="weekly" >Weekly</option>
-                                        <option value="monthly" selected>Monthly</option>
-                                    </select>
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Date From</label>
-                                    <input type="date" class="form-control" name="date_from" value="2026-07-01">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Date To</label>
-                                    <input type="date" class="form-control" name="date_to" value="2026-09-25">
-                                </div>
-                                <div class="col-xl-3 col-lg-4 col-md-6">
-                                    <label class="form-label">Category</label>
-                                    <select class="form-control frequency-category-select" name="category" data-placeholder="Search category">
-                                        <option value="">All Categories</option>
-                                                                            </select>
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Product SKU / Item No</label>
-                                    <input type="text" class="form-control" name="product_sku" value="" placeholder="Optional">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Minimum Transaction Count</label>
-                                    <input type="number" class="form-control" name="min_repeat" min="1" max="999" value="3">
-                                </div>
-                                <div class="col-xl-2 col-lg-3 col-md-6">
-                                    <label class="form-label">Member ID</label>
-                                    <input type="text" class="form-control" name="member_id" inputmode="numeric" pattern="[0-9]*" value="" placeholder="Optional">
-                                </div>
-                                <div class="col-xl-1 col-lg-2 col-md-6 frequency-filter-action">
-                                    <button type="submit" class="btn btn-primary w-100 mb-0" style="background-color: rgb(12,99,38);">Run</button>
-                                </div>
-                            </form>
-
-                            <p class="text-xs text-muted mt-3 mb-0">
-                                Source index: repeat. Category options and filtering use prod-crm-outlet-transactions.
-                                Click a chart bar to open Customer Behaviour Report for that product.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            
-            <div class="row mb-4">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card frequency-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Repeat Products</p>
-                            <h4>0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card frequency-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Total Repeat Purchase Count</p>
-                            <h4>0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card frequency-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Repeat Customers</p>
-                            <h4>0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card frequency-summary-card">
-                        <div class="card-body">
-                            <p class="text-sm mb-1">Top Repeat Product</p>
-                            <h4>-</h4>
-                            <div class="frequency-muted">0 repeat purchases</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Repeat Purchase Count by Product</h6>
-                            <p class="text-sm mb-0">Top 0 products by summed repeat purchase count.</p>
-                        </div>
-                        <div class="card-body">
-                            <div class="frequency-chart-wrap">
-                                <canvas id="productFrequencyChart"></canvas>
-                            </div>
-                                                            <p class="text-center text-muted mt-3 mb-0">No products matched the selected filters.</p>
-                                                    </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Product Frequency Details</h6>
-                    <p class="text-sm mb-0">
-                        Showing 0 matching products.
-                                            </p>
-                </div>
-                <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-3">
-                        <table class="table align-items-center mb-0 frequency-table" id="productFrequencyTable">
-                            <thead>
-                                <tr>
-                                    <th>Item No</th>
-                                    <th>Product Name</th>
-                                    <th>Category</th>
-                                    <th class="text-end">Total Repeat Purchase Count</th>
-                                    <th class="text-end">Customers</th>
-                                    <th>Last Purchase</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid py-4"><script>document.write(PM.main());document.currentScript.remove()</script>
         </div>
 
         <footer class="footer pt-3">
@@ -1325,9 +1190,9 @@
                 });
             }
 
-            const chartLabels = [];
-            const chartValues = [];
-            const chartLinks = [];
+            const chartLabels = PM.chartLabels;
+            const chartValues = PM.chartValues;
+            const chartLinks = PM.chartLinks;
             const canvas = document.getElementById('productFrequencyChart');
 
             if (window.Chart && canvas && chartLabels.length > 0) {

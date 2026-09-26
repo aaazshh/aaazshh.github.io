@@ -17,6 +17,8 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/pages/weekly-customer-product-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -777,7 +779,7 @@
             <div class="table-responsive p-3">
                 <table class="table align-items-center weekly-table" id="weeklyCustomerTable">
                     <thead><tr><th>User</th><th>Product</th><th>Item No</th><th>Months of Purchases</th><th>Action</th></tr></thead>
-                    <tbody></tbody>
+                    <tbody><script>document.write(PM.body());document.currentScript.remove()</script></tbody>
                 </table>
             </div>
         </div>
@@ -1169,8 +1171,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderAction(memberId, productSku) {
         const parameters = new URLSearchParams({
             period_type: 'weekly',
-            date_from: "2026-01-01",
-            date_to: "2026-09-25",
+            date_from: PM.behaviourFrom,
+            date_to: PM.behaviourTo,
             member_id: memberId,
             product_sku: productSku,
             min_repeat: '1'

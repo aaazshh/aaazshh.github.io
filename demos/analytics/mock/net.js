@@ -56,7 +56,7 @@ var Api = (function () {
   function handles(url) {
     var u = parseUrl(url);
     // A page that is also its own DataTables endpoint (comparison.php?draw=...).
-    if (/\.html$/.test(u.file) && (u.params.draw || u.params.ajax) && routes[u.file.replace(/\.html$/, '.php')]) {
+    if (/\.html$/.test(u.file) && (u.params.draw || u.params.ajax || u.params.api) && routes[u.file.replace(/\.html$/, '.php')]) {
       return { key: u.file.replace(/\.html$/, '.php'), params: u.params, file: u.file };
     }
     if (!/\.php$/.test(u.file)) return null;

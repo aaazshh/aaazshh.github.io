@@ -10,6 +10,15 @@
 'use strict';
 
 var UI = (function () {
+  // Every page but login.php sends a signed-out visitor to login first.
+  var me = null;
+  try { me = JSON.parse(sessionStorage.getItem('ff-portal-user') || 'null'); } catch (e) {}
+  if (!me) {
+    location.replace('login.html');
+    // Anything the page asks of the frame while it leaves is a no-op.
+    var stub = new Proxy(function () { return stub; }, { get: function (t, k) { return k === Symbol.toPrimitive ? function () { return ''; } : stub; } });
+    return stub;
+  }
   var params = new URLSearchParams(location.search);
   var file = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '');
 
@@ -123,6 +132,7 @@ var UI = (function () {
   }
 
   return {
+    me: function () { return me; },
     file: file, params: params, q: q, qi: qi, esc: esc, nf: nf, dec: dec, strim: strim, flash: flash,
     flashFrom: flashFrom, pager: pager, options: options, byName: byName, desc: desc, prod: prod, cage: cage,
     sp: sp, named: named, byId: byId, speciesCell: speciesCell
@@ -274,7 +284,7 @@ var Shell = (function () {
           inGroup('images') && cat === c];
       })) +
       single('./activity-log.html', 'Activity Log', 'log', is('activity-log')) +
-      '<li class="nav-item mt-3"><a class="nav-link" href="#" data-unbuilt="Log Out">' + iconBox('out') +
+      '<li class="nav-item mt-3"><a class="nav-link" href="#" data-logout>' + iconBox('out') +
       '<span class="nav-link-text">Log Out</span></a></li>' +
       '</ul></div></div></aside>';
   }
@@ -298,8 +308,8 @@ var Shell = (function () {
       (opts.user ? '<div class="collapse navbar-collapse mt-sm-0 mt-2 ms-auto flex-grow-0" id="navbar">' +
         '<ul class="navbar-nav align-items-center ms-auto justify-content-end">' +
         '<li class="nav-item d-flex align-items-center"><span class="nav-link text-body font-weight-bold px-0">' +
-        '<i class="fa fa-user me-sm-1"></i> Maram Aashna</span></li>' +
-        '<li class="nav-item d-flex align-items-center"><a href="#" data-unbuilt="Log Out" class="nav-link text-body font-weight-bold px-3">Log Out</a></li>' +
+        '<i class="fa fa-user me-sm-1"></i> ' + UI.esc(UI.me().name) + '</span></li>' +
+        '<li class="nav-item d-flex align-items-center"><a href="#" data-logout class="nav-link text-body font-weight-bold px-3">Log Out</a></li>' +
         '</ul></div>' : '') +
       '</div></nav>';
     var footer = '<footer class="footer pt-3"><div class="container-fluid"><div class="row align-items-center justify-content-lg-between">' +
@@ -355,6 +365,14 @@ var Shell = (function () {
   });
 
   document.addEventListener('click', function (e) {
+    var out = e.target.closest('[data-logout]');
+    if (out) {
+      // logout.php: end the session and go back to the login page
+      e.preventDefault();
+      try { sessionStorage.removeItem('ff-portal-user'); } catch (err) {}
+      location.href = 'login.html';
+      return;
+    }
     var link = e.target.closest('[data-unbuilt]');
     if (!link) return;
     e.preventDefault();

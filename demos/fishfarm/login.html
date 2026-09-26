@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/svg+xml" href="assets/img/fishfarm-logo.svg">
+    <title>Fish Farm — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link id="pagestyle" href="assets/css/argon-dashboard.min.css" rel="stylesheet" />
+    <link href="assets/css/ff-ocean.css" rel="stylesheet" />
+    <link href="demo.css" rel="stylesheet">
+</head>
+
+<body class="ff-login">
+    <canvas id="ff-ocean" class="ff-ocean-canvas" aria-hidden="true"></canvas>
+    <main class="main-content  mt-0">
+        <section>
+            <div class="page-header min-vh-100">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
+                            <div class="card card-plain">
+                                <div class="card-header pb-0 text-start">
+                                    <h4 class="font-weight-bolder">Login</h4>
+                                    <p class="mb-0">Enter your email or username and password to login</p>
+                                </div>
+                                <div class="card-body">
+                                    <form action="login.html" method="post" class="auth-form login-form" novalidate>
+                                        <div class="email-or-username mb-3">
+                                            <label class="sr-only" for="email-or-username">Email/Username</label>
+                                            <input type="text" id="email-or-username" name="email-or-username" class="form-control" value="guest1">
+                                            <span class="help-block" style="color:red;" data-err="user"></span>
+                                        </div>
+                                        <div class="password mb-3">
+                                            <label class="sr-only" for="password">Password</label>
+                                            <input type="password" id="password" name="password" class="form-control" value="guest1">
+                                            <span class="help-block" style="color:red;" data-err="pass"></span>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary w-100 theme-btn mx-auto">Log In</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="text-center my-2 text-sm text-muted">or</div>
+                                    <button type="button" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2" data-microsoft>
+                                        <img src="assets/img/icons/microsoft.png" alt="Microsoft" style="width:18px;height:18px;">
+                                        <span>Sign in with Microsoft</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
+                            <div class="ff-brand-panel">
+                                <canvas class="ff-brand-logo" id="ff-brand-logo" aria-hidden="true"></canvas>
+                                <h1 class="ff-brand-name">Fish Farm</h1>
+                                <p class="ff-brand-tag">Welcome back</p>
+                            </div>
+                            <footer class="app-auth-footer">
+                                <div class="container text-center py-3">
+                                    <small class="copyright">Copyright ©<span data-year></span> Fish Farm</small>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="demo-note" class="demo-note" role="status"></div>
+    <script src="assets/js/core/popper.min.js"></script>
+    <script src="assets/js/core/bootstrap.min.js"></script>
+    <script src="assets/js/ff-ocean.js"></script>
+    <script src="assets/js/ff-logo-draw.js"></script>
+    <script>
+        FFOcean.mount(document.getElementById('ff-ocean'), {
+            intensity: 1,
+            interactive: true,
+            bubblesOnTap: true
+        });
+        FFLogoDraw.loop(document.getElementById('ff-brand-logo'));
+    </script>
+    <script>
+    // login.php, run in the page: the same checks and messages against the
+    // portal's users (status_id 1 only). Walkthrough accounts sign in with
+    // their username as the password.
+    (function () {
+        'use strict';
+        var USERS = [
+            { id: 2, username: 'Maram Aashna', email: 'maram.aashna@mail.com', name: 'Maram Aashna', role_id: 1, status_id: 1 },
+            { id: 3, username: 'guest1', email: 'guest1@mail.com', name: 'guest1', role_id: 2, status_id: 1 },
+            { id: 4, username: 'guest2', email: 'guest2@mail.com', name: 'guest2', role_id: 3, status_id: 1 },
+            { id: 5, username: 'guest3', email: 'guest3@mail.com', name: 'guest3', role_id: 3, status_id: 1 }
+        ];
+        try { if (sessionStorage.getItem('ff-portal-user')) { location.replace('index.html'); return; } } catch (e) {}
+        document.querySelector('[data-year]').textContent = new Date().getFullYear();
+        var form = document.querySelector('.login-form');
+        var errUser = form.querySelector('[data-err=user]'), errPass = form.querySelector('[data-err=pass]');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var who = form['email-or-username'].value.trim(), pw = form.password.value.trim(), uErr = '', pErr = '';
+            var at = who.indexOf('@');
+            if (!who) uErr = 'Please enter a valid email or username.';
+            else if (at > 0 && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(who)) uErr = 'Invalid email format.';
+            if (!pw) pErr = 'Please enter your password.';
+            if (!uErr && !pErr) {
+                var u = USERS.filter(function (x) { return x.status_id === 1 && (at > 0 ? x.email === who : x.username === who); })[0];
+                if (!u) uErr = 'No account found with that email or username.';
+                else if (pw !== u.username) pErr = 'The password you entered was not valid.';
+                else {
+                    try { sessionStorage.setItem('ff-portal-user', JSON.stringify({ id: u.id, username: u.username, name: u.name, email: u.email, role_id: u.role_id })); } catch (e2) {}
+                    location.href = 'index.html';
+                    return;
+                }
+            }
+            errUser.textContent = uErr;
+            errPass.textContent = pErr;
+        });
+        document.querySelector('[data-microsoft]').addEventListener('click', function () {
+            var n = document.getElementById('demo-note');
+            n.textContent = 'Sign in with Microsoft (iam.php) is wired to the live system, not to this walkthrough.';
+            n.classList.add('show');
+            clearTimeout(n.timer);
+            n.timer = setTimeout(function () { n.classList.remove('show'); }, 3600);
+        });
+    })();
+    </script>
+</body>
+
+</html>

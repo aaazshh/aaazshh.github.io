@@ -171,7 +171,7 @@
         '<a href="add-fish-production.html" class="btn btn-primary btn-sm mb-0"><i class="fa fa-plus me-1"></i> Add Production</a>' +
         '<a href="feed-list.html" class="btn btn-success btn-sm mb-0"><i class="fa fa-wheat-awn me-1"></i> View Feed</a>' +
         '<a href="fish-species-list.html" class="btn btn-info btn-sm mb-0"><i class="fa fa-fish me-1"></i> Manage Species</a></div>' +
-        '<hr class="horizontal dark my-3"><p class="text-xs text-secondary mb-0">Welcome, <strong>Maram Aashna</strong>. This Daily Report ' +
+        '<hr class="horizontal dark my-3"><p class="text-xs text-secondary mb-0">Welcome, <strong>' + UI.esc(UI.me().name) + '</strong>. This Daily Report ' +
         'mirrors the dashboard on the legacy CMS, with operational KPIs added.</p></div></div></div></div>'
     });
 

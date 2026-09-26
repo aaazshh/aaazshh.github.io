@@ -45,6 +45,7 @@ button { cursor: pointer; }
   transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 400ms;
   overflow: hidden;
 }
+.screen { will-change: transform; box-shadow: -10px 0 28px rgba(12,46,76,0.14); }
 .screen.enter { transform: translateX(100%); }
 .screen.under { transform: translateX(-30%); filter: brightness(0.92); }
 .screen.leave { transform: translateX(100%); }

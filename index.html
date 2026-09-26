@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maram Aashna</title>
   <meta name="description" content="Maram Aashna. Web and mobile development, from internal operations portals to the apps that go with them.">
-  <meta name="theme-color" content="#e0ddd7">
+  <meta name="theme-color" content="#eadfcd">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
@@ -21,9 +21,14 @@
   <a class="skip-link" href="#items">Skip to the desktop items</a>
 
   <div class="desktop" id="desktop">
-    <!-- Wallpaper, decorative, so the alt stays empty. The portrait photo is
-         parked at assets/me.png until its crop gets another look. -->
-    <img class="wallpaper" src="assets/wallpaper.webp" alt="">
+    <!-- Wallpaper: the painted desk and its journal. Decorative, so it stays
+         out of the accessibility tree. journal.js builds the moving parts on
+         top of the still picture. -->
+    <div class="journal" id="journal" aria-hidden="true">
+      <div class="journal-stage" id="journal-stage">
+        <img class="journal-desk" src="assets/journal/desk.webp" alt="">
+      </div>
+    </div>
 
     <header class="menubar">
       <span class="who">Maram Aashna</span>
@@ -329,6 +334,7 @@
     </symbol>
   </svg>
 
+  <script src="journal.js"></script>
   <script src="desktop.js"></script>
   <script src="guide.js"></script>
 

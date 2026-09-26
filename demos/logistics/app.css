@@ -2964,13 +2964,14 @@ tbody td {
     margin-top: 3px;
 }
 
-/* Driver marker on map — vehicle disc stacked above the plate badge */
+/* Driver marker on map — vehicle disc stacked above the plate badge. The
+   disc's centre (half its 34px) sits on the GPS fix and the plate hangs below. */
 .cc-driver-avatar {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -17px);
 }
 
 .cc-driver-disc {

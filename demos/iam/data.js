@@ -1,11 +1,14 @@
 // In-browser copy of the IAM database. Departments, portals, roles and
 // department_mapping are the rows from migrate.sql. Users, outlets, access,
 // category_groups and bm_mapping are generated in the same shapes, with every
-// person as guestN. Changes live in sessionStorage for the length of the visit.
+// person as guestN. The portals are the five systems in this portfolio, each
+// with the roles its own database maps IAM roles onto. The database lives in
+// localStorage, so an account made here can sign in to the other demos through
+// iam-sso.js, the way the real portals ask IAM.
 var IAM = (function () {
   'use strict';
 
-  var KEY = 'iam-demo-db-v1';
+  var KEY = 'iam-demo-db-v2';
 
   function rng(seed) {
     return function () {
@@ -29,52 +32,25 @@ var IAM = (function () {
   ];
 
   var PORTALS = [
-    [1, 'http://localhost/fresh', 'PMT Fresh', '2025-09-26 01:32:46'],
-    [2, 'http://localhost/seafood', 'PMT Seafood', '2025-09-26 01:32:46'],
-    [3, 'http://localhost/ips', 'IPS Order', '2025-09-26 01:32:46'],
-    [4, 'http://localhost/crm_web', 'CRM Dashboard', '2025-09-26 01:32:46'],
-    [5, 'http://localhost/apps_landing', 'Apps', '2025-09-26 01:32:46'],
     [6, 'http://localhost/iam', 'IAM', '2025-09-26 01:32:46'],
-    [7, 'http://localhost/forms', 'Digital Forms', '2025-10-16 00:43:20'],
-    [8, 'http://localhost/stocktake-v2', 'Stocktake', '2025-10-28 06:45:36'],
-    [22, 'http://localhost/merchandising', 'Merchandising', '2026-05-05 00:00:00'],
-    [23, 'http://localhost/prime-hunt', 'Prime Hunt', '2026-06-25 00:00:00'],
-    [24, 'http://localhost/fishfarm', 'Fish Farm', '2026-06-26 00:00:00']
+    [24, 'http://localhost/fishfarm', 'Fish Farm', '2026-06-26 00:00:00'],
+    [25, 'http://localhost/logistics', 'Logistics', '2026-06-30 00:00:00'],
+    [26, 'http://localhost/hq-web', 'HQ', '2026-04-15 00:00:00'],
+    [27, 'http://localhost/analytic', 'Analytic', '2025-09-26 01:32:46']
   ];
 
-  // id, name, description, portal_id, portal_access_id, department_access_id
+  // id, name, description, portal_id. Each portal matches the IAM role name
+  // against its own roles table: Fish Farm and HQ by name (HQ falls back to
+  // Staff), Logistics by the lower-cased name, Analytic by name.
   var ROLES = [
-    [1, 'Account', 'Account Access for Fruits', 1], [8, 'Buyer', 'Buyer Access for Fruits', 1],
-    [15, 'Customer', 'Customer Access for Fruits', 1], [22, 'Picker', 'Picker Access for Fruits', 1],
-    [29, 'PMT Admin', 'PMT Admin Access for Fruits', 1], [36, 'PSM Account', 'PSM Account Access for Fruits', 1],
-    [43, 'Super Admin', 'Super Admin Access for Fruits', 1],
-    [50, 'Account', 'Account Access', 2], [51, 'Buyer', 'Buyer Access', 2], [52, 'Outlet', 'Outlet Access', 2],
-    [53, 'Customer', 'Customer Access', 2], [54, 'Picker', 'Picker Access', 2], [55, 'PMT Admin', 'PMT Admin Access', 2],
-    [56, 'PSM Account', 'PSM Account Access', 2], [57, 'Super Admin', 'Full Access', 2],
-    [58, 'Buyer', 'Buyer Access', 3], [59, 'Outlet', 'Outlet Access', 3], [60, 'PGI Admin', 'PGI Admin Access', 3],
-    [61, 'Super Admin', 'Full Access', 3],
-    [62, 'CRM Ops', 'CRM Ops Access', 4], [63, 'Customer Service', 'Customer Service Access', 4],
-    [64, 'Managed Store', 'Managed Store Access', 4], [65, 'Account', 'Account Access', 4], [66, 'Admin', 'Admin Access', 4],
-    [67, 'Super Admin', 'Full Access', 4],
     [68, 'Admin', 'Admin Access', 6], [69, 'Super Admin', 'Full Access', 6],
-    [70, 'Super Admin', 'Full Access', 7], [71, 'Admin', 'Can create and edit forms', 7],
-    [72, 'Approver', 'Approver Access', 7], [73, 'Staff', 'Staff Access', 7],
-    [74, 'PGI Admin+', 'PGI Admin+ Access', 3],
-    [75, 'PGI Admin', 'PGI Access', 6, '3', '8'], [76, 'PMT Admin', 'PMT Access', 6, '1,2', '1'],
-    [77, 'CRM Admin', 'CRM Access', 6, '4', '17'],
-    [78, 'Super Admin', 'Full Access', 8], [79, 'Admin', 'Admin Access', 8], [80, 'Outlet', 'Outlet Access', 8],
-    [81, 'Merchant Admin', 'Merchant Access', 6],
-    [82, 'Administrator', 'Admin dashboard access', 9], [83, 'Shop manager', 'Shop manager dashboard access', 9],
-    [84, 'Customer', 'Customer dashboard access', 9], [85, 'HR', 'HR dashboard access', 9],
-    [86, 'Employer', 'Employer dashboard access', 9], [87, 'Store Locator Manager', 'Store locator manager dashboard access', 9],
-    [88, 'Subscriber', 'Subscriber dashboard access', 9], [89, 'Contributor', 'Contributor dashboard access', 9],
-    [90, 'Author', 'Author dashboard access', 9], [91, 'Editor', 'Editor dashboard access', 9],
-    [92, 'HR', 'Digital Forms Access', 6, '7', null],
-    [93, 'Driver', 'Van Sales Driver', 3], [94, 'Van Sales Admin', 'Van Sales Admin Access', 3],
-    [119, 'Super Admin', 'Full Access', 22], [120, 'Admin', 'Admin Access', 22],
-    [121, 'Approver', 'Approver Access', 22], [122, 'Supplier', 'Supplier Access', 22],
-    [123, 'Super Admin', 'Full Access', 23], [124, 'Admin', 'Admin Access', 23],
-    [125, 'Super Admin', 'Full Access', 24], [126, 'Admin', 'Admin Access', 24]
+    [125, 'Super Admin', 'Full Access', 24], [126, 'Admin', 'Admin Access', 24],
+    [130, 'Super_Admin', 'Full access to every company', 25], [131, 'PSM_Admin', 'PSM Logistics dispatch and fleet', 25],
+    [132, 'PSM_Driver', 'PSM Logistics driver app', 25], [133, 'POL_Admin', 'Prime Online dispatch and fleet', 25],
+    [134, 'POL_Driver', 'Prime Online driver app', 25],
+    [140, 'Super Admin', 'Full Access', 26], [141, 'Admin', 'Can create and edit forms', 26], [142, 'Staff', 'Staff Access', 26],
+    [150, 'Super Admin', 'Full Access', 27], [151, 'PSM Admin', 'PGI Admin Access', 27], [152, 'Outlet', 'Outlet Access', 27],
+    [153, 'Buyer', 'PGI Admin Access', 27]
   ];
 
   // id, department_id, department, entra
@@ -189,32 +165,35 @@ var IAM = (function () {
     // Role assignments, shaped like the access table.
     var byPortal = {};
     db.roles.forEach(function (x) { (byPortal[x.portal_id] = byPortal[x.portal_id] || []).push(x.id); });
-    // Apps (portal 5) has no roles in the seed, so nobody is granted it.
+    // Which systems each department works in: HQ for everyone, Logistics for
+    // operations, Fish Farm for PAC, Analytic for buying and management.
     var deptPortals = {
-      1: [1, 2], 2: [1, 2, 4], 3: [6, 7, 8], 4: [3, 8], 5: [4, 7], 6: [3, 22], 7: [6, 7],
-      8: [3], 9: [7], 10: [4], 11: [1, 3, 22], 12: [24], 13: [7], 14: [7], 15: [4],
-      16: [4, 7, 24], 17: [4], 18: [6], 19: [3, 8, 23]
+      1: [26, 27], 2: [26, 27], 3: [6, 26], 4: [25, 26], 5: [26, 27], 6: [26], 7: [6, 26],
+      8: [26, 27], 9: [26], 10: [25, 26], 11: [26, 27], 12: [24, 26], 13: [26], 14: [26], 15: [26, 27],
+      16: [24, 26, 27], 17: [26, 27], 18: [6, 26], 19: [25, 26, 27]
     };
+    // Admin and super admin roles are rare; most people get the everyday one.
+    var everyday = { 6: [68], 24: [126], 25: [132, 132, 132, 134, 131], 26: [142, 142, 142, 142, 141], 27: [152, 152, 153, 151] };
     var accessId = 0;
     function grant(userId, roleId, status) {
       var role = db.roles.filter(function (x) { return x.id === roleId; })[0];
       db.access.push({
         id: ++accessId, user_id: userId, role_id: roleId,
-        platform_id: role.portal_id === 1 ? pick(['1,2', '1,2,4', '2', '1,4,6', '1']) : null,
+        platform_id: null,
         status_id: status, created_at: stamp(new Date(now.getTime() - Math.floor(r() * 200) * 86400000)), deleted_by: null
       });
     }
-    grant(1, 69, 1); grant(1, 70, 1); grant(1, 125, 1);
+    // Maram Aashna runs all five.
+    grant(1, 69, 1); grant(1, 125, 1); grant(1, 130, 1); grant(1, 140, 1); grant(1, 150, 1);
     db.users.slice(1).forEach(function (usr) {
-      var portals = deptPortals[usr.department_id] || [7];
+      var portals = deptPortals[usr.department_id] || [26];
       var n = 1 + Math.floor(r() * 3);
       var used = {};
       for (var i = 0; i < n; i++) {
         var pid = pick(portals);
         if (used[pid]) continue;
         used[pid] = 1;
-        var candidates = byPortal[pid];
-        if (pid === 7) candidates = [71, 72, 73, 73, 73];
+        var candidates = everyday[pid] || byPortal[pid];
         grant(usr.id, pick(candidates), usr.status_id === 1 && r() < 0.94 ? 1 : 0);
         if (pid === 7) {
           var cats = Object.keys(CATEGORIES);
@@ -225,9 +204,6 @@ var IAM = (function () {
             seen[cat] = 1;
             db.category_groups.push({ id: db.category_groups.length + 1, user_id: usr.id, category_id: cat });
           }
-        }
-        if (pid === 3 && r() < 0.6) {
-          usr.portal_fields[3] = { ai_enable: r() < 0.5 ? 1 : 0, immediate_active: r() < 0.3 ? 1 : 0, is_urgent: 0, outlet_code: usr.outlet_id ? 'S' + pad(usr.outlet_id, 3) : '' };
         }
       }
     });
@@ -248,11 +224,11 @@ var IAM = (function () {
   }
 
   var db = null;
-  try { db = JSON.parse(sessionStorage.getItem(KEY)); } catch (e) { db = null; }
-  if (!db || !db.users) db = seed();
+  try { db = JSON.parse(localStorage.getItem(KEY)); } catch (e) { db = null; }
+  if (!db || !db.users) { db = seed(); try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
 
   function save() {
-    try { sessionStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {}
   }
 
   function all(table) { return db[table]; }

@@ -18,6 +18,10 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/commission.js"></script>
+    <script src="mock/mapping.js"></script>
+    <script src="mock/pages/product-mapping.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -744,7 +748,7 @@
         <div class="container-fluid py-4">
             <div class="card">
                 <h3 class="card-header text-center font-weight-bolder text-uppercase py-4">Product Mapping</h3>
-                <div class="card-body">
+                <div class="card-body"><script>document.write(PM.alert());document.currentScript.remove()</script>
                     
                     <form action="product-mapping.html" method="post" id="mappingForm">
                         <input type='hidden' name='token' value='demo'>
@@ -764,8 +768,7 @@
                                 <select
                                     class="form-control fs-6 "
                                     id="source_market" name="source_market">
-                                    <option value="">Select Source Supermarket</option>
-                                                                    </select>
+                                    <option value="">Select Source Supermarket</option><option value="Cold Storage">Cold Storage</option><option value="GrabMart">GrabMart</option><option value="NTUC">NTUC</option><option value="PRIME">PRIME</option><option value="Sheng Siong">Sheng Siong</option></select>
                                 <span class="invalid-feedback"></span>
                             </div>
                         </div>
@@ -818,8 +821,7 @@
                                     <div class="col-md-9">
                                         <select class="form-control fs-6 target-market-select"
                                             id="target_market_0" name="target_market[]" data-target-index="0">
-                                            <option value="">Select Target Supermarket</option>
-                                                                                    </select>
+                                            <option value="">Select Target Supermarket</option><option value="Cold Storage">Cold Storage</option><option value="GrabMart">GrabMart</option><option value="NTUC">NTUC</option><option value="PRIME">PRIME</option><option value="Sheng Siong">Sheng Siong</option></select>
                                         <span class="invalid-feedback"></span>
                                     </div>
                                 </div>
@@ -877,14 +879,12 @@
                             <div class="col-md-3">
                                 <label class="form-label">Source Market</label>
                                 <select id="filterSourceMarket" class="form-select form-select-sm">
-                                    <option value="">All Markets</option>
-                                                                    </select>
+                                    <option value="">All Markets</option><option value="Cold Storage">Cold Storage</option><option value="GrabMart">GrabMart</option><option value="NTUC">NTUC</option><option value="PRIME">PRIME</option><option value="Sheng Siong">Sheng Siong</option></select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Target Market</label>
                                 <select id="filterTargetMarket" class="form-select form-select-sm">
-                                    <option value="">All Markets</option>
-                                                                    </select>
+                                    <option value="">All Markets</option><option value="Cold Storage">Cold Storage</option><option value="GrabMart">GrabMart</option><option value="NTUC">NTUC</option><option value="PRIME">PRIME</option><option value="Sheng Siong">Sheng Siong</option></select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Search Product</label>
@@ -1908,8 +1908,7 @@
                                 id="target_market_${targetIndex}" 
                                 name="target_market[]"
                                 data-target-index="${targetIndex}">
-                                <option value="">Select Target Supermarket</option>
-                                                            </select>
+                                <option value="">Select Target Supermarket</option><option value="Cold Storage">Cold Storage</option><option value="GrabMart">GrabMart</option><option value="NTUC">NTUC</option><option value="PRIME">PRIME</option><option value="Sheng Siong">Sheng Siong</option></select>
                             <span class="invalid-feedback"></span>
                         </div>
                     </div>

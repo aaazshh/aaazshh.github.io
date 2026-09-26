@@ -18,6 +18,10 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/commission.js"></script>
+    <script src="mock/mapping.js"></script>
+    <script src="mock/pages/users-list.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -766,8 +770,7 @@
                                     <div class="col-md-3">
                                         <label for="status" class="form-control-label">Filter by Departments</label>
                                         <select class="form-select" id="department" name="department">
-                                            <option value="">All Departments</option>
-                                                                                    </select>
+                                            <option value="">All Departments</option><script>document.write(PM.deptOptions());document.currentScript.remove()</script></select>
                                     </div>
                                     <div class="col-md-3">
                                         <label for="status" class="form-control-label">Filter by Account Type</label>
@@ -793,8 +796,7 @@
                                                                                     <th class="col-md-1">Action</th>
                                                                             </tr>
                                 </thead>
-                                <tbody>
-                                                                    </tbody>
+                                <tbody><script>document.write(PM.body());document.currentScript.remove()</script></tbody>
                             </table>
                         </div>
                         <div class="card-footer text-center pt-0"></div>

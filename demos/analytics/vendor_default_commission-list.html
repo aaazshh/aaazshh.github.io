@@ -18,6 +18,10 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/weekly.js"></script>
+    <script src="mock/commission.js"></script>
+    <script src="mock/mapping.js"></script>
+    <script src="mock/pages/vendor_default_commission-list.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -751,7 +755,7 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center py-4">
                             <h3 class="text-uppercase font-weight-bolder mb-0" style="font-size: 1.25rem;">Vendor Default Commission Rates</h3>
-                            <a href="#add-vendor_commission_rate.php" data-pjax="false" target="_self" class="btn btn-success btn-sm mb-0 text-uppercase">
+                            <a href="add-vendor_commission_rate.html" data-pjax="false" target="_self" class="btn btn-success btn-sm mb-0 text-uppercase">
                                 <i class="fas fa-plus-circle me-2"></i> Add Default Rate
                             </a>
                         </div>
@@ -768,11 +772,7 @@
                                         <th class="col-md-1 text-center">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                                                            <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">No default commission rates configured yet. Click "Add Default Rate" to assign one.</td>
-                                        </tr>
-                                                                    </tbody>
+                                <tbody><script>document.write(PM.body());document.currentScript.remove()</script></tbody>
                             </table>
                         </div>
                     </div>
@@ -805,8 +805,7 @@
                         <div class="form-group mb-3">
                             <label for="modal_vendor_no" class="form-control-label">Target Vendor Profile</label>
                             <select class="form-control" id="modal_vendor_no" name="vendor_no" required>
-                                <option value="" disabled selected>-- Select Vendor Code Reference --</option>
-                                                            </select>
+                                <option value="" disabled selected>-- Select Vendor Code Reference --</option><script>document.write(PM.vendorOptions());document.currentScript.remove()</script></select>
                             <input type="text" class="form-control bg-gray-200" id="modal_vendor_disabled_display" readonly style="display:none;">
                         </div>
                         <div class="form-group mb-3">

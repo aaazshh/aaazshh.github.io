@@ -21,7 +21,7 @@
     <script src="mock/weekly.js"></script>
     <script src="mock/commission.js"></script>
     <script src="mock/mapping.js"></script>
-    <script src="mock/pages/game-utilisation.js"></script>
+    <script src="mock/pages/add-vendor_commission_rate.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -30,20 +30,7 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>Game Utilisation Report</title>
-
-<head>
-    <style>
-        .btn-outline-green { border: 1px solid rgb(12, 99, 38); color: rgb(12, 99, 38); }
-        .btn-outline-green:hover { background-color: rgb(12, 99, 38); color: white; }
-        .dashboard-card { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(31,41,55,.08); height: 100%; }
-        .chart-box { height: 320px; position: relative; }
-        .chart-box canvas { height: 295px !important; max-height: 295px; width: 100% !important; }
-        .table-scroll { max-height: 430px; overflow: auto; }
-        .control-label { color: #344767; font-size: .82rem; font-weight: 700; margin-bottom: .35rem; }
-    </style>
 </head>
-
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
     
@@ -215,7 +202,7 @@
                     
                                             <li class="nav-item has-submenu">
                             <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
-                                aria-controls="manageReports" aria-expanded="true">
+                                aria-controls="manageReports" aria-expanded="">
                                 <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
@@ -227,7 +214,7 @@
                             </a>
 
                             
-                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                            <div id="manageReports" class="collapse submenu submenu-1 ">
                                 <ul class="nav ms-4">
                                                                         <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
@@ -382,18 +369,18 @@
                                     <!-- game reports -->
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gameReports" data-bs-toggle="collapse" data-bs-target="#gameReports"
-                                            aria-controls="gameReports" aria-expanded="true"
+                                            aria-controls="gameReports" aria-expanded=""
                                             id="gameReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gameFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gameFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gameFolderIconFull"></i>
                                                 Game Reports
                                             </span>
                                         </a>
-                                        <div id="gameReports" class="collapse submenu submenu-2 show">
+                                        <div id="gameReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="game-utilisation.html">
+                                                    <a class="nav-link " href="game-utilisation.html">
                                                         <span class="sidenav-mini-icon">GU</span>
                                                         <span class="sidenav-normal">Game Utilisation</span>
                                                     </a>
@@ -734,13 +721,13 @@
 
 </html>
 
-
+    
     <main class="main-content position-relative border-radius-lg">
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">Game Reports | Game Utilisation Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Supplier Reports | Add Default Commission Rates</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -758,209 +745,50 @@
     </div>
 </nav>
 
-
+        
         <div class="container-fluid py-4">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="mb-0">Game Utilisation Report</h5>
-                    <p class="text-sm text-muted mb-0">Track game plays, player usage, and stamp activity.</p>
-                </div>
-                <div class="card-body">
-                    <form id="filterForm" method="get">
-                        <div class="row g-3">
-                            <div class="col-xl-2 col-md-4">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
-                            </div>
-                            <div class="col-xl-2 col-md-4">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
-                            </div>
-                            <div class="col-xl-3 col-md-4">
-                                <label class="form-label mb-1">Game Name / Game ID</label>
-                                <select class="form-control select2-search" name="game" data-placeholder="Select All Games">
-                                    <option value="">Select All Games</option><script>document.write(PM.gameOptionsHtml());document.currentScript.remove()</script></select>
-                            </div>
-                            <div class="col-xl-5 col-md-8 d-flex align-items-end justify-content-end gap-2">
-                                <a href="game-utilisation.html" class="btn btn-outline-green mb-0">Reset</a>
-                                <button type="submit" class="btn btn-primary mb-0" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Apply Filters</button>
-                            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="card shadow-lg">
+                        <div class="card-header py-4">
+                            <h4 class="text-uppercase font-weight-bolder mb-0" style="font-size: 1.15rem;">Assign Default Commission Rate</h4>
+                            <p class="text-sm mb-0 text-muted">Select a vendor sourced directly from live sales records to declare an immutable baseline rate.</p>
                         </div>
-                    </form>
-                </div>
-            </div>
+                        
+                        <div class="card-body px-4">
+                            
+                            <form id="commissionForm" action="add-vendor_commission_rate.html" method="POST">
+                                <div class="row">
+                                    
+                                    <div class="col-md-5 mb-4">
+                                        <label for="vendor_no" class="form-control-label font-weight-bold text-xs text-uppercase">Target Vendor Profile</label>
+                                        <select class="form-control" id="vendor_no" name="vendor_no">
+                                            <option value=""></option><script>document.write(PM.vendorOptions());document.currentScript.remove()</script></select>
 
-            <div class="row g-3 mb-4">
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Total Game Plays</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[0][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Unique Players</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[1][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Total Stamps</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[2][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Average Stamps per Play</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[3][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Average Plays per Member</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[4][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                                    <div class="col-xl-2 col-md-4 col-sm-6">
-                        <div class="card dashboard-card">
-                            <div class="card-body p-3">
-                                <p class="text-sm text-muted mb-1">Active Games</p>
-                                <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[5][1]));document.currentScript.remove()</script></h5>
-                            </div>
-                        </div>
-                    </div>
-                            </div>
+                                        <small class="text-muted mt-1 d-block">
+                                            Total available system references: <strong><script>document.write(PM.vendorCount);document.currentScript.remove()</script></strong> profiles loaded.
+                                        </small>
+                                    </div>
 
-            <div class="row mb-4">
-                <div class="col-lg-6 mb-4">
-                    <div class="card dashboard-card">
-                        <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div>
-                                <h6 class="mb-0">Game Utilisation Trend</h6>
-                                <small class="text-muted">Daily trend by selected metric</small>
-                            </div>
-                            <div style="min-width: 190px;">
-                                <label class="control-label">Metric</label>
-                                <select id="trendMetric" class="form-control form-control-sm">
-                                    <option value="game_plays">Game Plays</option>
-                                    <option value="unique_players">Unique Players</option>
-                                    <option value="total_stamps">Total Stamps</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-box"><canvas id="trendChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card dashboard-card">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Game Performance Breakdown</h6>
-                            <small class="text-muted">Grouped by game</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-box"><canvas id="performanceChart"></canvas></div>
+                                    <div class="col-md-2 mb-4">
+                                        <label for="default_commission_rate" class="form-control-label font-weight-bold text-xs text-uppercase">Default Commission Rate</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="default_commission_rate" name="default_commission_rate" step="0.01" min="0" max="100" placeholder="0.00" required>
+                                            <span class="input-group-text font-weight-bold">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end align-items-center border-top pt-3 mt-2">
+                                    <a href="vendor_default_commission-list.html" class="btn btn-light text-uppercase mb-0 me-2">Cancel</a>
+                                    <button type="submit" class="btn btn-success text-uppercase mb-0">Save Ruleset</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="card dashboard-card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Game Performance Table</h6>
-                    <div style="min-width: 220px;">
-                        <label class="control-label">Sort By</label>
-                        <select id="gameTableSort" class="form-control form-control-sm">
-                            <option value="most_played" selected>Most Played</option>
-                            <option value="least_played" >Least Played</option>
-                            <option value="highest_stamps" >Highest Stamps</option>
-                            <option value="highest_unique_players" >Highest Unique Players</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-scroll">
-                        <table class="table table-sm align-items-center mb-0" id="gamePerformanceTable">
-                            <thead>
-                                <tr>
-                                    <th>Game ID</th>
-                                    <th>Game Name</th>
-                                    <th class="text-end">Game Plays</th>
-                                    <th class="text-end">Unique Players</th>
-                                    <th class="text-end">Total Stamps</th>
-                                    <th class="text-end">Average Stamps per Play</th>
-                                    <th class="text-end">Average Plays per Player</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-lg-8 mb-4">
-                    <div class="card dashboard-card">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Top Game Players</h6>
-                            <small class="text-muted">Grouped by member ID</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-scroll">
-                                <table class="table table-sm align-items-center mb-0" id="playersTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Member ID</th>
-                                            <th class="text-end">Game Plays</th>
-                                            <th class="text-end">Total Stamps</th>
-                                            <th class="text-end">Unique Games Played</th>
-                                            <th class="text-end">Average Stamps per Play</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card dashboard-card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Repeat Usage</h6>
-                            <small class="text-muted">Players by play frequency</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between border-bottom py-3">
-                                <span>One-time Players</span>
-                                <strong><script>document.write(PM.nf(PM.oneTime));document.currentScript.remove()</script></strong>
-                            </div>
-                            <div class="d-flex justify-content-between border-bottom py-3">
-                                <span>Repeat Players</span>
-                                <strong><script>document.write(PM.nf(PM.repeat));document.currentScript.remove()</script></strong>
-                            </div>
-                            <div class="d-flex justify-content-between py-3">
-                                <span>Repeat Player Rate</span>
-                                <strong><script>document.write(PM.nf(PM.repeatRate, 2));document.currentScript.remove()</script>%</strong>
-                            </div>
-                            <canvas id="repeatChart" height="170"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <footer class="footer pt-3">
+            <footer class="footer pt-3">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
             <div class="col-lg-12 mb-lg-0 mb-4">
@@ -970,11 +798,11 @@
             </div>
         </div>
     </div>
-</footer>    </main>
+</footer>        </div>
+    </main>
     <script>Api.restoreForms();</script>
-</body>
 
-<link rel="stylesheet" href="./assets/css/loading.css">
+    <link rel="stylesheet" href="./assets/css/loading.css">
 <script src="./assets/js/loading-overlay.js"></script>
 <script src="./assets/js/loading.js"></script>
 
@@ -1319,247 +1147,55 @@
         return day + '-' + month + '-' + year;
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const TREND_BUCKETS = PM.trendBuckets;
-const GAME_ROWS = PM.gameRows;
-const PLAYER_ROWS = PM.playerRows;
-const REPEAT_DATA = {
-    oneTime: PM.oneTime,
-    repeat: PM.repeat};
 
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(37,99,235)';
-const ORANGE = 'rgb(180,83,9)';
-let trendChart;
-let performanceChart;
-let repeatChart;
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('commissionForm');
 
-function fmtNum(value) {
-    return new Intl.NumberFormat('en-SG').format(Number(value || 0));
-}
-
-function fmtDec(value) {
-    return new Intl.NumberFormat('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(value || 0));
-}
-
-function initSearchDropdowns() {
-    if (!window.jQuery || !$.fn.select2) return;
-    $('.select2-search').each(function() {
-        const $select = $(this);
-        if ($select.data('select2')) return;
-        $select.select2({
-            width: '100%',
-            placeholder: $select.data('placeholder') || 'Select',
-            allowClear: true
+        $('#vendor_no').select2({
+            placeholder: 'Type vendor code or company name to filter suggestions...',
+            allowClear: true,
+            width: '100%'
         });
-    });
-}
 
-function trendMetricConfig(metric) {
-    if (metric === 'unique_players') {
-        return { color: BLUE, fill: 'rgba(37,99,235,.14)' };
-    }
-    if (metric === 'total_stamps') {
-        return { color: ORANGE, fill: 'rgba(180,83,9,.14)' };
-    }
-    return { color: GREEN, fill: 'rgba(12,99,38,.14)' };
-}
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // 1. Pause form submission
+                e.preventDefault(); 
+                
+                const vendorNo = (document.getElementById('vendor_no').value || '').trim();
+                const newRate = parseFloat(document.getElementById('default_commission_rate').value || 0).toFixed(2);
 
-function renderTrend() {
-    const metricSelect = document.getElementById('trendMetric');
-    const metric = metricSelect.value;
-    const metricLabel = metricSelect.selectedOptions[0].text;
-    const metricStyle = trendMetricConfig(metric);
-    const labels = TREND_BUCKETS.map(bucket => bucket.key_as_string);
-    const values = TREND_BUCKETS.map(bucket => {
-        if (metric === 'unique_players') return Number(bucket.unique_players?.value || 0);
-        if (metric === 'total_stamps') return Number(bucket.total_stamps?.value || 0);
-        return Number(bucket.doc_count || 0);
-    });
-
-    if (trendChart) {
-        trendChart.destroy();
-        trendChart = null;
-    }
-
-    trendChart = new Chart(document.getElementById('trendChart'), {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                label: metricLabel,
-                data: values,
-                borderColor: metricStyle.color,
-                backgroundColor: metricStyle.fill,
-                borderWidth: 3,
-                pointRadius: 2,
-                pointHoverRadius: 6,
-                pointHitRadius: 14,
-                tension: .3,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'nearest', intersect: false },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: ctx => `${metricLabel}: ${fmtNum(ctx.parsed.y)}`
-                    }
+                if (!vendorNo) {
+                    alert('Please select a valid vendor.');
+                    return;
                 }
-            },
-            scales: {
-                y: { beginAtZero: true, ticks: { callback: value => fmtNum(value) } }
-            }
-        }
-    });
-}
 
-function renderPerformanceChart() {
-    const rows = [...GAME_ROWS].sort((a, b) => b.game_plays - a.game_plays).slice(0, 15).reverse();
-    const maxPlays = Math.max(...rows.map(row => Number(row.game_plays || 0)), 1);
-    if (performanceChart) performanceChart.destroy();
-    performanceChart = new Chart(document.getElementById('performanceChart'), {
-        type: 'bar',
-        data: {
-            labels: rows.map(row => row.game_name || `Game ${row.game_id}`),
-            datasets: [
-                {
-                    label: 'Hover Area',
-                    data: rows.map(() => maxPlays),
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderWidth: 0,
-                    grouped: false,
-                    barPercentage: 1,
-                    categoryPercentage: .95
-                },
-                {
-                    label: 'Game Plays',
-                    data: rows.map(row => row.game_plays),
-                    backgroundColor: GREEN,
-                    borderRadius: 5,
-                    minBarLength: 4,
-                    grouped: false,
-                    barPercentage: .62,
-                    categoryPercentage: .72
-                }
-            ]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'nearest', axis: 'y', intersect: false },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    filter: ctx => ctx.dataset.label === 'Game Plays' || ctx.dataset.label === 'Hover Area',
-                    callbacks: {
-                        label: ctx => {
-                            const row = rows[ctx.dataIndex] || {};
-                            return [
-                                `Game Plays: ${fmtNum(row.game_plays)}`,
-                                `Unique Players: ${fmtNum(row.unique_players)}`,
-                                `Total Stamps: ${fmtNum(row.total_stamps)}`,
-                                `Average Stamps per Play: ${fmtDec(row.avg_stamps_per_play)}`
-                            ];
+                // 2. Query this file's internal AJAX endpoint
+                fetch(`add-vendor_commission_rate.html?ajax_check_vendor=${encodeURIComponent(vendorNo)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.exists) {
+                            // 3. Collision Found! Fire the warning prompt
+                            const msg = `Notice: Vendor ${vendorNo} already has an assigned default commission rate of ${data.current_rate.toFixed(2)}%.\n\nDo you want to overwrite it and change it to ${newRate}%?`;
+                            
+                            if (!confirm(msg)) {
+                                // User hit "Cancel" -> Exit out and do absolutely nothing
+                                return;
+                            }
                         }
-                    }
-                }
-            },
-            scales: {
-                x: { beginAtZero: true, suggestedMax: maxPlays, ticks: { callback: value => fmtNum(value) } }
-            }
+                        
+                        // 4. Clear to go or confirmed overwrite -> submit form ruleset natively!
+                        form.submit();
+                    })
+                    .catch(err => {
+                        console.error('Validation engine error:', err);
+                        // Fallback: If network check drops, let the database handle it natively via ON DUPLICATE KEY
+                        form.submit();
+                    });
+            });
         }
     });
-}
-
-function sortedGameRows() {
-    const sort = document.getElementById('gameTableSort').value;
-    return [...GAME_ROWS].sort((a, b) => {
-        if (sort === 'least_played') return a.game_plays - b.game_plays;
-        if (sort === 'highest_stamps') return b.total_stamps - a.total_stamps;
-        if (sort === 'highest_unique_players') return b.unique_players - a.unique_players;
-        return b.game_plays - a.game_plays;
-    });
-}
-
-function renderGameTable() {
-    const tbody = document.querySelector('#gamePerformanceTable tbody');
-    tbody.innerHTML = sortedGameRows().map(row => `
-        <tr>
-            <td>${escapeHtml(row.game_id)}</td>
-            <td>${escapeHtml(row.game_name)}</td>
-            <td class="text-end">${fmtNum(row.game_plays)}</td>
-            <td class="text-end">${fmtNum(row.unique_players)}</td>
-            <td class="text-end">${fmtNum(row.total_stamps)}</td>
-            <td class="text-end">${fmtDec(row.avg_stamps_per_play)}</td>
-            <td class="text-end">${fmtDec(row.avg_plays_per_player)}</td>
-        </tr>
-    `).join('');
-}
-
-function renderPlayersTable() {
-    const rows = [...PLAYER_ROWS].sort((a, b) => b.game_plays - a.game_plays).slice(0, 50);
-    const tbody = document.querySelector('#playersTable tbody');
-    tbody.innerHTML = rows.map(row => `
-        <tr>
-            <td>${escapeHtml(row.member_id)}</td>
-            <td class="text-end">${fmtNum(row.game_plays)}</td>
-            <td class="text-end">${fmtNum(row.total_stamps)}</td>
-            <td class="text-end">${fmtNum(row.unique_games)}</td>
-            <td class="text-end">${fmtDec(row.avg_stamps_per_play)}</td>
-        </tr>
-    `).join('');
-}
-
-function renderRepeatChart() {
-    if (repeatChart) repeatChart.destroy();
-    repeatChart = new Chart(document.getElementById('repeatChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['One-time Players', 'Repeat Players'],
-            datasets: [{
-                data: [REPEAT_DATA.oneTime, REPEAT_DATA.repeat],
-                backgroundColor: [BLUE, GREEN]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: { callbacks: { label: ctx => `${ctx.label}: ${fmtNum(ctx.parsed)}` } }
-            }
-        }
-    });
-}
-
-function escapeHtml(value) {
-    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
-
-function bindTrendMetricEvents() {
-    const trendMetric = document.getElementById('trendMetric');
-    if (!trendMetric) return;
-    trendMetric.onchange = renderTrend;
-    trendMetric.oninput = renderTrend;
-    trendMetric.addEventListener('change', renderTrend);
-}
-
-bindTrendMetricEvents();
-if (window.jQuery) {
-    $('#trendMetric').on('change', renderTrend);
-}
-document.getElementById('gameTableSort').addEventListener('change', renderGameTable);
-
-initSearchDropdowns();
-renderTrend();
-renderPerformanceChart();
-renderGameTable();
-renderPlayersTable();
-renderRepeatChart();
-</script>
-
+    </script>
+</body>
 </html>

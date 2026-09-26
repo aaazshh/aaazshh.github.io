@@ -7,7 +7,7 @@ var Rep = (function () {
   function vendorOptions(withRate) {
     return W.VENDORS.map(function (v) {
       var o = { id: v.no, text: v.no + ' - ' + v.name };
-      if (withRate) o.rate = v.rate;
+      if (withRate) o.rate = window.Commission && Commission.load()[v.no] ? Commission.load()[v.no].rate : 0;
       return o;
     });
   }

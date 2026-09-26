@@ -56,7 +56,7 @@ var Api = (function () {
   function handles(url) {
     var u = parseUrl(url);
     // A page that is also its own DataTables endpoint (comparison.php?draw=...).
-    if (/\.html$/.test(u.file) && (u.params.draw || u.params.ajax || u.params.api) && routes[u.file.replace(/\.html$/, '.php')]) {
+    if (/\.html$/.test(u.file) && Object.keys(u.params).some(function (k) { return /^(draw|ajax|api)/.test(k); }) && routes[u.file.replace(/\.html$/, '.php')]) {
       return { key: u.file.replace(/\.html$/, '.php'), params: u.params, file: u.file };
     }
     if (!/\.php$/.test(u.file)) return null;
@@ -168,10 +168,33 @@ var Api = (function () {
     var a = e.target.closest && e.target.closest('a[href]');
     if (!a) return;
     var href = a.getAttribute('href');
+    // Runs after the page's own handlers, so a link a script already handled
+    // (a delete button that opens a modal) is left alone.
+    if (e.defaultPrevented) return;
+    // Endpoints the page's own script calls (a delete link it turns into an
+    // AJAX call) are left to that script.
+    if (routes[href.split('?')[0]]) return;
     if (/^#?[\w./-]+\.php/.test(href)) { e.preventDefault(); unbuilt(href.replace(/^#/, '').split('?')[0]); }
-  }, true);
+  });
+
+  // POST forms back to a page: the page model registers what the PHP did
+  // with the fields and where it redirected.
+  var posts = {};
+  function post(page, fn) { posts[page] = fn; }
+  function handlePost(form) {
+    if (String(form.getAttribute('method') || '').toLowerCase() !== 'post') return false;
+    var file = parseUrl(form.getAttribute('action') || location.href);
+    var fn = posts[file.file.replace(/\.html$/, '')];
+    if (!fn) return false;
+    var data = {};
+    new FormData(form).forEach(function (v, k) { data[k] = v; });
+    var to = fn(data, file.params);
+    if (to) location.href = to;
+    return true;
+  }
 
   function blockForm(form) {
+    if (handlePost(form)) return true;
     var action = form.getAttribute('action') || '';
     if (/\.php/.test(action) && !/^https?:/.test(action)) { unbuilt(action.replace(/^#/, '').split('?')[0]); return true; }
     return false;
@@ -219,5 +242,5 @@ var Api = (function () {
 
   function json(data) { return { status: 1, count: Array.isArray(data) ? data.length : Object.keys(data || {}).length, data: data }; }
 
-  return { route: route, restoreForms: restoreForms, note: note, unbuilt: unbuilt, json: json, parseUrl: parseUrl, routes: routes };
+  return { post: post, route: route, restoreForms: restoreForms, note: note, unbuilt: unbuilt, json: json, parseUrl: parseUrl, routes: routes };
 })();

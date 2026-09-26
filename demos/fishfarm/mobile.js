@@ -480,12 +480,16 @@
       node.classList.remove('enter');
       if (prev) prev.el.classList.add('under');
     });
+    // A covered screen's ocean stops drawing once the new screen has slid in,
+    // so only the top screen animates.
+    if (prev) setTimeout(function () { if (prev.el._ocean && stack[stack.length - 1] !== prev) prev.el._ocean.stop(); }, 420);
     if (screen.enter) screen.enter();
   }
   function pop(result) {
     if (stack.length < 2) return;
     var top = stack.pop(), prev = stack[stack.length - 1];
     top.el.classList.add('leave');
+    if (prev.el._ocean && prev.el._ocean.animated && !prev.el._ocean.running) prev.el._ocean.start();
     prev.el.classList.remove('under');
     setTimeout(function () { top.el.remove(); }, 420);
     if (top.leave) top.leave();
@@ -526,7 +530,8 @@
   function mountOcean(node, opts) {
     var c = node.querySelector('.ocean canvas');
     opts.host = opts.host || node;
-    return new Art.Ocean(c, opts);
+    node._ocean = new Art.Ocean(c, opts);
+    return node._ocean;
   }
 
   /* ==== overlays: snackbar, toast, dialogs, sheets ======================== */
@@ -607,8 +612,8 @@
       '<canvas class="prime-canvas"></canvas>' +
       '<div style="margin-top:8px">' + logo(56, '#fff', 34) + '</div>' +
       '<div class="glass" style="margin-top:28px"><form novalidate>' +
-      '<div class="login-field">' + icon('person_outline', 'lead') + '<input name="u" autocomplete="username" placeholder="' + esc(t('enterUsername')) + '"></div>' +
-      '<div class="login-field">' + icon('lock_outline', 'lead') + '<input name="p" type="password" autocomplete="current-password" placeholder="' + esc(t('enterPassword')) + '">' +
+      '<div class="login-field">' + icon('person_outline', 'lead') + '<input name="u" autocomplete="username" value="guest1" placeholder="' + esc(t('enterUsername')) + '"></div>' +
+      '<div class="login-field">' + icon('lock_outline', 'lead') + '<input name="p" type="password" autocomplete="current-password" value="guest1" placeholder="' + esc(t('enterPassword')) + '">' +
       '<button type="button" class="eye" data-eye aria-label="Show password">' + icon('visibility_off') + '</button></div>' +
       '<div style="height:6px"></div><button class="primary-btn" type="submit" data-login>' + esc(t('login')) + '</button>' +
       '<button type="button" class="ms-btn press" data-ms>' + icon('open_in_new') + 'Sign in with Microsoft</button></form></div>' +
@@ -635,7 +640,11 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>';
       setTimeout(function () {
-        try { sessionStorage.setItem('ff-app-token', '1'); } catch (err) {}
+        // A guestN account signs in as that guest; any other name stays the admin.
+        var g = /^guest(\d+)$/i.exec(u.trim());
+        if (g) me = { id: 100 + +g[1], username: 'guest' + g[1], email: 'guest' + g[1] + '@mail.com', role_id: 3 }
+        else me = { id: 2, username: 'Maram Aashna', email: 'maram.aashna@mail.com', role_id: 1 };
+        try { sessionStorage.setItem('ff-app-token', '1'); sessionStorage.setItem('ff-app-user', JSON.stringify(me)); } catch (err) {}
         var logoBox = node.querySelector('.prime-canvas').getBoundingClientRect(), host = app.getBoundingClientRect();
         var start = { x: logoBox.left - host.left, y: logoBox.top - host.top, w: logoBox.width, h: logoBox.height };
         node.querySelector('.login-wrap').classList.add('gone');

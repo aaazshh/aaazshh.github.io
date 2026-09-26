@@ -19,3 +19,10 @@
   z-index: 9000;
 }
 .demo-note.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Argon only docks the sidenav from 1200px (xl). A desktop window is
+   narrower than that, so keep the menu docked down to tablet width. */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  html body.g-sidenav-show:not(.rtl) .sidenav { transform: translateX(0); }
+  html body.g-sidenav-show .sidenav.fixed-start + .main-content { margin-left: 17.125rem !important; }
+}

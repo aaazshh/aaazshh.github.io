@@ -208,10 +208,9 @@
             <span class="row-note">Elasticsearch indexing, spreadsheet exports, scraping</span>
           </button>
           <span class="platforms">
-            <span class="chip" title="Web portal">
+            <button type="button" class="chip is-live" data-demo="analytics/index.html" data-kind="web" data-label="Analytics, dashboard" title="Web portal, opens in a window" aria-label="Open the Analytics dashboard">
               <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-web"></use></svg>
-              <span class="sr-only">Web portal</span>
-            </span>
+            </button>
           </span>
         </li>
       </ul>
@@ -259,7 +258,13 @@
     <template data-window="analytics" data-title="prime-supermarket/analytics" data-icon="folder">
       <p>Elasticsearch indexing, PHPSpreadsheet exports for ABC analysis and vendor
         commission reports, and Puppeteer scraping for the sources that had no API.</p>
-      <p class="stub">Screenshots go here.</p>
+      <p class="demo-open">Open the <button type="button" class="link" data-demo="analytics/index.html" data-kind="web" data-label="Analytics, dashboard">dashboard</button>.
+        Every report in the real sidebar: gross profit, penetration, share of basket,
+        POS and mobile transactions, no sale and slow moving stock, loyalty points and
+        games, repeat purchase behaviour, the Jet and supplier reports, and the
+        competitor price comparison with its product mapping. The pages run their own
+        scripts against an in-browser stand-in for the Elasticsearch queries, over
+        generated sales for twelve placeholder outlets.</p>
     </template>
 
     <template data-window="readme" data-title="README.md" data-icon="doc">

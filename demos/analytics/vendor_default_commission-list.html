@@ -26,66 +26,14 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
+</head><title>Vendor Default Commission Configurations</title>
 
 <head>
-    <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
-        .dataTables_wrapper {
-            width: 100%;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
-            border-radius: 8px;
-            color: #67748e;
-        }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
-        }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/list-styles.css">
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
-
     
 <html>
 
@@ -307,15 +255,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +278,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -449,15 +397,15 @@
                                     </li>
                                                                         <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#supplierReports" data-bs-toggle="collapse" data-bs-target="#supplierReports"
-                                            aria-controls="supplierReports" aria-expanded=""
+                                            aria-controls="supplierReports" aria-expanded="true"
                                             id="supplierReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                <i class="fa fa-folder-open me-1" id="supplierFolderIconFull"></i>
                                                 Supplier Reports
                                             </span>
                                         </a>
-                                        <div id="supplierReports" class="collapse submenu submenu-2 ">
+                                        <div id="supplierReports" class="collapse submenu submenu-2 show">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="supplier-consignment-report.html">
@@ -466,7 +414,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link " href="vendor_default_commission-list.html">
+                                                    <a class="nav-link active" href="vendor_default_commission-list.html">
                                                         <span class="sidenav-mini-icon">SR</span>
                                                         <span class="sidenav-normal">Vendor Commission Rate</span>
                                                     </a>
@@ -774,13 +722,12 @@
 
 </html>
 
-
     <main class="main-content position-relative border-radius-lg">
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Supplier Reports | Vendor Default Commission Rates</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -798,209 +745,40 @@
     </div>
 </nav>
 
-
         <div class="container-fluid py-4">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
-                </div>
-                <div class="card-body">
-                    <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
-                            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center py-4">
+                            <h3 class="text-uppercase font-weight-bolder mb-0" style="font-size: 1.25rem;">Vendor Default Commission Rates</h3>
+                            <a href="#add-vendor_commission_rate.php" data-pjax="false" target="_self" class="btn btn-success btn-sm mb-0 text-uppercase">
+                                <i class="fas fa-plus-circle me-2"></i> Add Default Rate
+                            </a>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
-                                </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Export to Excel
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
+                        <div class="card-body px-3 pb-30 table-responsive" style="overflow: hidden;">
+                            
+                            
+                            <table id="commission_list" class="table table-hover data-table" cellspacing="0" style="width:100%">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Vendor Code</th>
+                                        <th>Vendor Name</th>
+                                        <th class="text-center">Default Commission Rate</th>
+                                        <th>Last Modified On</th>
+                                        <th class="col-md-1 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                                                            <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">No default commission rates configured yet. Click "Add Default Rate" to assign one.</td>
+                                        </tr>
+                                                                    </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
-                            </select>
-                        </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
-                    </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
-                </div>
-            </div>
-        </div>
-
-        <footer class="footer pt-3">
+            <footer class="footer pt-3">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
             <div class="col-lg-12 mb-lg-0 mb-4">
@@ -1010,889 +788,179 @@
             </div>
         </div>
     </div>
-</footer>    </main>
+</footer>        </div>
+    </main>
     <script>Api.restoreForms();</script>
-</body>
 
-<link rel="stylesheet" href="./assets/css/loading.css">
-<script src="./assets/js/loading-overlay.js"></script>
-<script src="./assets/js/loading.js"></script>
-
-<style>
-    .report-assistant-trigger {
-        position: fixed;
-        right: 28px;
-        bottom: 28px;
-        z-index: 1030;
-        border: 0;
-        border-radius: 999px;
-        padding: 12px 18px;
-        color: #fff;
-        font-weight: 700;
-        background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);
-        box-shadow: 0 12px 28px rgba(2, 49, 40, .28);
-    }
-    .report-assistant-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 1040;
-        background: rgba(2, 19, 18, .38);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .25s ease;
-    }
-    .report-assistant-overlay.is-open {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    .report-assistant-panel {
-        position: fixed;
-        top: 0;
-        right: 0;
-        z-index: 1050;
-        width: min(440px, 100vw);
-        height: 100vh;
-        transform: translateX(100%);
-        transition: transform .28s ease;
-        background: #eef5f1;
-        box-shadow: -16px 0 38px rgba(2, 19, 18, .18);
-        display: flex;
-        flex-direction: column;
-    }
-    .report-assistant-panel.is-open {
-        transform: translateX(0);
-    }
-    .report-assistant-header {
-        padding: 24px 24px 16px;
-        border-bottom: 1px solid rgba(2, 49, 40, .1);
-    }
-    .report-assistant-title-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-    }
-    .report-assistant-title {
-        margin: 0;
-        color: #063328;
-        font-size: 1.25rem;
-        font-weight: 800;
-    }
-    .report-assistant-subtitle {
-        margin: 8px 0 0;
-        color: #5f7068;
-        font-size: .92rem;
-    }
-    .report-assistant-close {
-        border: 0;
-        background: #fff;
-        color: #063328;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        font-size: 1.15rem;
-        line-height: 1;
-        box-shadow: 0 4px 14px rgba(2, 49, 40, .1);
-    }
-    .report-assistant-body {
-        padding: 18px 24px 24px;
-        overflow-y: auto;
-    }
-    .report-category-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    .report-category-btn {
-        border: 1px solid rgba(2, 49, 40, .12);
-        border-radius: 14px;
-        padding: 10px 12px;
-        min-height: 48px;
-        background: #fff;
-        color: #244238;
-        font-weight: 700;
-        text-align: left;
-        transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
-    }
-    .report-category-btn:hover {
-        transform: translateY(-1px);
-        border-color: rgba(10, 106, 79, .32);
-    }
-    .report-category-btn.is-active {
-        background: #063328;
-        border-color: #063328;
-        color: #fff;
-    }
-    .report-recommendations {
-        margin-top: 20px;
-    }
-    .report-empty-state {
-        margin: 0;
-        padding: 18px;
-        border-radius: 16px;
-        color: #64736c;
-        background: rgba(255, 255, 255, .7);
-        border: 1px dashed rgba(2, 49, 40, .18);
-    }
-    .report-card {
-        padding: 16px;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 8px 22px rgba(2, 49, 40, .08);
-    }
-    .report-card + .report-card {
-        margin-top: 12px;
-    }
-    .report-card h6 {
-        margin: 0 0 6px;
-        color: #063328;
-        font-weight: 800;
-    }
-    .report-card p {
-        margin: 0 0 12px;
-        color: #66746e;
-        font-size: .88rem;
-        line-height: 1.45;
-    }
-    .report-card a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 999px;
-        padding: 8px 14px;
-        color: #fff;
-        font-size: .84rem;
-        font-weight: 700;
-        background: #0A6A4F;
-    }
-    .report-card a:hover {
-        color: #fff;
-        background: #063328;
-    }
-    @media (min-width: 768px) {
-        .report-assistant-overlay {
-            display: none;
-        }
-    }
-    @media (max-width: 575.98px) {
-        .report-assistant-trigger {
-            right: 16px;
-            bottom: 16px;
-        }
-        .report-category-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<button type="button" class="report-assistant-trigger" id="reportAssistantOpen">
-    Report Assistant
-</button>
-<div class="report-assistant-overlay" id="reportAssistantOverlay"></div>
-<aside class="report-assistant-panel" id="reportAssistantPanel" aria-hidden="true">
-    <div class="report-assistant-header">
-        <div class="report-assistant-title-row">
-            <h5 class="report-assistant-title">Report Assistant</h5>
-            <button type="button" class="report-assistant-close" id="reportAssistantClose" aria-label="Close Report Assistant">&times;</button>
-        </div>
-        <p class="report-assistant-subtitle">What would you like to analyze today?</p>
-    </div>
-    <div class="report-assistant-body">
-        <div class="report-category-grid" id="reportCategoryGrid"></div>
-        <div class="report-recommendations" id="reportRecommendations">
-            <p class="report-empty-state">Select an interest to view recommended reports.</p>
-        </div>
-    </div>
-</aside>
-<script src="./assets/js/core/jquery-3.7.1.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-
-
-<script src="./assets/js/core/popper.min.js"></script>
-<!--<script src="./assets/js/core/bootstrap.min.js"></script> disable for now-->
-<script src="./assets/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="./assets/js/plugins/smooth-scrollbar.min.js"></script>
-<script src="./assets/js/plugins/chartjs.min.js"></script>
-
-<!-- Include Select2 locally -->
-<link href="./assets/css/select2.min.css" rel="stylesheet" />
-<script src="./assets/js/plugins/select2.min.js"></script>
-
-<script src="./assets/js/argon-dashboard.min.js"></script>
-
-<link rel="stylesheet" type="text/css" href="./assets/css/dataTables.bootstrap5.css">
-<script src="./assets/js/core/dataTables.js"></script>
-<script src="./assets/js/core/dataTables.bootstrap5.js"></script>
-<script src="./assets/js/core/dataTables.scrollToTop.min.js"></script>
-
-<script>
-    const reportAssistantData = {
-        'Sales Performance': [
-            { name: 'POS Report', url: 'pos-transction-report.html', description: 'Analyze outlet sales, revenue, transactions, and sales trends.' },
-            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze mobile sales performance and customer purchase activity.' },
-            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand overall basket value, units per basket, and receipt trends.' }
-        ],
-        'Customer Behaviour': [
-            { name: 'Product Frequency Behaviour', url: '#product_frequency_behaviour.php', description: 'Identify products customers repeatedly buy, then drill into individual customer behaviour.' },
-            { name: 'Customer Behaviour Report', url: 'customer-behaviour-report.html', description: 'Find members who repeatedly purchase selected products and analyze their repeat frequency.' },
-            { name: 'Every-Week Customer Products', url: 'weekly-customer-product-report.html', description: 'List customers who purchased the same item every week for at least one complete month.' },
-            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze customer purchase patterns by age group, gender, outlet, and category.' },
-            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand how customers build their shopping baskets.' },
-            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'See how different product groups contribute to each basket.' }
-        ],
-        'Customer Loyalty': [
-            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze customer points earning, redemption, and loyalty activity.' },
-            { name: 'Member Point List', url: 'member-point-list.html', description: 'View member point balances and individual loyalty records.' },
-            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Understand member participation in CRM games.' }
-        ],
-        'Product Performance': [
-            { name: 'Item Report', url: 'gp-item-report.html', description: 'Analyze item-level sales, quantity, revenue, and gross profit.' },
-            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare product categories by sales and profitability.' },
-            // No Sale & Slow Moving is hidden from discovery surfaces on purpose; the
-            // page stays live at no-sale-report.php for anyone with the direct link.
-            { name: 'Penetration Report', url: 'penetration-report.html', description: 'See how widely products or categories appear across customer baskets.' },
-            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Understand each category or item’s contribution to the basket.' }
-        ],
-        'Profitability': [
-            { name: 'GP Summary', url: 'gp-report-summary.html', description: 'View overall gross profit, margin, and profitability trends.' },
-            { name: 'Item Report', url: 'gp-item-report.html', description: 'Identify high and low margin items.' },
-            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare gross profit performance across categories.' }
-        ],
-        'Basket Behaviour': [
-            { name: 'Basket Summary', url: 'basket-summary.html', description: 'View basket size, value per basket, units per basket, and receipt trends.' },
-            { name: 'Penetration Report', url: 'penetration-report.html', description: 'Measure how often products or categories appear in baskets.' },
-            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Analyze what percentage of the basket is contributed by different categories/items.' }
-        ],
-        'Game Engagement': [
-            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Track game plays, active games, unique players, and stamp usage.' },
-            { name: 'Game Winnings', url: 'game-winning.html', description: 'Analyze prize claims, winners, prize types, and game reward performance.' }
-        ],
-        'Points / Rewards': [
-            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze overall points movement, redemption, and loyalty trends.' },
-            { name: 'Member Point List', url: 'member-point-list.html', description: 'Search and view individual member point details.' }
-        ]
-    };
-
-    function escapeReportAssistantHtml(value) {
-        return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const openButton = document.getElementById('reportAssistantOpen');
-        const closeButton = document.getElementById('reportAssistantClose');
-        const panel = document.getElementById('reportAssistantPanel');
-        const overlay = document.getElementById('reportAssistantOverlay');
-        const categoryGrid = document.getElementById('reportCategoryGrid');
-        const recommendations = document.getElementById('reportRecommendations');
-
-        if (!openButton || !closeButton || !panel || !overlay || !categoryGrid || !recommendations) {
-            return;
-        }
-
-        function openAssistant() {
-            panel.classList.add('is-open');
-            overlay.classList.add('is-open');
-            panel.setAttribute('aria-hidden', 'false');
-        }
-
-        function closeAssistant() {
-            panel.classList.remove('is-open');
-            overlay.classList.remove('is-open');
-            panel.setAttribute('aria-hidden', 'true');
-        }
-
-        function renderRecommendations(category) {
-            const reports = reportAssistantData[category] || [];
-            recommendations.innerHTML = reports.map(function(report) {
-                return `
-                    <div class="report-card">
-                        <h6>${escapeReportAssistantHtml(report.name)}</h6>
-                        <p>${escapeReportAssistantHtml(report.description)}</p>
-                        <a href="${escapeReportAssistantHtml(report.url)}">Open Report</a>
+    <div class="modal fade" id="commissionModal" tabindex="-1" aria-labelledby="commissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="vendor-commission-action.php" method="POST">
+                    <input type="hidden" name="action" value="save">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bolder text-uppercase" id="commissionModalLabel">Manage Vendor Commission</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                `;
-            }).join('');
+                    <div class="modal-body">
+                        <div class="form-group mb-3">
+                            <label for="modal_vendor_no" class="form-control-label">Target Vendor Profile</label>
+                            <select class="form-control" id="modal_vendor_no" name="vendor_no" required>
+                                <option value="" disabled selected>-- Select Vendor Code Reference --</option>
+                                                            </select>
+                            <input type="text" class="form-control bg-gray-200" id="modal_vendor_disabled_display" readonly style="display:none;">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="modal_commission_rate" class="form-control-label">Default Commission Rate (%)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="modal_commission_rate" name="default_commission_rate" step="0.01" min="0" max="100" placeholder="0.00" required>
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary text-uppercase" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-uppercase">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteCommissionModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bolder text-uppercase text-danger" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you absolutely sure you want to delete the assigned default commission rate configuration for vendor element <strong id="delete_target_label" class="text-dark"></strong>? 
+                    <br><span class="text-xs text-danger font-weight-bold">*This forces manual filter entry fields during standard report runs.</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary text-uppercase" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger text-uppercase">Delete Rate</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="prettyDeleteModal" tabindex="-1" aria-labelledby="prettyDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-gray-100 py-3">
+                    <h5 class="modal-title font-weight-bolder text-uppercase text-danger d-flex align-items-center" id="prettyDeleteModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <p class="text-sm text-muted mb-3">Are you absolutely sure you want to delete this configuration rule? This action cannot be reversed.</p>
+                    
+                    <div class="p-3 bg-gray-100 border-radius-lg border">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-xs font-weight-bold text-uppercase text-secondary">Vendor Code:</span>
+                            <span id="del_vendor_code" class="text-sm font-weight-bolder text-dark"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-xs font-weight-bold text-uppercase text-secondary">Vendor Name:</span>
+                            <span id="del_vendor_name" class="text-sm font-weight-bold text-dark text-end" style="max-width: 70%;"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-xs font-weight-bold text-uppercase text-secondary">Commission Rate:</span>
+                            <span id="del_vendor_rate" class="text-sm font-weight-bolder text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light text-uppercase mb-0" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="prettyConfirmDeleteBtn" class="btn btn-danger text-uppercase mb-0">Delete Configuration</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vendorSelect = document.getElementById('modal_vendor_no');
+        const disabledDisplay = document.getElementById('modal_vendor_disabled_display');
+        const rateInput = document.getElementById('modal_commission_rate');
+        const modalLabel = document.getElementById('commissionModalLabel');
+
+        function openAddModal() {
+            modalLabel.innerText = "Add Default Commission Rate";
+            vendorSelect.style.display = "block";
+            vendorSelect.disabled = false;
+            vendorSelect.value = "";
+            disabledDisplay.style.display = "none";
+            disabledDisplay.disabled = true;
+            rateInput.value = "";
         }
 
-        Object.keys(reportAssistantData).forEach(function(category) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'report-category-btn';
-            button.textContent = category;
-            button.addEventListener('click', function() {
-                categoryGrid.querySelectorAll('.report-category-btn').forEach(function(item) {
-                    item.classList.remove('is-active');
+        function openEditModal(vendorNo, rateValue) {
+            modalLabel.innerText = "Edit Commission Configuration: " + vendorNo;
+            
+            // Hide selection node dropdown and force explicit frozen string context text input view fields
+            vendorSelect.style.display = "none";
+            vendorSelect.disabled = false; // Kept enabled so the POST submission payload receives it
+            vendorSelect.value = vendorNo;
+
+            disabledDisplay.style.display = "block";
+            disabledDisplay.value = vendorNo;
+            
+            rateInput.value = rateValue;
+            
+            // Explicitly call bootstrap modal view state toggle hook trigger
+            const commissionModal = new bootstrap.Modal(document.getElementById('commissionModal'));
+            commissionModal.show();
+        }
+
+        // Handle structural setup click listeners for custom routing configuration parameters inside row deletes
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-commission-btn');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const targetLabel = document.getElementById('delete_target_label');
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteCommissionModal'));
+
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const vendorNo = this.getAttribute('data-vendor');
+                    targetLabel.innerText = vendorNo;
+                    confirmBtn.href = `vendor-commission-action.php?action=delete&vendor_no=${encodeURIComponent(vendorNo)}`;
+                    deleteModal.show();
                 });
-                button.classList.add('is-active');
-                renderRecommendations(category);
             });
-            categoryGrid.appendChild(button);
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.open-delete-modal-btn');
+            const confirmBtn = document.getElementById('prettyConfirmDeleteBtn');
+            const deleteModal = new bootstrap.Modal(document.getElementById('prettyDeleteModal'));
 
-        openButton.addEventListener('click', openAssistant);
-        closeButton.addEventListener('click', closeAssistant);
-        overlay.addEventListener('click', closeAssistant);
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeAssistant();
-            }
-        });
-    });
+            // Dynamic fields inside the modal body box container
+            const codeEl = document.getElementById('del_vendor_code');
+            const nameEl = document.getElementById('del_vendor_name');
+            const rateEl = document.getElementById('del_vendor_rate');
 
-    function formatDateToDisplay(date) {
-        date = new Date(date);
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Read target info out of the dataset strings
+                    const code = this.getAttribute('data-code');
+                    const name = this.getAttribute('data-name');
+                    const rate = this.getAttribute('data-rate');
 
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
+                    // Inject content right into the beautiful custom text wrappers
+                    codeEl.innerText = code;
+                    nameEl.innerText = name;
+                    rateEl.innerText = rate;
 
-        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
-        const month = months[date.getMonth()]; // Get month abbreviation
-        const year = date.getFullYear(); // Get full year
+                    // Dynamically alter the link execution target to pass parameters to the engine file
+                    confirmBtn.href = `#delete-vendor_commission_rate.php?id=${encodeURIComponent(code)}`;
 
-        return day + '-' + month + '-' + year;
-    }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
-
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
-
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
-}
-
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
-
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
-    }
-}
-
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
-
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
-    }
-
-}
-
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
+                    // Fire open the sleek Bootstrap modal window panel view element
+                    deleteModal.show();
+                });
             });
-        }).catch(console.error);
-}
-
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
-        _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
-            const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
-            sel.appendChild(opt);
         });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
-        }
-    });
-}
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
-}
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
-        .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
-        .catch(console.error);
-}
-
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
-}
-
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
-            },
-            scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
-            }
-        }
-    });
-}
-
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
-            },
-            scales: {
-                y: { ticks: { callback: v => v + '%' } }
-            }
-        }
-    });
-}
-
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
-}
-
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
-}
-
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
-}
-
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
-}
-
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
-}
-
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
-            }
-        });
-}
-
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
-});
-
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
-});
-
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
-});
-
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
-
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
-    });
-});
-
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
-
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
-
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
-
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
-
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
-
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
-</script>
-
+    </script>
+</body>
 </html>

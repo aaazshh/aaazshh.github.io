@@ -1,3 +1,4 @@
+<!-- basket-insight.php -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,6 +19,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/basket-summary.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,59 +28,23 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
+</head><title>Basket & Insights</title>
 
 <head>
     <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
         .card:hover {
             transform: translateY(-2px);
             transition: 0.2s;
         }
-        .dataTables_wrapper {
-            width: 100%;
+
+        .btn-outline-green {
+            border: 1px solid rgb(12, 99, 38);
+            color: rgb(12, 99, 38);
         }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
-            border-radius: 8px;
-            color: #67748e;
-        }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
-        }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
+
+        .btn-outline-green:hover {
+            background-color: rgb(12, 99, 38);
+            color: white;
         }
     </style>
 </head>
@@ -271,19 +237,19 @@
                                 <ul class="nav ms-4">
                                                                         <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
-                                            aria-controls="basketReports" aria-expanded=""
+                                            aria-controls="basketReports" aria-expanded="true"
                                             id="basketReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="basketFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder me-1" id="basketFolderIconFull"></i>
+                                                <i class="fa fa-folder-open me-1" id="basketFolderIconFull"></i>
                                                 Basket Reports
                                             </span>
                                         </a>
                                         
-                                        <div id="basketReports" class="collapse submenu submenu-2 ">
+                                        <div id="basketReports" class="collapse submenu submenu-2 show">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
-                                                    <a class="nav-link " href="basket-summary.html">
+                                                    <a class="nav-link active" href="basket-summary.html">
                                                         <span class="sidenav-mini-icon">BS</span>
                                                         <span class="sidenav-normal">Basket Summary</span>
                                                     </a>
@@ -307,15 +273,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +296,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -780,7 +746,7 @@
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Statistics | Basket Insight</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -800,206 +766,164 @@
 
 
         <div class="container-fluid py-4">
+
+            <!-- FILTERS -->
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
+                    <h5>Filters</h5>
                 </div>
                 <div class="card-body">
                     <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Date From</label>
+                                <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
+                            <div class="col-md-4">
+                                <label>Date To</label>
+                                <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
+                            <div class="col-md-4 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary w-50" style="background-color: rgb(12,99,38);">
+                                    Filter
                                 </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
+
+                                <a href="basket-summary.html" class="btn btn-outline-green w-50">
+                                    Reset
+                                </a>
+                                <button type="button" onclick="exportExcel()" class="btn btn-success w-100" style="background-color: rgb(12,99,38);">
                                     Export to Excel
                                 </button>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Metric Type</label>
+                                <select name="metric_type" class="form-control">
+                                    <option value="avg" selected>Average</option>
+                                    <option value="median" >Median</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Outlet</label>
+                                <select name="store_no" class="form-control">
+                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Category</label>
+                                <select class="form-control" id="categorySelect" multiple></select>
+                                <input type="hidden" name="category" id="categoryHidden" value="">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="memberOnlySwitch" name="member_only" value="1" >
+                                    <label class="form-check-label" for="memberOnlySwitch">Members only</label>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
-            </div>
-
+            <!-- KPI CARDS -->
             <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
-                        </div>
+
+
+                <div class="col-lg-2">
+                    <div class="card">
                         <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
+                            <h6>Total Receipts</h6>
+                            <h4><script>document.write(PM.nf(PM.totalReceipts));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
-                        </div>
+
+                <div class="col-lg-2">
+                    <div class="card">
                         <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
+                            <h6>Total Items</h6>
+                            <h4><script>document.write(PM.nf(PM.totalUnits));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
-                            </select>
-                        </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
+                <div class="col-lg-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Total Sales</h6>
+                            <h4>$<script>document.write(PM.nf(PM.totalSales, 2));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
-                    </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
+                <div class="col-lg-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Units per Basket</h6>
+                            <h4><script>document.write(PM.nf(PM.basketSize, 2));document.currentScript.remove()</script></h4>
                         </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
+                <div class="col-lg-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Value per Basket</h6>
+                            <h4>$<script>document.write(PM.nf(PM.basketValue, 2));document.currentScript.remove()</script></h4>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
 
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
+                <div class="col-lg-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6><script>document.write(PM.spendLabel);document.currentScript.remove()</script></h6>
+                            <h4>$<script>document.write(PM.nf(PM.avgValueAllOutlets, 2));document.currentScript.remove()</script></h4>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="row mt-5"> <!-- add margin-top -->
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card ">
+                            <div class="card-header">
+                                <h6 class="mb-0">Basket Size Trend</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="timeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Basket Value Trend</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="valueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3" id="outletComparisonCard">
+
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h6 class="mb-0">Outlet Comparison</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="outletChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
         </div>
-
         <footer class="footer pt-3">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
@@ -1360,539 +1284,352 @@
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ES_DATA = PM.aggs;
+</script>
 
 <script>
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
+    document.addEventListener("DOMContentLoaded", () => {
 
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
+        renderBasketTrend(ES_DATA.per_day?.buckets || []);
+        renderOutletChart(ES_DATA.per_outlet?.buckets || []);
+        renderValueTrend(ES_DATA.per_day?.buckets || []);
+        loadCategories();
 
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
-}
+    });
 
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
+    // ─── Category dropdown (same control as the penetration report) ───────────
+    let _allCats = [];
 
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
-    }
-}
+    function rebuildCategoryDropdown(currentVal) {
+        const sel = document.getElementById('categorySelect');
+        const hidden = document.getElementById('categoryHidden');
+        const raw = currentVal !== undefined ? currentVal : (hidden ? hidden.value : '');
+        const curArr = raw ? raw.split(',').map(v => v.trim()).filter(Boolean) : [];
 
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
+        const hasSelect2 = typeof window.jQuery !== 'undefined'
+            && typeof window.jQuery.fn.select2 !== 'undefined';
+        if (hasSelect2 && $(sel).data('select2')) $(sel).select2('destroy');
+        while (sel.options.length > 0) sel.remove(0);
 
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
-    }
-
-}
-
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
-            });
-        }).catch(console.error);
-}
-
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
         _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
             const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
+            opt.value = cat.id;
+            opt.text = cat.id + ' - ' + cat.text;
             sel.appendChild(opt);
         });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
-        }
-    });
-}
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
-}
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
-        .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
-        .catch(console.error);
-}
 
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
-}
+        if (hasSelect2) {
+            $(sel).select2({
+                placeholder: 'All Categories',
+                allowClear: true,
+                width: '100%',
+                templateResult: function (item) {
+                    if (!item.id) return item.text;
+                    // Code length encodes depth, so sub-categories sit indented
+                    // under their parent in the list.
+                    const level = Math.max(0, Math.floor((item.id.length - 2) / 2));
+                    return $('<span>').css('padding-left', (level * 14) + 'px').text(item.text);
+                },
+            });
+            $(sel).val(curArr).trigger('change');
+            $(sel).off('change.cats').on('change.cats', function () {
+                if (hidden) hidden.value = ($(this).val() || []).join(',');
+            });
+        }
+    }
 
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
+    function loadCategories() {
+        const current = PM.category;
+        return fetch('api.php?action=product-groups')
+            .then(r => {
+                if (!r.ok) throw new Error('Unable to load categories');
+                return r.json();
+            })
+            .then(pgRes => {
+                _allCats = pgRes.data || [];
+                rebuildCategoryDropdown(current);
+            })
+            .catch(console.error);
+    }
+    let timeChartInstance;
+    let valueChartInstance;
+    let outletChartInstance;
+
+
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-SG', {
+            style: 'currency',
+            currency: 'SGD',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat('en-SG').format(Math.round(value));
+    }
+
+    function formatHour(hour) {
+        const date = new Date();
+        date.setHours(hour);
+        date.setMinutes(0);
+
+        return new Intl.DateTimeFormat('en-SG', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        }).format(date);
+    }
+
+
+
+    function renderBasketTrend(data) {
+        if (timeChartInstance) timeChartInstance.destroy();
+        //if (valueChartInstance) valueChartInstance.destroy();
+        if (!data.length) return;
+
+        const labels = data.map(d => d.key_as_string.substring(0, 10));
+
+        const values = data.map(d => {
+            return d.receipts.value ? d.units.value / d.receipts.value : 0;
+        });
+
+        new Chart(document.getElementById('timeChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Basket Size',
+                    data: values,
+                    borderColor: '#0c6326',
+                    backgroundColor: 'rgba(12,99,38,0.2)',
+                    fill: true
+                }]
             },
-            scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Units per Basket'
+                        }
+                    }
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
+    function renderCompositionChart(data) {
+        const ctx = document.getElementById('compositionChart').getContext('2d');
+        if (compositionChart) compositionChart.destroy();
+
+        if (!data || data.length === 0) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('No co-purchased items found', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            return;
+        }
+
+        const palette = [
+            '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236',
+            '#166a8f', '#00a950', '#58595b', '#8549ba', '#e8c634'
+        ];
+        const bg = data.map((_, i) => palette[i % palette.length]);
+
+        compositionChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(d => d.item_no),
+                datasets: [{
+                    data: data.map(d => d.count),
+                    backgroundColor: bg
+                }]
             },
-            scales: {
-                y: { ticks: { callback: v => v + '%' } }
+            options: {
+                responsive: true
             }
+        });
+    }
+
+    function renderSkuTable(buckets) {
+
+        const tbody = document.querySelector('#skuTable tbody');
+        tbody.innerHTML = '';
+
+        buckets.forEach(bucket => {
+
+            const sku = bucket.key;
+
+            tbody.innerHTML += `
+            <tr style="cursor:pointer" onclick="loadComposition('${sku}')">
+                <td>${sku}</td>
+                <td>${bucket.total_quantity?.value || 0}</td>
+                <td>$${(bucket.total_sales?.value || 0).toFixed(2)}</td>
+            </tr>`;
+        });
+    }
+
+
+
+    function renderOutletChart(data) {
+        const ctx = document.getElementById('outletChart');
+        const card = document.getElementById('outletComparisonCard');
+
+        if (outletChartInstance) {
+            outletChartInstance.destroy();
         }
-    });
-}
 
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
-}
+        if (data.length <= 1) {
+            card.style.display = 'none';
+            return;
+        }
 
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
-}
+        card.style.display = '';
 
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
-}
+        const labels = data.map(o => o.key);
+        const values = data.map(o =>
+            o.receipts.value ? o.units.value / o.receipts.value : 0
+        );
 
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
-}
-
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
-}
-
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
+        outletChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Items per Basket by Outlet',
+                    data: values,
+                    backgroundColor: '#0c6326'
+                }]
             }
         });
-}
+    }
 
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
-});
+    function renderValueTrend(data) {
+        if (!data.length) return;
+        if (valueChartInstance) {
+            valueChartInstance.destroy();
+        }
+        const labels = data.map(d => d.key_as_string.substring(0, 10));
 
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
-});
+        const values = data.map(d => {
+            return d.receipts.value ? d.sales.value / d.receipts.value : 0;
+        });
 
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
-});
+        new Chart(document.getElementById('valueChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Basket Value ($)',
+                    data: values,
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(190, 173, 20, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date (Selected Outlet)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value per Basket ($)'
+                        }
+                    }
+                }
+            }
+        });
+    }
 
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
+    function chartToWhitePNG(canvasId) {
+        const src = document.getElementById(canvasId);
+        const tmp = document.createElement('canvas');
+        tmp.width = src.width;
+        tmp.height = src.height;
+        const ctx = tmp.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, tmp.width, tmp.height);
+        ctx.drawImage(src, 0, 0);
+        return tmp.toDataURL('image/png');
+    }
 
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
-    });
-});
+    function downloadExcel(url, formData) {
+        if (typeof window.primeShowLoading === 'function') window.primeShowLoading();
+        return fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(await response.text() || 'Export failed');
+                }
+                const blob = await response.blob();
+                const disposition = response.headers.get('Content-Disposition') || '';
+                const match = disposition.match(/filename="?([^"]+)"?/i);
+                const filename = match ? match[1] : 'basket_summary.xlsx';
+                const objectUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = objectUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            })
+            .catch(err => {
+                console.error('export error:', err);
+                alert('Failed to export Excel. Please try again.');
+            })
+            .finally(() => {
+                if (typeof window.primeHideLoading === 'function') window.primeHideLoading();
+            });
+    }
 
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
+    function exportExcel() {
 
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
+        const timeChartImg = chartToWhitePNG('timeChart');
+        const valueChartImg = chartToWhitePNG('valueChart');
+        const outletChartImg = chartToWhitePNG('outletChart');
 
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
+        const formData = new FormData();
 
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
+        function addField(name, value) {
+            formData.append(name, value);
+        }
 
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
+        // pass filters
+        addField('date_from', document.querySelector('[name="date_from"]').value);
+        addField('date_to', document.querySelector('[name="date_to"]').value);
+        addField('store_no', document.querySelector('[name="store_no"]').value);
+        addField('metric_type', document.querySelector('[name="metric_type"]').value);
+        addField('member_only', document.querySelector('[name="member_only"]').checked ? '1' : '');
+        addField('category', document.getElementById('categoryHidden').value);
 
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
+        // pass charts
+        addField('timeChart', timeChartImg);
+        addField('valueChart', valueChartImg);
+        addField('outletChart', outletChartImg);
+
+        // pass raw ES aggregation data for table rows  ← ADD THIS
+        addField('es_data', JSON.stringify(ES_DATA));
+
+        downloadExcel('#export-basket-summary.php', formData);
+    }
 </script>
 
 </html>

@@ -26,66 +26,10 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
-
-<head>
-    <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
-        .dataTables_wrapper {
-            width: 100%;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
-            border-radius: 8px;
-            color: #67748e;
-        }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
-        }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
-        }
-    </style>
-</head>
+</head><title>Product Mapping</title>
 
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
-
     
 <html>
 
@@ -165,7 +109,7 @@
                             </a>
 
                             
-                            <div id="manageStatistics" class="collapse submenu submenu-1 ">
+                            <div id="manageStatistics" class="collapse submenu submenu-1 show">
                                 <ul class="nav ms-4">
                                     <li class="nav-item">
                                         <a class="nav-link " href="overview.html">
@@ -186,7 +130,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link " href="product-mapping.html">
+                                        <a class="nav-link active" href="product-mapping.html">
                                             <span class="sidenav-mini-icon">MP</span>
                                             <span class="sidenav-normal">Product Mapping</span>
                                         </a>
@@ -255,7 +199,7 @@
                     
                                             <li class="nav-item has-submenu">
                             <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
-                                aria-controls="manageReports" aria-expanded="true">
+                                aria-controls="manageReports" aria-expanded="">
                                 <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
@@ -267,7 +211,7 @@
                             </a>
 
                             
-                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                            <div id="manageReports" class="collapse submenu submenu-1 ">
                                 <ul class="nav ms-4">
                                                                         <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
@@ -307,15 +251,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +274,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -774,13 +718,12 @@
 
 </html>
 
-
     <main class="main-content position-relative border-radius-lg">
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Statistics | Product Mapping</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -798,208 +741,295 @@
     </div>
 </nav>
 
-
         <div class="container-fluid py-4">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
-                </div>
+            <div class="card">
+                <h3 class="card-header text-center font-weight-bolder text-uppercase py-4">Product Mapping</h3>
                 <div class="card-body">
-                    <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
+                    
+                    <form action="product-mapping.html" method="post" id="mappingForm">
+                        <input type='hidden' name='token' value='demo'>
+                        <p class="text-muted mb-4">
+                            Map products from different supermarkets to standardize product names and UOM.
+                            <strong>Priority: PRIME → NTUC → Sheng Shiong → Cold Storage</strong>
+                            <br>
+                        </p>
+
+                        <!-- Source Supermarket -->
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
+                                <label for="source_market" class="form-label fs-6 mb-0">Source
+                                    Supermarket*</label>
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
+                            <div class="col-md-9">
+                                <select
+                                    class="form-control fs-6 "
+                                    id="source_market" name="source_market">
+                                    <option value="">Select Source Supermarket</option>
+                                                                    </select>
+                                <span class="invalid-feedback"></span>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
-                                </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Export to Excel
-                                </button>
+
+                        <!-- Source Product -->
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
+                                <label for="source_product" class="form-label fs-6 mb-0">Source Product*</label>
                             </div>
+                            <div class="col-md-9">
+                                <select class="form-select form-select-sm uom-filter mb-2"
+                                    id="source_uom_filter" data-product-target="source_product"
+                                    disabled>
+                                    <option value="">All UOMs</option>
+                                </select>
+                                
+                                        <p> </p>
+                                
+                                <select
+                                    class="form-control fs-6 "
+                                    id="source_product" name="source_product" disabled>
+                                    <option value="">Type to search products...</option>
+                                </select>
+                                <span class="invalid-feedback"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Target Supermarkets Section -->
+                        <div class="mb-3">
+                            <h5 class="mb-0">Target Supermarkets</h5>
+                        </div>
+
+                        <!-- Target Products Container -->
+                        <div id="targetProductsContainer">
+                            <!-- First target (always visible) -->
+                            <div class="target-product-group mb-4 p-3"
+                                style="background-color: #f8f9fa; border-radius: 8px;" data-target-index="0">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">Target #1</h6>
+                                </div>
+
+                                <!-- Target Supermarket -->
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="target_market_0" class="form-label fs-6 mb-0">Target
+                                            Supermarket*</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select class="form-control fs-6 target-market-select"
+                                            id="target_market_0" name="target_market[]" data-target-index="0">
+                                            <option value="">Select Target Supermarket</option>
+                                                                                    </select>
+                                        <span class="invalid-feedback"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Target Product -->
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="target_product_0" class="form-label fs-6 mb-0">Target
+                                            Product(s)*</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select class="form-select form-select-sm uom-filter mb-2"
+                                            id="target_uom_filter_0" data-product-target="target_product_0" disabled>
+                                            <option value="">All UOMs</option>
+
+                                        </select>
+                                         <p> </p>
+                                        <select class="form-control fs-6 target-product-select"
+                                            id="target_product_0" name="target_product_0[]" data-target-index="0"
+                                            multiple disabled>
+                                        </select>
+                                        <span class="invalid-feedback"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Target Button (moved below) -->
+                        <div class="text-center mt-3 mb-4">
+                            <button type="button" class="btn btn-success" id="addTargetBtn">
+                                <i class="fas fa-plus me-1"></i>Add Target
+                            </button>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" name="submit_mapping" class="btn btn-success">
+                                <i class="fas fa-link me-2"></i>Create Mapping
+                            </button>
                         </div>
                     </form>
-                </div>
-            </div>
 
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
-            </div>
+                    <!-- Existing Mappings Section -->
+                    <hr class="my-5">
+                    <div id="existingMappingsSection">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="font-weight-bolder mb-0">Existing Mappings</h4>
+                            <div class="text-muted">
+                                <small id="mappingsShowingText">Loading...</small>
+                            </div>
+                        </div>
 
-            <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
+                        <!-- Filter Controls -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Source Market</label>
+                                <select id="filterSourceMarket" class="form-select form-select-sm">
+                                    <option value="">All Markets</option>
+                                                                    </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Target Market</label>
+                                <select id="filterTargetMarket" class="form-select form-select-sm">
+                                    <option value="">All Markets</option>
+                                                                    </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Search Product</label>
+                                <input type="text" id="filterProductSearch" class="form-control form-control-sm"
+                                    placeholder="Search by product name...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button id="clearFilters" class="btn btn-sm btn-outline-secondary w-100 d-block">
+                                    <i class="fas fa-times me-1"></i>Clear
+                                </button>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
-                            </select>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Source Market</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Source Product</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Target Market</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Target Product</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Created</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mappingsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading mappings...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
+                        <!-- Pagination Container -->
+                        <div id="mappingsPagination"></div>
                     </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
                 </div>
             </div>
         </div>
 
+        <!-- Replace Mapping Confirmation Modal -->
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteMappingModal" tabindex="-1" aria-labelledby="deleteMappingModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header"
+                        style="background: linear-gradient(87deg, #dc3545 0, #c82333 100%); color: white;">
+                        <h5 class="modal-title" id="deleteMappingModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Delete Mapping
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to delete this product mapping?</p>
+                        <p class="text-muted small mb-0 mt-2">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Existing Mapping Update Modal -->
+        <div class="modal fade" id="existingMappingModal" tabindex="-1" aria-labelledby="existingMappingModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #f39c12 0%, #f5b041 100%);">
+                        <h5 class="modal-title text-white" id="existingMappingModalLabel">
+                            <i class="fas fa-exclamation-triangle"></i> Duplicate Mapping Detected
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning border-warning">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>A mapping already exists for this source product and target market combination.</strong>
+                            <br>
+                            <small class="text-muted">You need to decide whether to replace the existing mapping or add to it.</small>
+                        </div>
+
+                        <div id="existingMappingDetails"></div>
+
+                        <div class="mt-4 p-3 border rounded bg-light">
+                            <p class="mb-2 fw-bold"><i class="fas fa-question-circle text-primary"></i> What would you like to do?</p>
+                            <div class="form-check mb-3 p-3 border rounded bg-white">
+                                <input class="form-check-input" type="radio" name="updateAction" id="actionReplace"
+                                    value="replace" checked>
+                                <label class="form-check-label w-100" for="actionReplace" style="cursor: pointer;">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-grow-1">
+                                            <strong class="text-danger"><i class="fas fa-sync-alt"></i> Replace Mapping</strong>
+                                            <p class="mb-0 text-muted small mt-1">
+                                                Delete the existing target product(s) and map only the new product(s) you selected.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <!-- Add to Existing option hidden for now -->
+                            <div class="form-check p-3 border rounded bg-white" style="display: none;">
+                                <input class="form-check-input" type="radio" name="updateAction" id="actionAdd" value="add">
+                                <label class="form-check-label w-100" for="actionAdd" style="cursor: pointer;">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-grow-1">
+                                            <strong class="text-success"><i class="fas fa-plus-circle"></i> Add to Existing</strong>
+                                            <p class="mb-0 text-muted small mt-1">
+                                                Keep the existing target product(s) and add the new product(s) alongside them.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" id="confirmUpdateBtn">
+                            <i class="fas fa-check"></i> Proceed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <footer class="footer pt-3">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
@@ -1013,7 +1043,6 @@
 </footer>    </main>
     <script>Api.restoreForms();</script>
 </body>
-
 <link rel="stylesheet" href="./assets/css/loading.css">
 <script src="./assets/js/loading-overlay.js"></script>
 <script src="./assets/js/loading.js"></script>
@@ -1359,540 +1388,1233 @@
         return day + '-' + month + '-' + year;
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
+    $(document).ready(function () {
+        let targetIndex = 1;
 
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
+        // Function to load mappings via AJAX
+        function loadMappings(page) {
+            // Show loading state
+            $('#mappingsTableBody').html('<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
+            $('#mappingsPagination').html('');
 
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
-}
+            // Get filter values
+            const filters = {
+                page: page,
+                source_market: $('#filterSourceMarket').val(),
+                target_market: $('#filterTargetMarket').val(),
+                product_search: $('#filterProductSearch').val()
+            };
 
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
+            $.ajax({
+                url: 'load-mappings.php',
+                type: 'GET',
+                data: filters,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $('#mappingsTableBody').html(response.rows_html);
+                        $('#mappingsPagination').html(response.pagination_html);
+                        $('#mappingsShowingText').text(response.showing_text);
 
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
-    }
-}
-
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
-
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
-    }
-
-}
-
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
+                        // Scroll to mappings section smoothly
+                        if (page > 1) {
+                            $('html, body').animate({
+                                scrollTop: $('#existingMappingsSection').offset().top - 100
+                            }, 500);
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading mappings:', error);
+                    $('#mappingsTableBody').html('<tr><td colspan="6" class="text-center text-danger">Error loading mappings. Please refresh the page.</td></tr>');
+                }
             });
-        }).catch(console.error);
-}
+        }
 
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
-        _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
-            const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
-            sel.appendChild(opt);
+        // Filter change handlers
+        $('#filterSourceMarket, #filterTargetMarket').on('change', function () {
+            loadMappings(1);
         });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
-        }
-    });
-}
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
-}
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
-        .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
-        .catch(console.error);
-}
 
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
-}
+        // Search with debounce
+        let searchTimeout;
+        $('#filterProductSearch').on('keyup', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function () {
+                loadMappings(1);
+            }, 500);
+        });
 
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
-            },
-            scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
+        // Clear filters button
+        $('#clearFilters').on('click', function () {
+            $('#filterSourceMarket').val('');
+            $('#filterTargetMarket').val('');
+            $('#filterProductSearch').val('');
+            loadMappings(1);
+        });
+
+        // Handle pagination clicks
+        $(document).on('click', '#mappingsPagination .page-link', function (e) {
+            e.preventDefault();
+
+            if ($(this).parent().hasClass('disabled') || $(this).parent().hasClass('active')) {
+                return false;
             }
-        }
-    });
-}
 
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
-            },
-            scales: {
-                y: { ticks: { callback: v => v + '%' } }
-            }
-        }
-    });
-}
-
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
-}
-
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
-}
-
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
-}
-
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
-}
-
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
-}
-
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
+            const page = $(this).data('page');
+            if (page) {
+                loadMappings(page);
             }
         });
-}
 
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
-});
+        // Handle delete mapping button clicks
+        let deleteUrl = '';
+        let $deleteRow = null;
 
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
-});
+        $(document).on('click', '.delete-mapping-btn', function (e) {
+            e.preventDefault();
 
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
-});
+            deleteUrl = $(this).attr('href');
+            $deleteRow = $(this).closest('tr');
 
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
+            // Show the modal
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteMappingModal'));
+            deleteModal.show();
+        });
 
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
-    });
-});
+        // Handle confirm delete button in modal
+        $('#confirmDeleteBtn').on('click', function () {
+            // Hide the modal
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteMappingModal'));
+            deleteModal.hide();
 
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
+            // Show loading state
+            $deleteRow.find('td').css('opacity', '0.5');
 
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
+            $.ajax({
+                url: deleteUrl,
+                type: 'GET',
+                success: function (response) {
+                    // Reload current page
+                    const currentPage = $('#mappingsPagination .page-item.active .page-link').data('page') || 1;
+                    loadMappings(currentPage);
 
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
+                    // Show success message
+                    const alertHtml = '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        '<span class="alert-icon"><i class="fas fa-check-circle"></i></span>' +
+                        '<span class="alert-text">Mapping deleted successfully!</span>' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
+                        '</div>';
 
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
+                    $('.card-body').prepend(alertHtml);
 
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
+                    // Auto dismiss after 3 seconds
+                    setTimeout(function () {
+                        $('.alert').fadeOut('slow', function () {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                },
+                error: function () {
+                    alert('Error deleting mapping. Please try again.');
+                    $deleteRow.find('td').css('opacity', '1');
+                }
+            });
+        });
 
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
+        // Load initial mappings
+        loadMappings(1);
+
+        // Reload mappings after successful form submission
+        
+        function initProductSelect(selectId, marketSelectId, isMultiple = false) {
+            const $select = $('#' + selectId);
+            const $marketSelect = $('#' + marketSelectId);
+            // The UOM filter sits alongside each product select (id swaps "product" -> "uom_filter").
+            const uomFilterId = selectId.replace('product', 'uom_filter');
+
+            $select.select2({
+                placeholder: 'Type to search products...',
+                allowClear: true,
+                width: '100%',
+                minimumInputLength: 2,
+                closeOnSelect: !isMultiple,
+                ajax: {
+                    url: 'product-search-api.php',
+                    type: 'POST',  // Use POST instead of GET to avoid URL encoding issues
+                    dataType: 'json',
+                    delay: 250,
+                    global: false, // Don't trigger the full-screen loading overlay on every keystroke
+                    data: function (params) {
+                        return {
+                            action: 'search-products',
+                            supermarket: $marketSelect.val(),
+                            search: params.term,  // Select2 will handle encoding
+                            uom: $('#' + uomFilterId).val() || '',
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total_count
+                            }
+                        };
+                    },
+                    // No cache: the UOM filter is not part of Select2's cache key, so caching
+                    // would return stale results after changing the filter.
+                    cache: false
+                },
+                templateResult: formatProduct,
+                templateSelection: formatProductSelection
+            });
+        }
+
+
+        function formatProduct(product) {
+            if (product.loading) {
+                return product.text;
+            }
+
+            let detailsHtml = '';
+            // Store helps tell otherwise-identical products apart at a glance.
+            if (product.supermarket_name) {
+                detailsHtml += '<span class="text-muted">Store: ' + product.supermarket_name + '</span> | ';
+            }
+            detailsHtml += '<span class="text-muted">UOM: ' + product.uom + '</span>';
+            detailsHtml += ' | <span class="text-muted">Price: $' + product.price + '</span>';
+
+            // Only add barcode if it's not null
+            if (product.barcode && product.barcode !== 'null' && product.barcode.trim() !== '') {
+                detailsHtml += ' | <span class="text-muted">Barcode: ' + product.barcode + '</span>';
+            } else if(product.sku && product.sku !== 'null' && product.sku.trim() !== '') {
+                detailsHtml += ' | <span class="text-muted">Barcode: ' + product.sku + '</span>';
+            };
+
+            const $container = $(
+                '<div class="select2-product">' +
+                '<div class="select2-product-name"><strong>' + product.name + '</strong></div>' +
+                '<div class="select2-product-details">' + detailsHtml + '</div>' +
+                '</div>'
+            );
+
+            return $container;
+        }
+
+        // Make a UOM filter searchable via Select2 (the list can be long).
+        function initUomSelect($uomFilter) {
+            if ($uomFilter.hasClass('select2-hidden-accessible')) {
+                $uomFilter.select2('destroy');
+            }
+            $uomFilter.select2({
+                placeholder: 'All UOMs',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $uomFilter.closest('.target-product-group, form')
+            });
+        }
+
+        // Populate a UOM filter dropdown with the distinct UOMs for the selected supermarket.
+        function loadUoms(supermarket, uomFilterId) {
+            const $uomFilter = $('#' + uomFilterId);
+            if (!$uomFilter.length) return;
+
+            // Reset to a clean "All UOMs" state while loading.
+            if ($uomFilter.hasClass('select2-hidden-accessible')) {
+                $uomFilter.select2('destroy');
+            }
+            $uomFilter.prop('disabled', true).empty().append('<option value="">All UOMs</option>');
+
+            if (!supermarket) {
+                initUomSelect($uomFilter);
+                return;
+            }
+
+            $.ajax({
+                url: 'product-search-api.php',
+                type: 'POST',
+                dataType: 'json',
+                global: false, // Suppress the full-screen loading overlay for the UOM lookup
+                data: { action: 'get-uoms', supermarket: supermarket },
+                success: function (data) {
+                    if (data && Array.isArray(data.uoms)) {
+                        data.uoms.forEach(function (uom) {
+                            $uomFilter.append($('<option>', { value: uom, text: uom }));
+                        });
+                    }
+                    $uomFilter.prop('disabled', false);
+                    initUomSelect($uomFilter);
+                }
+            });
+        }
+
+        // When a UOM filter changes, clear its product select so the next search re-filters.
+        // EXCEPT when we auto-filled it from a just-selected product (don't wipe that pick).
+        $(document).on('change', '.uom-filter', function () {
+            const $filter = $(this);
+            if ($filter.data('autofill')) {
+                $filter.data('autofill', false);
+                return;
+            }
+            const productTargetId = $filter.data('product-target');
+            const $productSelect = $('#' + productTargetId);
+            if ($productSelect.length) {
+                $productSelect.val(null).trigger('change');
+            }
+        });
+
+        // Auto-fill the UOM filter with the UOM of a product the user just selected.
+        function autofillUomFilter(productSelectId, uom) {
+            if (!uom) return;
+            const uomFilterId = productSelectId.replace('product', 'uom_filter');
+            const $filter = $('#' + uomFilterId);
+            if (!$filter.length) return;
+            // Make sure the value exists as an option, then set it without clearing the product.
+            const exists = $filter.find('option').filter(function () { return this.value === uom; }).length > 0;
+            if (!exists) {
+                $filter.append(new Option(uom, uom, false, false));
+            }
+            $filter.data('autofill', true);
+            $filter.val(uom).trigger('change');
+        }
+
+        // Source product (single) + target products (multi) fire select2:select on pick.
+        $(document).on('select2:select', '#source_product, .target-product-select', function (e) {
+            const uom = (e.params && e.params.data) ? e.params.data.uom : null;
+            autofillUomFilter(this.id, uom);
+        });
+
+        function formatProductSelection(product) {
+            if (product.id) {
+                return product.name + ' - ' + product.uom;
+            }
+            return product.text;
+        }
+
+        $('#source_market').on('change', function () {
+            const $sourceProduct = $('#source_product');
+            const sourceMarket = $(this).val();
+
+            if (sourceMarket) {
+                $sourceProduct.prop('disabled', false);
+                $sourceProduct.val(null).trigger('change');
+                loadUoms(sourceMarket, 'source_uom_filter');
+                initProductSelect('source_product', 'source_market');
+
+                // Check all target markets and clear if they match the new source market
+                $('.target-market-select').each(function () {
+                    const $targetMarket = $(this);
+                    const targetMarketValue = $targetMarket.val();
+                    const index = $targetMarket.data('target-index');
+
+                    if (targetMarketValue === sourceMarket) {
+                        $targetMarket.val('').trigger('change');
+                        $targetMarket.addClass('is-invalid');
+                        $targetMarket.siblings('.invalid-feedback')
+                            .text('Target supermarket cannot be the same as source supermarket (' + sourceMarket + ')')
+                            .show();
+
+                        // Disable and clear the corresponding product select
+                        const $targetProduct = $('#target_product_' + index);
+                        $targetProduct.prop('disabled', true);
+                        $targetProduct.val(null).trigger('change');
+                        loadUoms('', 'target_uom_filter_' + index);
+                    }
+                });
+                
+                // Update available supermarkets after source market change
+                updateAvailableSupermarkets();
+            } else {
+                $sourceProduct.prop('disabled', true);
+                $sourceProduct.val(null).trigger('change');
+                loadUoms('', 'source_uom_filter');
+            }
+        });
+
+        // Store original supermarket options
+        let originalSupermarketOptions = [];
+        
+        // Function to initialize original options (call once on page load)
+        function initializeOriginalOptions() {
+            if (originalSupermarketOptions.length === 0) {
+                $('#target_market_0 option').each(function() {
+                    originalSupermarketOptions.push({
+                        value: $(this).val(),
+                        text: $(this).text()
+                    });
+                });
+            }
+        }
+        
+        // Function to update available supermarkets in all target market dropdowns
+        function updateAvailableSupermarkets() {
+            const sourceMarket = $('#source_market').val();
+            const selectedTargetMarkets = [];
+            
+            // Hide Add Target button if no source market is selected
+            if (!sourceMarket) {
+                $('#addTargetBtn').hide();
+                return;
+            }
+            
+            // Initialize original options if not done yet
+            initializeOriginalOptions();
+            
+            // Check if all existing target dropdowns have selections
+            let allTargetsSelected = true;
+            $('.target-market-select').each(function() {
+                const value = $(this).val();
+                if (value) {
+                    selectedTargetMarkets.push(value);
+                } else {
+                    // Found an empty target dropdown
+                    allTargetsSelected = false;
+                }
+            });
+            
+            // If not all targets are selected, hide the Add Target button
+            if (!allTargetsSelected) {
+                $('#addTargetBtn').hide();
+                // Still update the dropdowns but don't return yet
+            }
+            
+            // Count how many supermarkets are still available
+            let availableSupermarkets = 0;
+            originalSupermarketOptions.forEach(function(opt) {
+                if (opt.value === '') return; // Skip empty option
+                
+                const isSourceMarket = opt.value === sourceMarket;
+                const isSelectedElsewhere = selectedTargetMarkets.includes(opt.value);
+                
+                // Count if available
+                if (!isSourceMarket && !isSelectedElsewhere) {
+                    availableSupermarkets++;
+                }
+            });
+            
+            // Show the Add Target button only if:
+            // 1. All existing targets have selections AND
+            // 2. There are still available supermarkets
+            if (allTargetsSelected && availableSupermarkets > 0) {
+                $('#addTargetBtn').show();
+            } else {
+                $('#addTargetBtn').hide();
+            }
+            
+            // Update each target market dropdown
+            $('.target-market-select').each(function() {
+                const $this = $(this);
+                const currentValue = $this.val();
+                
+                // Clear all options except the first (placeholder)
+                $this.find('option:not(:first)').remove();
+                
+                // Re-add options based on availability
+                originalSupermarketOptions.forEach(function(opt) {
+                    if (opt.value === '') return; // Skip empty option (already exists)
+                    
+                    // Check if this option should be available
+                    const isSourceMarket = opt.value === sourceMarket;
+                    const isSelectedElsewhere = selectedTargetMarkets.includes(opt.value) && opt.value !== currentValue;
+                    
+                    // Only add if it's not the source market and not selected elsewhere
+                    if (!isSourceMarket && !isSelectedElsewhere) {
+                        $this.append($('<option>', {
+                            value: opt.value,
+                            text: opt.text
+                        }));
+                    }
+                });
+                
+                // Restore the previously selected value if it's still available
+                if (currentValue) {
+                    const optionExists = $this.find('option[value="' + currentValue + '"]').length > 0;
+                    if (optionExists) {
+                        $this.val(currentValue);
+                    } else {
+                        $this.val('').trigger('change');
+                    }
+                }
+            });
+        }
+
+        // Initialize on page load
+        $(window).on('load', function() {
+            initializeOriginalOptions();
+            updateAvailableSupermarkets();
+        });
+
+        $(document).on('change', '.target-market-select', function () {
+            const index = $(this).data('target-index');
+            const $targetProduct = $('#target_product_' + index);
+            const $this = $(this);
+            const sourceMarket = $('#source_market').val();
+            const selectedMarket = $this.val();
+
+            // Check if target market is the same as source market
+            if (selectedMarket && selectedMarket === sourceMarket) {
+                $this.val('').trigger('change');
+                $this.addClass('is-invalid');
+                $this.siblings('.invalid-feedback')
+                    .text('Target supermarket cannot be the same as source supermarket (' + sourceMarket + ')')
+                    .show();
+                $targetProduct.prop('disabled', true);
+                $targetProduct.val(null).trigger('change');
+                loadUoms('', 'target_uom_filter_' + index);
+                updateAvailableSupermarkets();
+                return;
+            } else {
+                $this.removeClass('is-invalid');
+                $this.siblings('.invalid-feedback').hide();
+            }
+
+            if ($(this).val()) {
+                $targetProduct.prop('disabled', false);
+                $targetProduct.val(null).trigger('change');
+                loadUoms(selectedMarket, 'target_uom_filter_' + index);
+                initProductSelect('target_product_' + index, 'target_market_' + index, true);
+            } else {
+                $targetProduct.prop('disabled', true);
+                $targetProduct.val(null).trigger('change');
+                loadUoms('', 'target_uom_filter_' + index);
+            }
+            
+            // Update available supermarkets after selection change
+            updateAvailableSupermarkets();
+        });
+
+        $('#addTargetBtn').on('click', function () {
+            const newTargetHtml = `
+                <div class="target-product-group mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;" data-target-index="${targetIndex}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Target #${targetIndex + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-danger remove-target-btn">
+                            <i class="fas fa-times me-1"></i>Remove
+                        </button>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-3">
+                            <label for="target_market_${targetIndex}" class="form-label fs-6 mb-0">Target Supermarket*</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select 
+                                class="form-control fs-6 target-market-select" 
+                                id="target_market_${targetIndex}" 
+                                name="target_market[]"
+                                data-target-index="${targetIndex}">
+                                <option value="">Select Target Supermarket</option>
+                                                            </select>
+                            <span class="invalid-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-3">
+                            <label for="target_product_${targetIndex}" class="form-label fs-6 mb-0">Target Product(s)*</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-select form-select-sm uom-filter mb-2"
+                                id="target_uom_filter_${targetIndex}"
+                                data-product-target="target_product_${targetIndex}"
+                                disabled>
+                                <option value="">All UOMs</option>
+                            </select>
+                             <p> </p>
+                            <select
+                                class="form-control fs-6 target-product-select"
+                                id="target_product_${targetIndex}"
+                                name="target_product_${targetIndex}[]"
+                                data-target-index="${targetIndex}"
+                                multiple
+                                disabled>
+                            </select>
+                            <span class="invalid-feedback"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#targetProductsContainer').append(newTargetHtml);
+            targetIndex++;
+            
+            // Update available supermarkets after adding a new target
+            updateAvailableSupermarkets();
+        });
+
+        $(document).on('click', '.remove-target-btn', function () {
+            $(this).closest('.target-product-group').remove();
+
+            $('.target-product-group').each(function (index) {
+                $(this).find('h6').text('Target #' + (index + 1));
+            });
+            
+            // Update available supermarkets after removing a target
+            updateAvailableSupermarkets();
+        });
+        // Form submission with duplicate checking
+        $('#mappingForm').on('submit', function (e) {
+            // Check if this is a regular form submission (not from our update handler)
+            if ($(this).data('skipValidation')) {
+                $(this).data('skipValidation', false);
+                return true;
+            }
+
+            e.preventDefault();
+            
+            console.log('Form submission intercepted by validation');
+
+            const sourceProductId = $('#source_product').val();
+            const formData = $(this).serializeArray();
+            
+            console.log('Source Product ID:', sourceProductId);
+
+            // Collect target markets and their products
+            const targetData = {};
+            let hasTargets = false;
+
+            $('.target-market-select').each(function () {
+                const targetIdx = $(this).data('target-index');
+                const targetMarket = $(this).val();
+                const targetProducts = $(`#target_product_${targetIdx}`).val();
+
+                if (targetMarket && targetProducts && targetProducts.length > 0) {
+                    if (!targetData[targetMarket]) {
+                        targetData[targetMarket] = [];
+                    }
+                    targetData[targetMarket] = targetData[targetMarket].concat(targetProducts);
+                    hasTargets = true;
+                }
+            });
+
+            if (!hasTargets || !sourceProductId) {
+                // If no targets or no source product, submit normally
+                console.log('No targets or source product, submitting normally');
+                $(this).data('skipValidation', true);
+                // Add submit_mapping to form data
+                if (!$('input[name="submit_mapping"]').length) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'submit_mapping',
+                        value: '1'
+                    }).appendTo('#mappingForm');
+                }
+                this.submit();
+                return;
+            }
+            
+            console.log('Starting AJAX validation checks for', Object.keys(targetData).length, 'markets');
+
+            // Check each target market for existing mappings
+            let checksCompleted = 0;
+            let totalChecks = Object.keys(targetData).length;
+            let existingMappingsFound = [];
+
+            Object.keys(targetData).forEach(targetMarket => {
+                $.ajax({
+                    url: 'check-existing-mapping.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        source_product_id: sourceProductId,
+                        target_market: targetMarket,
+                        target_product_ids: targetData[targetMarket]
+                    },
+                    success: function (response) {
+                        console.log('AJAX response for', targetMarket, ':', response);
+                        if (response.success && response.has_existing) {
+                            existingMappingsFound.push({
+                                target_market: targetMarket,
+                                existing_mappings: response.existing_mappings,
+                                new_products: response.new_products,
+                                duplicates: response.duplicates
+                            });
+                        }
+
+                        checksCompleted++;
+
+                        if (checksCompleted === totalChecks) {
+                            console.log('All AJAX checks completed. Existing mappings found:', existingMappingsFound.length);
+                            if (existingMappingsFound.length > 0) {
+                                // Sort existingMappingsFound by the creation date of the first mapping
+                                // to maintain consistent order
+                                existingMappingsFound.sort((a, b) => {
+                                    const dateA = a.existing_mappings[0]?.created_at || '';
+                                    const dateB = b.existing_mappings[0]?.created_at || '';
+                                    return dateA.localeCompare(dateB);
+                                });
+                                
+                                showExistingMappingModal(existingMappingsFound, targetData);
+                            } else {
+                                console.log('No conflicts found, submitting form now');
+                                $('#mappingForm').data('skipValidation', true);
+                                // Add submit_mapping to form data since programmatic submit doesn't include button value
+                                if (!$('input[name="submit_mapping"]').length) {
+                                    $('<input>').attr({
+                                        type: 'hidden',
+                                        name: 'submit_mapping',
+                                        value: '1'
+                                    }).appendTo('#mappingForm');
+                                }
+                                $('#mappingForm')[0].submit();
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error for', targetMarket, ':', status, error);
+                        checksCompleted++;
+                        if (checksCompleted === totalChecks) {
+                            console.log('All checks completed (with errors), submitting form anyway');
+                            $('#mappingForm').data('skipValidation', true);
+                            // Add submit_mapping to form data
+                            if (!$('input[name="submit_mapping"]').length) {
+                                $('<input>').attr({
+                                    type: 'hidden',
+                                    name: 'submit_mapping',
+                                    value: '1'
+                                }).appendTo('#mappingForm');
+                            }
+                            $('#mappingForm')[0].submit();
+                        }
+                    }
+                });
+            });
+        });
+
+        function showExistingMappingModal(existingData, allTargetData) {
+            let detailsHtml = '<div class="mb-3">';
+            detailsHtml += '<p class="mb-2"><strong>Source Product:</strong></p>';
+            detailsHtml += '<div class="alert alert-light border">';
+            
+            if (existingData.length > 0 && existingData[0].existing_mappings.length > 0) {
+                const firstMapping = existingData[0].existing_mappings[0];
+                detailsHtml += `<strong>${firstMapping.source_market}:</strong> ${firstMapping.source_product_name} - ${firstMapping.source_product_uom}`;
+            }
+            
+            detailsHtml += '</div></div>';
+            
+            // Current Mappings Table
+            detailsHtml += '<p class="mb-2"><strong>Current Mappings:</strong></p>';
+            detailsHtml += '<div class="table-responsive"><table class="table table-sm table-bordered mb-4">';
+            detailsHtml += '<thead class="table-light"><tr><th class="text-center">Target Market</th><th>Current Product</th><th>Created Date</th></tr></thead><tbody>';
+
+            // Store the order of markets as they appear in existing mappings
+            // We need to track both the order AND which markets have mappings
+            const marketOrder = [];
+            const marketMappings = {}; // Store all mappings by market
+            
+            existingData.forEach(data => {
+                const market = data.target_market;
+                if (!marketOrder.includes(market)) {
+                    marketOrder.push(market);
+                }
+                
+                data.existing_mappings.forEach(mapping => {
+                    const createdDate = mapping.created_at ? new Date(mapping.created_at).toLocaleDateString() : 'N/A';
+                    detailsHtml += `<tr>
+                        <td class="text-center"><span class="badge bg-secondary">${mapping.target_market}</span></td>
+                        <td>${mapping.target_product_name} - ${mapping.target_product_uom}</td>
+                        <td class="text-muted small">${createdDate}</td>
+                    </tr>`;
+                });
+            });
+
+            detailsHtml += '</tbody></table></div>';
+
+            // Arrow indicator
+            detailsHtml += '<div class="text-center mb-3">';
+            detailsHtml += '<i class="fas fa-arrow-down fa-2x text-danger"></i>';
+            detailsHtml += '<p class="text-danger fw-bold mt-2 mb-0">WILL BE REPLACED WITH</p>';
+            detailsHtml += '</div>';
+
+            // New Mappings Table - ordered to match existing mappings
+            detailsHtml += '<p class="mb-2"><strong>New Mappings:</strong></p>';
+            detailsHtml += '<div class="table-responsive"><table class="table table-sm table-bordered">';
+            detailsHtml += '<thead class="table-success"><tr><th class="text-center">Target Market</th><th>New Product</th></tr></thead><tbody>';
+
+            // Display new mappings in the SAME ORDER as existing mappings
+            marketOrder.forEach(targetMarket => {
+                if (allTargetData[targetMarket]) {
+                    const productIds = allTargetData[targetMarket];
+                    
+                    productIds.forEach(productId => {
+                        // Get the product details from the select2 element
+                        const $option = $(`select[id^="target_product_"] option[value="${productId}"]`);
+                        const productText = $option.text() || 'Selected Product';
+                        
+                        detailsHtml += `<tr>
+                            <td class="text-center"><span class="badge bg-success">${targetMarket}</span></td>
+                            <td>${productText}</td>
+                        </tr>`;
+                    });
+                }
+            });
+
+            detailsHtml += '</tbody></table></div>';
+
+            $('#existingMappingDetails').html(detailsHtml);
+            $('#existingMappingModal').data('existingData', existingData);
+            $('#existingMappingModal').data('allTargetData', allTargetData);
+
+            const modal = new bootstrap.Modal(document.getElementById('existingMappingModal'));
+            modal.show();
+        }
+
+        $('#confirmUpdateBtn').on('click', function () {
+            const action = $('input[name="updateAction"]:checked').val();
+            const existingData = $('#existingMappingModal').data('existingData');
+            const allTargetData = $('#existingMappingModal').data('allTargetData');
+            const sourceProductId = $('#source_product').val();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('existingMappingModal'));
+            modal.hide();
+
+            const loadingAlert = '<div class="alert alert-info" id="loadingAlert"><i class="fas fa-spinner fa-spin"></i> Updating mappings...</div>';
+            $('.card-body').first().prepend(loadingAlert);
+
+            let updatesCompleted = 0;
+            let totalUpdates = existingData.length;
+            let allSuccess = true;
+
+            existingData.forEach(data => {
+                const oldTargetProductIds = data.existing_mappings.map(m => m.target_product_id);
+                const newTargetProductIds = allTargetData[data.target_market];
+
+                $.ajax({
+                    url: 'update-mapping.php',
+                    type: 'POST',
+                    data: {
+                        action: action,
+                        source_product_id: sourceProductId,
+                        target_market: data.target_market,
+                        old_target_product_ids: oldTargetProductIds,
+                        new_target_product_ids: newTargetProductIds
+                    },
+                    success: function (response) {
+                        if (!response.success) {
+                            allSuccess = false;
+                        }
+                        updatesCompleted++;
+
+                        if (updatesCompleted === totalUpdates) {
+                            $('#loadingAlert').remove();
+                            
+                            if (allSuccess) {
+                                const successHtml = '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                                    '<span class="alert-icon"><i class="fas fa-check-circle"></i></span>' +
+                                    '<span class="alert-text">Mappings updated successfully!</span>' +
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">' +
+                                    '<span aria-hidden="true">&times;</span></button></div>';
+                                $('.card-body').first().prepend(successHtml);
+
+                                $('#mappingForm')[0].reset();
+                                $('#source_product').val('').trigger('change');
+                                $('.target-product-select').val(null).trigger('change');
+                                loadMappings(1);
+
+                                setTimeout(function () {
+                                    $('.alert').fadeOut('slow', function () {
+                                        $(this).remove();
+                                    });
+                                }, 3000);
+                            } else {
+                                const errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                                    '<span class="alert-icon"><i class="fas fa-times-circle"></i></span>' +
+                                    '<span class="alert-text">Some mappings failed to update. Please try again.</span>' +
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">' +
+                                    '<span aria-hidden="true">&times;</span></button></div>';
+                                $('.card-body').first().prepend(errorHtml);
+                            }
+                        }
+                    },
+                    error: function () {
+                        allSuccess = false;
+                        updatesCompleted++;
+
+                        if (updatesCompleted === totalUpdates) {
+                            $('#loadingAlert').remove();
+                            alert('Error updating mappings. Please try again.');
+                        }
+                    }
+                });
+            });
+        });
+
+
+            });
 </script>
 
+<style>
+    .select2-product {
+        padding: 5px 0;
+    }
+
+    .select2-product-name {
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .select2-product-details {
+        font-size: 0.85em;
+        color: #6c757d;
+    }
+
+    /* Validation feedback */
+    .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+
+    .is-invalid~.invalid-feedback {
+        display: block;
+    }
+
+    select.is-invalid {
+        border-color: #dc3545;
+    }
+
+    select.is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    /* Delete Modal Styles */
+    #deleteMappingModal .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    #deleteMappingModal .modal-header {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    #deleteMappingModal .modal-title {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    #deleteMappingModal .modal-body {
+        padding: 2rem 1.5rem;
+    }
+
+    #deleteMappingModal .modal-footer {
+        border-top: 1px solid #dee2e6;
+        padding: 1rem 1.5rem;
+    }
+
+    #deleteMappingModal .btn-danger:hover {
+        background-color: #bd2130;
+        border-color: #b21f2d;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+
+    #deleteMappingModal .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+    .select2-container--default .select2-results__option {
+        padding: 8px 12px;
+    }
+
+    .target-product-group {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .target-product-group:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #d2d6da;
+        border-radius: 0.5rem;
+        padding: 0.3rem 0.5rem;
+        min-height: 45px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: rgb(12, 99, 38) !important;
+        border: none !important;
+        color: white !important;
+        padding: 4px 10px;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        margin: 3px 3px 3px 0;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 8px;
+        font-size: 1.1em;
+        border: none !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #ffebee !important;
+        background-color: transparent !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: rgb(12, 99, 38);
+        box-shadow: 0 0 0 0.2rem rgba(12, 99, 38, 0.25);
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-search__field {
+        margin-top: 5px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        padding: 0;
+    }
+
+    /* Existing Mappings Table Styles */
+    #existingMappingsSection table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    #existingMappingsSection table th,
+    #existingMappingsSection table td {
+        vertical-align: middle;
+        padding: 12px 16px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        overflow: hidden;
+    }
+
+    #existingMappingsSection table th:nth-child(1),
+    #existingMappingsSection table td:nth-child(1) {
+        width: 10%;
+        min-width: 80px;
+    }
+
+    #existingMappingsSection table th:nth-child(2),
+    #existingMappingsSection table td:nth-child(2) {
+        width: 30%;
+        min-width: 200px;
+        max-width: 400px;
+    }
+
+    #existingMappingsSection table th:nth-child(3),
+    #existingMappingsSection table td:nth-child(3) {
+        width: 10%;
+        min-width: 80px;
+    }
+
+    #existingMappingsSection table th:nth-child(4),
+    #existingMappingsSection table td:nth-child(4) {
+        width: 30%;
+        min-width: 200px;
+        max-width: 400px;
+    }
+
+    #existingMappingsSection table th:nth-child(5),
+    #existingMappingsSection table td:nth-child(5) {
+        width: 12%;
+        min-width: 100px;
+        white-space: nowrap;
+    }
+
+    #existingMappingsSection table th:nth-child(6),
+    #existingMappingsSection table td:nth-child(6) {
+        width: 8%;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    #existingMappingsSection thead th {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 10;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    #existingMappingsSection tbody tr:hover {
+        background-color: rgba(12, 99, 38, 0.05);
+    }
+
+    /* Responsive adjustments for different screen sizes */
+
+    /* Extra large screens (1400px and up) */
+    @media (min-width: 1400px) {
+
+        #existingMappingsSection table th:nth-child(2),
+        #existingMappingsSection table td:nth-child(2),
+        #existingMappingsSection table th:nth-child(4),
+        #existingMappingsSection table td:nth-child(4) {
+            width: 32%;
+        }
+    }
+
+    /* Large screens (1200px to 1399px) */
+    @media (max-width: 1399px) and (min-width: 1200px) {
+
+        #existingMappingsSection table th:nth-child(2),
+        #existingMappingsSection table td:nth-child(2),
+        #existingMappingsSection table th:nth-child(4),
+        #existingMappingsSection table td:nth-child(4) {
+            width: 30%;
+        }
+
+        #existingMappingsSection table th,
+        #existingMappingsSection table td {
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Medium screens (992px to 1199px) */
+    @media (max-width: 1199px) and (min-width: 992px) {
+
+        #existingMappingsSection table th:nth-child(2),
+        #existingMappingsSection table td:nth-child(2),
+        #existingMappingsSection table th:nth-child(4),
+        #existingMappingsSection table td:nth-child(4) {
+            width: 28%;
+        }
+
+        #existingMappingsSection table th,
+        #existingMappingsSection table td {
+            padding: 8px 10px;
+            font-size: 0.85rem;
+        }
+
+        #existingMappingsSection table th:nth-child(5),
+        #existingMappingsSection table td:nth-child(5) {
+            width: 10%;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Small screens (768px to 991px) - Switch to card layout */
+    @media (max-width: 991px) {
+        #existingMappingsSection .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #existingMappingsSection table {
+            min-width: 900px;
+        }
+
+        #existingMappingsSection table th,
+        #existingMappingsSection table td {
+            padding: 8px 10px;
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Extra small screens (below 768px) - Mobile optimized */
+    @media (max-width: 767px) {
+        #existingMappingsSection .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #existingMappingsSection table {
+            min-width: 800px;
+        }
+
+        #existingMappingsSection table th,
+        #existingMappingsSection table td {
+            padding: 6px 8px;
+            font-size: 0.8rem;
+        }
+
+        #existingMappingsSection table th:nth-child(2),
+        #existingMappingsSection table td:nth-child(2),
+        #existingMappingsSection table th:nth-child(4),
+        #existingMappingsSection table td:nth-child(4) {
+            min-width: 180px;
+        }
+    }
+
+    /* Pagination styles */
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .page-link {
+        color: rgb(12, 99, 38);
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 0.75rem;
+        margin: 0 2px;
+        border-radius: 0.375rem;
+        cursor: pointer;
+    }
+
+    .page-link:hover {
+        color: white;
+        background-color: rgb(12, 99, 38);
+        border-color: rgb(12, 99, 38);
+    }
+
+    .page-item.active .page-link {
+        background-color: rgb(12, 99, 38);
+        border-color: rgb(12, 99, 38);
+        color: white;
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #fff;
+        border-color: #dee2e6;
+        cursor: not-allowed;
+    }
+
+    #existingMappingModal .form-check {
+        transition: all 0.2s ease;
+    }
+
+    #existingMappingModal .form-check:hover {
+        background-color: #f8f9fa !important;
+        transform: translateX(3px);
+    }
+
+    #existingMappingModal .form-check-input:checked + .form-check-label {
+        color: #0c6326;
+    }
+
+    #existingMappingModal .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.65rem;
+    }
+
+    #existingMappingModal .table-success th {
+        background-color: #d1e7dd !important;
+        color: #0f5132;
+    }
+
+    #existingMappingModal .fa-arrow-down {
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+</style>
 </html>

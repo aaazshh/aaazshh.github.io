@@ -4,6 +4,7 @@
     <script src="mock/world.js"></script>
     <script src="mock/net.js"></script>
     <script src="mock/esagg.js"></script>
+    <script src="mock/es.js"></script>
     <script src="mock/common.js"></script>
     <script src="mock/pm.js"></script>
     <script src="mock/gp.js"></script>
@@ -12,6 +13,10 @@
     <script src="mock/reports.js"></script>
     <script src="mock/pos.js"></script>
     <script src="mock/nosale.js"></script>
+    <script src="mock/catalog.js"></script>
+    <script src="mock/dashboard.js"></script>
+    <script src="mock/crm.js"></script>
+    <script src="mock/mobile.js"></script>
     <script src="mock/pages/pos-detailed-transaction-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
@@ -814,7 +819,7 @@
                             <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Outlet</label>
                                 <select name="store_no" id="outletFilter" class="form-control select2-search" data-placeholder="All Outlets">
-                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions())</script></select>
+                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
                             </div>
                             <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Date From</label>

@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <script src="mock/world.js"></script>
@@ -18,6 +17,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/index.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,66 +26,87 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
+</head><title>Home Dashboard</title>
+<style>
+    .access-section {
+        margin: 1.5em 0;
+        padding: 1.2em 1.5em;
+        background: #fff7ed;
+        /* light orange background */
+        border: 1px solid #fdba74;
+        /* soft orange border */
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(251, 146, 60, 0.15);
+    }
 
-<head>
-    <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
-        .dataTables_wrapper {
-            width: 100%;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
-            border-radius: 8px;
-            color: #67748e;
-        }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
-        }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
-        }
-    </style>
-</head>
+    .access-title {
+        font-size: 1.4em;
+        color: #c2410c;
+        /* deep orange */
+        margin-bottom: 0.8em;
+        border-bottom: 3px solid #f97316;
+        /* orange accent */
+        padding-bottom: 0.3em;
+    }
+
+    .access-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .access-item {
+        padding: 0.6em 0;
+        border-bottom: 1px solid #fed7aa;
+        /* lighter divider */
+        display: flex;
+        align-items: center;
+    }
+
+    .access-item:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        font-weight: 600;
+        color: #7c2d12;
+        /* dark orange-brown */
+    }
+
+    .value {
+        color: #ea580c;
+        /* vibrant orange */
+        margin-left: 0.5em;
+        font-weight: 500;
+    }
+
+    .access-section:hover {
+        background: #fff0e0;
+        transition: background 0.3s ease;
+    }
+
+    .icon.icon-shape {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .icon.icon-shape svg.svg-icon {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+
+        width: 65%;
+        height: 65%;
+
+        display: block;
+        color: #fff;
+        stroke: currentColor;
+        fill: none;
+    }
+</style>
 
 <body class="g-sidenav-show bg-gray-100">
-    <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
-
+    <div class="min-height-400 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
     
 <html>
 
@@ -255,7 +276,7 @@
                     
                                             <li class="nav-item has-submenu">
                             <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
-                                aria-controls="manageReports" aria-expanded="true">
+                                aria-controls="manageReports" aria-expanded="">
                                 <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
@@ -267,7 +288,7 @@
                             </a>
 
                             
-                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                            <div id="manageReports" class="collapse submenu submenu-1 ">
                                 <ul class="nav ms-4">
                                                                         <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
@@ -307,15 +328,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +351,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -774,13 +795,12 @@
 
 </html>
 
-
-    <main class="main-content position-relative border-radius-lg">
+    <main class="main-content position-relative border-radius-lg ">
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Home | Dashboard</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -798,223 +818,328 @@
     </div>
 </nav>
 
-
         <div class="container-fluid py-4">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
-                </div>
-                <div class="card-body">
-                    <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
+            <div class="row">
+                <div class="col-xl-12 col-sm-12 mb-xl-0 mb-12">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="numbers">
+                                                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Hello
+                                            <strong>Maram Aashna</strong>, Welcome to Admin Dashboard
+                                        </p>
+                                                                                
+                                        
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
-                                </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Export to Excel
-                                </button>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+                            <!-- Statistics Cards -->
+                <div class="row">
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Products</p>
+                                            <h5 class="font-weight-bolder" id="product-count"></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 8.5V15.5a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 15.5V8.5a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8.5z"/>
+                                                    <path d="M3.3 7.6 12 12.6l8.7-5"/>
+                                                    <path d="M12 22V12.6"/>
+                                                </svg>
+                                            </div>                                    
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Categories</p>
+                                            <h5 class="font-weight-bolder" id="categoryCount"></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                                </svg>
+                                            </div>                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Fellow Supermarkets</p>
+                                            <h5 class="font-weight-bolder"><script>document.write(PM.supermarketCount);document.currentScript.remove()</script></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 9l1-5h16l1 5"/>
+                                                    <path d="M5 9v11h14V9"/>
+                                                    <path d="M9 20v-6h6v6"/>
+                                                    <path d="M7 9a2 2 0 0 0 4 0"/>
+                                                    <path d="M11 9a2 2 0 0 0 4 0"/>
+                                                    <path d="M15 9a2 2 0 0 0 4 0"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
-            </div>
+                    <!-- Elastic POS DATA -->
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">POS Transaction Count 2026</p>
+                                            <h5 class="font-weight-bolder" id="totalPOSTransactions"></h5>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <!-- Receipt / POS Terminal icon -->
+                                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M6 2h12a1 1 0 0 1 1 1v18l-2-1-2 1-2-1-2 1-2-1-2 1V3a1 1 0 0 1 1-1z"/>
+                                                <path d="M9 7h6M9 11h6M9 15h4"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Transactions Amount 2026</p>
+                                            <h5 class="font-weight-bolder" id="totalTransactionAmount"></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 6h18"/>
+                                                <path d="M3 10h18"/>
+                                                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                                                <path d="M7 15h2"/>
+                                                <path d="M13 15h4"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
-                            </select>
-                        </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
-                    </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Gross Profit 2026</p>
+                                            <h5 class="font-weight-bolder" id="totalGrossProfit"></h5>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <!-- Currency / Money icon -->
+                                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="1" x2="12" y2="23"/>
+                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
+                    </div>
+                                                    
+                    <!-- ACTIVE MEMBERS -->
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Active Members</p>
+                                            <h5 class="font-weight-bolder" id="totalMemberCount"></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="8" r="4"/>
+                                                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total IOS Users</p>
+                                            <h5 class="font-weight-bolder"><script>document.write(PM.nf(PM.totalIOS));document.currentScript.remove()</script></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="7" y="2" width="10" height="20" rx="2"/>
+                                                    <path d="M11 18h2"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="numbers">
+                                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Android & others Users</p>
+                                            <h5 class="font-weight-bolder"><script>document.write(PM.nf(PM.totalNotIOS));document.currentScript.remove()</script></h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M8 10l-1-2M16 10l1-2"/>
+                                                    <rect x="6" y="10" width="12" height="9" rx="2"/>
+                                                    <path d="M4 12v5M20 12v5"/>
+                                                    <path d="M9 19v2M15 19v2"/>
+                                                    <circle cx="10" cy="14" r="0.5"/>
+                                                    <circle cx="14" cy="14" r="0.5"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                
+                <!-- Monthly Transaction Amount -->
+                <br>&nbsp;
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <div class="card">
+                            <div class="card-header pb-0">
+                                <h6>Monthly Transaction Amount</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">From Start of Month</p>
+                                        <h4 class="font-weight-bolder mb-0" id="monthlyTransactionAmount">Loading...</h4>
+                                    </div>
+                                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Transaction Count</p>
+                                        <h5 class="font-weight-bolder mb-0" id="monthlyTransactionCount">Loading...</h5>
+                                    </div>
+                                </div>
+                                <div class="chart mt-4" style="height: 320px;">
+                                    <canvas id="monthlyTransactionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
+                <!-- Members vs Active Members -->
+                <br>&nbsp;
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <div class="card">
+                            <div class="card-header pb-0">
+                                <h6>Members vs Active Members</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="chart" style="height: 320px;">
+                                    <canvas id="memberComparisonChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
+            
 
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
-                </div>
-            </div>
         </div>
-
-        <footer class="footer pt-3">
-    <div class="container-fluid">
-        <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-12 mb-lg-0 mb-4">
-                <div class="copyright text-center text-muted"> <!-- Modified this for the footer to be centered -->
-                    <small class="copyright">Copyright ©2026 Prime Supermarket </small>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>    </main>
+    </main>
     <script>Api.restoreForms();</script>
-</body>
 
-<link rel="stylesheet" href="./assets/css/loading.css">
+    <!-- Core JS Files -->
+    <link rel="stylesheet" href="./assets/css/loading.css">
 <script src="./assets/js/loading-overlay.js"></script>
 <script src="./assets/js/loading.js"></script>
 
@@ -1359,540 +1484,210 @@
         return day + '-' + month + '-' + year;
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
 
-<script>
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
-
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
-
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
-}
-
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
-
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
-    }
-}
-
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
-
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+    async function apiFetch(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status} – ${url}`);
+        return res.json();
     }
 
-}
+    function setEl(id, value, fallback = 'N/A') {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value ?? fallback;
+    }
 
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
+    // ─── Loaders ──────────────────────────────────────────────────────────────
+    async function loadTransactionStats() {
+        try {
+            const { data } = await apiFetch('api.php?action=get-unique-transaction-count');
+            setEl('totalPOSTransactions', (data.receipt_count ?? 0).toLocaleString());
+            setEl('totalTransactionAmount', new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(data.total_transaction_amount || 0)));
+            setEl('uniqueItem',           (data.item_count    ?? 0).toLocaleString());
+            setEl('totalGrossProfit', new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(data.total_gross_profit || 0)));
+            setEl('totalMemberCount',     (data.active_members ?? 0).toLocaleString());
+        } catch (err) {
+            console.error('loadTransactionStats:', err);
+            ['totalPOSTransactions', 'totalTransactionAmount', 'uniqueItem', 'totalGrossProfit', 'totalMemberCount']
+                .forEach(id => setEl(id, 'N/A'));
+        }
+    }
+
+    async function loadCategoryCount() {
+        try {
+            const { data } = await apiFetch('api.php?action=get-category-count');
+            setEl('categoryCount', data.count);
+        } catch (err) {
+            console.error('loadCategoryCount:', err);
+            setEl('categoryCount', 'N/A');
+        }
+    }
+
+    async function loadProductCount() {
+        try {
+            const { data } = await apiFetch('api.php?action=get-product-count');
+            setEl('product-count', data.count);
+        } catch (err) {
+            console.error('loadProductCount:', err);
+            setEl('product-count', 'N/A');
+        }
+    }
+
+    let memberComparisonChart = null;
+    let monthlyTransactionChart = null;
+
+    async function loadMemberComparison() {
+        try {
+            const { data } = await apiFetch('api.php?action=get-member-comparison-over-time');
+            const ctx = document.getElementById('memberComparisonChart');
+            if (!ctx) return;
+
+            if (memberComparisonChart) memberComparisonChart.destroy();
+            memberComparisonChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.daily?.map(row => row.day) ?? [],
+                    datasets: [
+                        {
+                            label: 'Total Members',
+                            data: data.daily?.map(row => Number(row.total_members || 0)) ?? [],
+                            borderColor: 'rgb(12, 99, 38)',
+                            backgroundColor: 'rgba(12, 99, 38, 0.08)',
+                            borderWidth: 2,
+                            tension: 0.35,
+                            fill: false
+                        },
+                        {
+                            label: 'Active Members',
+                            data: data.daily?.map(row => Number(row.active_members || 0)) ?? [],
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.12)',
+                            borderWidth: 2,
+                            tension: 0.35,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.dataset.label}: ${Number(context.parsed.y || 0).toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => Number(value || 0).toLocaleString()
+                            }
+                        }
+                    }
+                }
             });
-        }).catch(console.error);
-}
+        } catch (err) {
+            console.error('loadMemberComparison:', err);
+        }
+    }
 
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
-        _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
-            const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
-            sel.appendChild(opt);
-        });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
+    async function loadMonthlyTransactionAmount() {
+        try {
+            const { data } = await apiFetch('api.php?action=get-monthly-transaction-amount');
+            setEl('monthlyTransactionAmount', new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(data.total_transaction_amount || 0)));
+            setEl('monthlyTransactionCount', (data.transaction_count ?? 0).toLocaleString());
+
+            const ctx = document.getElementById('monthlyTransactionChart');
+            if (!ctx) return;
+
+            if (monthlyTransactionChart) monthlyTransactionChart.destroy();
+            monthlyTransactionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.daily?.map(row => row.day) ?? [],
+                    datasets: [{
+                        label: 'Transaction Amount',
+                        data: data.daily?.map(row => Number(row.total_transaction_amount || 0)) ?? [],
+                        backgroundColor: 'rgba(12, 99, 38, 0.22)',
+                        borderColor: 'rgb(12, 99, 38)',
+                        borderWidth: 2,
+                        borderRadius: 4,
+                        maxBarThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(context.parsed.y || 0))
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => new Intl.NumberFormat('en-SG', {
+                                    style: 'currency',
+                                    currency: 'SGD',
+                                    notation: 'compact'
+                                }).format(Number(value || 0))
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('loadMonthlyTransactionAmount:', err);
+            ['monthlyTransactionAmount', 'monthlyTransactionCount'].forEach(id => setEl(id, 'N/A'));
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    // ─── Boot ─────────────────────────────────────────────────────────────────
+    if (typeof showLoading === 'function') {
+        showLoading();
+    }
+
+    Promise.allSettled([
+        loadTransactionStats(),
+        loadCategoryCount(),
+        loadProductCount(),
+        loadMemberComparison(),
+        loadMonthlyTransactionAmount(),
+    ]).finally(() => {
+        if (typeof hideLoading === 'function') {
+            hideLoading();
         }
     });
-}
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
-}
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
-        .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
-        .catch(console.error);
-}
-
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
-}
-
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
-            },
-            scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
-            }
-        }
-    });
-}
-
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
-            },
-            scales: {
-                y: { ticks: { callback: v => v + '%' } }
-            }
-        }
-    });
-}
-
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
-}
-
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
-}
-
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
-}
-
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
-}
-
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
-}
-
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
-            }
-        });
-}
-
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
-});
-
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
-});
-
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
-});
-
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
-
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
-    });
-});
-
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
-
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
-
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
-
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
-
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
-
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
-</script>
+    </script>
+</body>
 
 </html>
+

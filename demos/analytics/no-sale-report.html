@@ -4,6 +4,7 @@
     <script src="mock/world.js"></script>
     <script src="mock/net.js"></script>
     <script src="mock/esagg.js"></script>
+    <script src="mock/es.js"></script>
     <script src="mock/common.js"></script>
     <script src="mock/pm.js"></script>
     <script src="mock/gp.js"></script>
@@ -12,6 +13,10 @@
     <script src="mock/reports.js"></script>
     <script src="mock/pos.js"></script>
     <script src="mock/nosale.js"></script>
+    <script src="mock/catalog.js"></script>
+    <script src="mock/dashboard.js"></script>
+    <script src="mock/crm.js"></script>
+    <script src="mock/mobile.js"></script>
     <script src="mock/pages/no-sale-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
@@ -945,14 +950,14 @@
                         </p>
                     </div>
                     <div class="window-note" id="windowNote">
-                        Snapshots available <script>document.write(PM.firstSnapshot)</script> to <script>document.write(PM.lastSnapshot)</script>                    </div>
+                        Snapshots available <script>document.write(PM.firstSnapshot);document.currentScript.remove()</script> to <script>document.write(PM.lastSnapshot);document.currentScript.remove()</script>                    </div>
                 </div>
                 <div class="card-body">
                     <form id="filterForm">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="control-label" for="outletFilter">Outlet</label>
-                                <select name="store_no" id="outletFilter" class="form-control select2-search" data-placeholder="Select outlet"><script>document.write(PM.outletOptions())</script></select>
+                                <select name="store_no" id="outletFilter" class="form-control select2-search" data-placeholder="Select outlet"><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
                             </div>
                             <div class="col-md-2">
                                 <label class="control-label" for="periodFilter">Period</label>

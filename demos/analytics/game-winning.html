@@ -26,66 +26,41 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
+</head><title>Game Winning Report</title>
 
 <head>
     <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
-        .dataTables_wrapper {
-            width: 100%;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
+        .btn-outline-green { border: 1px solid rgb(12, 99, 38); color: rgb(12, 99, 38); }
+        .btn-outline-green:hover { background-color: rgb(12, 99, 38); color: white; }
+        .dashboard-card { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(31,41,55,.08); height: 100%; }
+        .chart-box { height: 320px; position: relative; }
+        .chart-box canvas { height: 295px !important; max-height: 295px; width: 100% !important; }
+        .table-scroll { max-height: 430px; overflow: auto; }
+        .control-label { color: #344767; font-size: .82rem; font-weight: 700; margin-bottom: .35rem; }
+        .metric-toggle {
+            display: inline-flex;
+            border: 1px solid #d7dde8;
             border-radius: 8px;
-            color: #67748e;
+            overflow: hidden;
+            background: #fff;
         }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
+        .metric-toggle button {
+            border: 0;
+            background: transparent;
+            color: #344767;
+            font-weight: 700;
+            min-width: 86px;
+            padding: 0.55rem 0.85rem;
         }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
+        .metric-toggle button.active {
+            background: #0c6326;
+            color: #fff;
         }
     </style>
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
-
     
 <html>
 
@@ -307,15 +282,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +305,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -422,15 +397,15 @@
                                     <!-- game reports -->
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gameReports" data-bs-toggle="collapse" data-bs-target="#gameReports"
-                                            aria-controls="gameReports" aria-expanded=""
+                                            aria-controls="gameReports" aria-expanded="true"
                                             id="gameReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gameFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder me-1" id="gameFolderIconFull"></i>
+                                                <i class="fa fa-folder-open me-1" id="gameFolderIconFull"></i>
                                                 Game Reports
                                             </span>
                                         </a>
-                                        <div id="gameReports" class="collapse submenu submenu-2 ">
+                                        <div id="gameReports" class="collapse submenu submenu-2 show">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="game-utilisation.html">
@@ -439,7 +414,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link " href="game-winning.html">
+                                                    <a class="nav-link active" href="game-winning.html">
                                                         <span class="sidenav-mini-icon">GW</span>
                                                         <span class="sidenav-normal">Game Winning</span>
                                                     </a>
@@ -780,7 +755,7 @@
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Game Reports | Game Winning Report</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -802,200 +777,138 @@
         <div class="container-fluid py-4">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
+                    <h5 class="mb-0">Game Winning Report</h5>
+                    <p class="text-sm text-muted mb-0">Track winning records, winners, prize categories, and prize items by winning date.</p>
                 </div>
                 <div class="card-body">
-                    <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
+                    <form method="get">
                         <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
+                            <div class="col-xl-2 col-md-4">
+                                <label class="form-label mb-1">Winning Date From</label>
+                                <input type="date" class="form-control" name="date_from" value="2026-09-01">
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
+                            <div class="col-xl-2 col-md-4">
+                                <label class="form-label mb-1">Winning Date To</label>
+                                <input type="date" class="form-control" name="date_to" value="2026-09-24">
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
-                                </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Export to Excel
-                                </button>
+                                                            <div class="col-xl-3 col-md-4">
+                                    <label class="form-label mb-1">Game ID</label>
+                                    <select class="form-control select2-search" name="game_id" data-placeholder="All Games">
+                                        <option value="">All Games</option>
+                                                                                                                    </select>
+                                </div>
+                                                            <div class="col-xl-3 col-md-4">
+                                    <label class="form-label mb-1">Prize Type / Prize Item</label>
+                                    <select class="form-control select2-search" name="prize_pool_id" data-placeholder="All Prize Types / Prize Items">
+                                        <option value="">All Prize Types / Prize Items</option>
+                                                                                                                    </select>
+                                </div>
+                                                        <div class="col-xl-2 col-md-4 d-flex align-items-end gap-2">
+                                <a href="game-winning.html" class="btn btn-outline-green mb-0 w-50">Reset</a>
+                                <button type="submit" class="btn btn-primary mb-0 w-50" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Apply</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
+            
+            <div class="row g-3 mb-4">
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Total Winning Records</p>
+                            <h5 class="mb-0">0</h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Unique Winners</p>
+                            <h5 class="mb-0">0</h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Active Winning Games</p>
+                            <h5 class="mb-0">0</h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Prize Categories</p>
+                            <h5 class="mb-0">0</h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Prize Types / Prize Items</p>
+                            <h5 class="mb-0">0</h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 col-sm-6">
+                        <div class="card dashboard-card"><div class="card-body p-3">
+                            <p class="text-sm text-muted mb-1">Average Wins per Winner</p>
+                            <h5 class="mb-0">0.00</h5>
+                        </div></div>
+                    </div>
+                            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-12 mb-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header pb-0">
+                            <div>
+                                <h6 class="mb-0">Winning Trend</h6>
+                                <small class="text-muted">Daily winning records by Winning Date</small>
+                            </div>
+                        </div>
+                        <div class="card-body"><div class="chart-box"><canvas id="trendChart"></canvas></div></div>
+                    </div>
+                </div>
             </div>
 
             <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
-                        </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header pb-0"><h6 class="mb-0">Winning by Game</h6></div>
+                        <div class="card-body"><div class="chart-box"><canvas id="gameChart"></canvas></div></div>
                     </div>
                 </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
+                <div class="col-lg-6 mb-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header pb-0 d-flex justify-content-between align-items-end gap-3">
+                            <h6 class="mb-0">Prize Type / Prize Item Ranking</h6>
+                            <div class="metric-toggle" aria-label="Prize ranking">
+                                <button type="button" class="active" data-rank-mode="top10">Top 10</button>
+                                <button type="button" data-rank-mode="bottom10">Bottom 10</button>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
+                        <div class="card-body table-scroll">
+                            <table class="table table-sm align-items-center mb-0" id="rankedPrizeTable">
+                                <thead><tr><th>Prize Type / Prize Item</th><th class="text-end">Winning Records</th><th class="text-end">Unique Winners</th><th class="text-end">Prize Category</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
-                            </select>
-                        </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
-                    </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
+            <div class="card dashboard-card mb-4">
+                <div class="card-header pb-0"><h6 class="mb-0">Prize Type / Prize Item Performance</h6></div>
+                <div class="card-body table-scroll">
+                    <table class="table table-sm align-items-center mb-0" id="prizePoolTable">
+                        <thead><tr><th>Prize Type / Prize Item</th><th class="text-end">Winning Records</th><th class="text-end">Unique Winners</th><th class="text-end">Prize Category</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
+            <div class="card dashboard-card mb-4">
+                <div class="card-header pb-0"><h6 class="mb-0">Top Winning Members</h6></div>
+                <div class="card-body table-scroll">
+                    <table class="table table-sm align-items-center mb-0" id="membersTable">
+                        <thead><tr><th>Member ID</th><th class="text-end">Total Wins</th><th class="text-end">Unique Games Won</th><th class="text-end">Unique Prize Pools</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1360,539 +1273,88 @@
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
+const TREND_BUCKETS = [];
+const GAME_ROWS = [];
+const PRIZE_POOL_ROWS = [];
+const RANKED_PRIZE_ROWS = {"top10":[],"bottom10":[]};
+const MEMBER_ROWS = [];
+
 const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
+const BLUE = 'rgb(37,99,235)';
+const ORANGE = 'rgb(180,83,9)';
+const RED = 'rgb(190,18,60)';
+let trendChart;
+let gameChart;
 
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
+function fmtNum(value) { return new Intl.NumberFormat('en-SG').format(Number(value || 0)); }
 
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
-}
-
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
-
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
-    }
-}
-
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
-
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
-    }
-
-}
-
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
-            });
-        }).catch(console.error);
-}
-
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
-        _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
-            const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
-            sel.appendChild(opt);
-        });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
-        }
+function initSearchDropdowns() {
+    if (!window.jQuery || !$.fn.select2) return;
+    $('.select2-search').each(function() {
+        const $select = $(this);
+        if ($select.data('select2')) return;
+        $select.select2({ width: '100%', placeholder: $select.data('placeholder') || 'Select', allowClear: true });
     });
 }
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
-}
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
-        .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
-        .catch(console.error);
+
+function renderTrend() {
+    const metricLabel = 'Winning Records';
+    const color = GREEN;
+    const labels = TREND_BUCKETS.map(bucket => bucket.key_as_string);
+    const values = TREND_BUCKETS.map(bucket => Number(bucket.doc_count || 0));
+
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: { labels, datasets: [{ label: metricLabel, data: values, borderColor: color, backgroundColor: color.replace('rgb', 'rgba').replace(')', ',.14)'), borderWidth: 3, pointRadius: 2, tension: .3, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'nearest', intersect: false }, plugins: { tooltip: { callbacks: { label: ctx => `${metricLabel}: ${fmtNum(ctx.parsed.y)}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: value => fmtNum(value) } } } }
+    });
 }
 
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
-}
-
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
+function renderGameChart() {
+    const rows = [...GAME_ROWS].sort((a, b) => b.winning_records - a.winning_records).slice(0, 15).reverse();
+    if (gameChart) gameChart.destroy();
+    gameChart = new Chart(document.getElementById('gameChart'), {
         type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
-            },
-            scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
-            }
-        }
+        data: { labels: rows.map(row => `Game ${row.game_id}`), datasets: [{ label: 'Winning Records', data: rows.map(row => row.winning_records), backgroundColor: GREEN, borderRadius: 5, minBarLength: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, interaction: { mode: 'nearest', axis: 'y', intersect: false }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => { const row = rows[ctx.dataIndex] || {}; return [`Winning Records: ${fmtNum(row.winning_records)}`, `Unique Winners: ${fmtNum(row.unique_winners)}`,`Active Prize Pools: ${fmtNum(row.active_prize_pools)}`]; } } } }, scales: { x: { beginAtZero: true, ticks: { callback: value => fmtNum(value) } } } }
     });
 }
 
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
-            },
-            scales: {
-                y: { ticks: { callback: v => v + '%' } }
-            }
-        }
-    });
+function renderRankedPrizeTable() {
+    const mode = document.querySelector('[data-rank-mode].active')?.dataset.rankMode || 'top10';
+    const rows = RANKED_PRIZE_ROWS[mode] || [];
+    document.querySelector('#rankedPrizeTable tbody').innerHTML = rows.map(row => `
+        <tr><td>${escapeHtml(row.prize_pool_id)}</td><td class="text-end">${fmtNum(row.winning_records)}</td><td class="text-end">${fmtNum(row.unique_winners)}</td><td class="text-end">${escapeHtml(row.prize_category)}</td></tr>
+    `).join('');
 }
 
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
+function renderTables() {
+    document.querySelector('#prizePoolTable tbody').innerHTML = PRIZE_POOL_ROWS.map(row => `
+        <tr><td>${escapeHtml(row.prize_pool_id)}</td><td class="text-end">${fmtNum(row.winning_records)}</td><td class="text-end">${fmtNum(row.unique_winners)}</td><td class="text-end">${escapeHtml(row.prize_category)}</td></tr>
+    `).join('');
+
+    document.querySelector('#membersTable tbody').innerHTML = MEMBER_ROWS.map(row => `
+        <tr><td>${escapeHtml(row.member_id)}</td><td class="text-end">${fmtNum(row.total_wins)}</td><td class="text-end">${fmtNum(row.unique_games)}</td><td class="text-end">${fmtNum(row.unique_prize_pools)}</td></tr>
+    `).join('');
 }
 
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
+function escapeHtml(value) {
+    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
-}
-
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
-}
-
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
-}
-
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
-            }
-        });
-}
-
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
-});
-
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
-});
-
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
-});
-
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
-
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
+initSearchDropdowns();
+renderTrend();
+renderGameChart();
+renderRankedPrizeTable();
+renderTables();
+document.querySelectorAll('[data-rank-mode]').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('[data-rank-mode]').forEach(btn => btn.classList.toggle('active', btn === button));
+        renderRankedPrizeTable();
     });
 });
-
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
-
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
-
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
-
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
-
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
-
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
 </script>
 
 </html>

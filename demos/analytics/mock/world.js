@@ -289,7 +289,7 @@ var World = (function () {
     hash: hash, rng: rng, pad: pad, ymd: ymd, parse: parse, addDays: addDays, days: days, round: round, TODAY: TODAY,
     STORES: STORES, GROUPS: GROUPS, DIVISION_NAMES: DIVISION_NAMES, CATEGORY_NAMES: CATEGORY_NAMES, GROUP_NAMES: GROUP_NAMES, ITEMS: ITEMS,
     ITEM_BY_NO: ITEM_BY_NO, VENDORS: VENDORS, MEMBERS: MEMBERS,
-    dayLines: dayLines, daySummary: daySummary, lines: lines, groupBy: groupBy, sum: sum, distinct: distinct, storeName: storeName,
+    dayLines: dayLines, daySummary: daySummary, lines: lines, forget: function (store, date) { delete cache[store.code + date]; }, groupBy: groupBy, sum: sum, distinct: distinct, storeName: storeName,
     storeList: storeList, inCategory: inCategory
   };
 })();
@@ -340,4 +340,26 @@ World.OUTLET_GROUPS = [
   }
   W.snapshotDates = snapshotDates;
   W.soh = soh;
+})(World);
+
+// Receipt level totals for one outlet on one day (count, net, gross profit and
+// the members who shopped), for the year long counters on the dashboard.
+(function (W) {
+  'use strict';
+  var cache = {};
+  W.dayTotals = function (store, date) {
+    var key = store.code + date;
+    if (cache[key]) return cache[key];
+    var lines = W.dayLines(store, date);
+    var receipts = {}, members = {}, net = 0, gp = 0;
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i];
+      receipts[l.receipt_no] = 1; net += l.net_amount; gp += l.gross_profit;
+      if (l.member_id) members[l.member_id] = 1;
+    }
+    var t = { receipts: Object.keys(receipts).length, net: net, gp: gp, members: Object.keys(members) };
+    // Keep the totals, drop the lines for older days so memory stays flat.
+    if (date < W.ymd(W.addDays(new Date(), -120))) W.forget(store, date);
+    return (cache[key] = t);
+  };
 })(World);

@@ -4,6 +4,7 @@
     <script src="mock/world.js"></script>
     <script src="mock/net.js"></script>
     <script src="mock/esagg.js"></script>
+    <script src="mock/es.js"></script>
     <script src="mock/common.js"></script>
     <script src="mock/pm.js"></script>
     <script src="mock/gp.js"></script>
@@ -12,6 +13,10 @@
     <script src="mock/reports.js"></script>
     <script src="mock/pos.js"></script>
     <script src="mock/nosale.js"></script>
+    <script src="mock/catalog.js"></script>
+    <script src="mock/dashboard.js"></script>
+    <script src="mock/crm.js"></script>
+    <script src="mock/mobile.js"></script>
     <script src="mock/pages/pos-transction-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
@@ -933,7 +938,7 @@
                             <div class="col-md-3">
                                 <label class="form-label mb-1">Outlet</label>
                                 <select name="store_no" id="globalOutletFilter" class="form-control select2-search" data-placeholder="All Outlets">
-                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions())</script></select>
+                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
                             </div>
                             <div class="col-md-3 d-flex align-items-end gap-2">
                                 <a href="pos-transction-report.html" class="btn btn-outline-green w-50">Reset</a>
@@ -951,7 +956,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <p class="text-sm text-muted mb-1">Total Revenue</p>
-                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.totalRevenue, 2))</script></h4>
+                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.totalRevenue, 2));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
@@ -959,7 +964,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <p class="text-sm text-muted mb-1">Total Items Sold</p>
-                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalItems))</script></h4>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalItems));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
@@ -967,7 +972,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <p class="text-sm text-muted mb-1">Total Transactions</p>
-                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalTransactions))</script></h4>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalTransactions));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
@@ -975,7 +980,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <p class="text-sm text-muted mb-1">Total Units Sold</p>
-                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalUnits, 2))</script></h4>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalUnits, 2));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
@@ -983,7 +988,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <p class="text-sm text-muted mb-1">Avg Transaction Value</p>
-                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2))</script></h4>
+                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2));document.currentScript.remove()</script></h4>
                         </div>
                     </div>
                 </div>
@@ -992,7 +997,7 @@
                         <a class="kpi-link" href="gp-report-summary.html" data-pm-query>
                             <div class="card-body">
                                 <p class="text-sm text-muted mb-1">Gross Profit (GP)</p>
-                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.grossProfit, 2))</script></h4>
+                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.grossProfit, 2));document.currentScript.remove()</script></h4>
                             </div>
                         </a>
                     </div>
@@ -1002,7 +1007,7 @@
                         <a class="kpi-link" href="gp-report-summary.html" data-pm-query>
                             <div class="card-body">
                                 <p class="text-sm text-muted mb-1">GP %</p>
-                                <h4 class="mb-0"><script>document.write(PM.nf(PM.grossProfitMargin, 2))</script>%</h4>
+                                <h4 class="mb-0"><script>document.write(PM.nf(PM.grossProfitMargin, 2));document.currentScript.remove()</script>%</h4>
                             </div>
                         </a>
                     </div>
@@ -1012,7 +1017,7 @@
                         <a class="kpi-link" href="basket-summary.html" data-pm-query>
                             <div class="card-body">
                                 <p class="text-sm text-muted mb-1">Average Basket Value</p>
-                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2))</script></h4>
+                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2));document.currentScript.remove()</script></h4>
                             </div>
                         </a>
                     </div>
@@ -1181,7 +1186,7 @@
                                     </div>
                                     <div class="benchmark-control">
                                         <label class="control-label" for="benchmarkOutlet">Outlet</label>
-                                        <select id="benchmarkOutlet" class="form-control form-control-sm select2-search" data-placeholder="Select Outlet"><script>document.write(PM.outletOptions())</script></select>
+                                        <select id="benchmarkOutlet" class="form-control form-control-sm select2-search" data-placeholder="Select Outlet"><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
                                     </div>
                                 </div>
                             </div>

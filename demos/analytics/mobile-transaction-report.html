@@ -18,6 +18,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/mobile-transaction-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,66 +27,22 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head><title>GP Category Report</title>
+</head><title>Mobile Transaction Report</title>
 
 <head>
     <style>
-        .btn-outline-green {
-            border: 1px solid rgb(12, 99, 38);
-            color: rgb(12, 99, 38);
-        }
-        .btn-outline-green:hover,
-        .btn-outline-green.active {
-            background-color: rgb(12, 99, 38);
-            color: white;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            transition: 0.2s;
-        }
-        .dataTables_wrapper {
-            width: 100%;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-        #categoryPerformanceTable tbody tr,
-        #marginBreakdownTable tbody tr {
-            cursor: pointer;
-        }
-        tr.selected-category td {
-            background-color: #e8f5e9 !important;
-        }
-        .drill-empty {
-            min-height: 120px;
-            border: 1px dashed #cfd8dc;
-            border-radius: 8px;
-            color: #67748e;
-        }
-        .margin-breakdown-note {
-            border: 2px solid rgb(12, 99, 38);
-            border-left-width: 6px;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-weight: 600;
-        }
-        .margin-breakdown-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-        #marginBreakdownTable {
-            min-width: 980px;
-        }
+        .btn-outline-green { border: 1px solid rgb(12, 99, 38); color: rgb(12, 99, 38); }
+        .btn-outline-green:hover { background-color: rgb(12, 99, 38); color: white; }
+        .dashboard-card { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(31,41,55,.08); height: 100%; }
+        .chart-box { height: 320px; position: relative; }
+        .chart-box canvas { height: 295px !important; max-height: 295px; width: 100% !important; }
+        .table-scroll { max-height: 430px; overflow: auto; }
+        .control-label { color: #344767; font-size: .82rem; font-weight: 700; margin-bottom: .35rem; }
     </style>
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
-
     
 <html>
 
@@ -307,15 +264,15 @@
                                     </li>
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
-                                            aria-controls="gpReports" aria-expanded="true"
+                                            aria-controls="gpReports" aria-expanded=""
                                             id="gpReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder-open me-1" id="gpFolderIconFull"></i>
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
                                                 Gross Profit Reports
                                             </span>
                                         </a>
-                                        <div id="gpReports" class="collapse submenu submenu-2 show">
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
                                             <ul class="nav ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link " href="gp-report-summary.html">
@@ -330,7 +287,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" href="gp-category-report.html">
+                                                    <a class="nav-link " href="gp-category-report.html">
                                                         <span class="sidenav-mini-icon">CR</span>
                                                         <span class="sidenav-normal">Category Report</span>
                                                     </a>
@@ -341,15 +298,15 @@
                                     <!-- transaction report -->
                                     <li class="nav-item has-submenu">
                                         <a class="nav-link no-collapse-arrow" href="#transactionReports" data-bs-toggle="collapse" data-bs-target="#transactionReports"
-                                            aria-controls="transactionReports" aria-expanded=""
+                                            aria-controls="transactionReports" aria-expanded="true"
                                             id="transactionReportsToggle">
                                             <span class="sidenav-mini-icon"><i class="fa fa-folder" id="transactionFolderIcon"></i></span>
                                             <span class="sidenav-normal">
-                                                <i class="fa fa-folder me-1" id="transactionFolderIconFull"></i>
+                                                <i class="fa fa-folder-open me-1" id="transactionFolderIconFull"></i>
                                                 Transaction Reports
                                             </span>
                                         </a>
-                                        <div id="transactionReports" class="collapse submenu submenu-2 ">
+                                        <div id="transactionReports" class="collapse submenu submenu-2 show">
                                             <ul class="nav ms-3">
                                                 <!-- POS Report is a folder: the dashboard plus the line-level
                                                      drill-down that sits behind its numbers. -->
@@ -381,7 +338,7 @@
                                                     </div>
                                                 </li>
                                                                                                 <li class="nav-item">
-                                                    <a class="nav-link " href="mobile-transaction-report.html">
+                                                    <a class="nav-link active" href="mobile-transaction-report.html">
                                                         <span class="sidenav-mini-icon">MR</span>
                                                         <span class="sidenav-normal">Mobile Report</span>
                                                     </a>
@@ -780,7 +737,7 @@
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li class="breadcrumb-item text-sm text-white active">GP Reports | Category Report</li>
+                <li class="breadcrumb-item text-sm text-white active">Reports | Mobile Transaction Report</li>
             </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -798,208 +755,268 @@
     </div>
 </nav>
 
-
         <div class="container-fluid py-4">
             <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="mb-0">Filters</h5>
-                </div>
+                <div class="card-header pb-0"><h5 class="mb-0">Mobile Transaction Report</h5></div>
                 <div class="card-body">
                     <form id="filterForm">
-                        <input type="hidden" name="margin_group" id="marginGroupInput" value="">
+                        <input type="hidden" name="breakdown_group_by" data-pm-value="bGroup" value="date">
+                        <input type="hidden" name="breakdown_interval" data-pm-value="bInterval" value="daily">
+                        <input type="hidden" name="breakdown_display" data-pm-value="bDisplay" value="top10">
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Date From</label>
-                                <input type="date" class="form-control form-control-sm" name="date_from"
-                                    value="2026-01-01">
+                                <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Date To</label>
-                                <input type="date" class="form-control form-control-sm" name="date_to"
-                                    value="2026-09-25">
+                                <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Outlet</label>
-                                <select class="form-control form-control-sm" name="store_no" id="outletSelect">
-                                    <option value="">All Outlets</option>
-                                </select>
+                                <select name="store_no" class="form-control select2-search" data-placeholder="All Outlets">
+                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions());document.currentScript.remove()</script></select>
                             </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="button" id="resetBtn" class="btn btn-outline-green">Reset</button>
-                                <button type="submit" class="btn btn-primary"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Apply Filters
-                                </button>
-                                <button type="button" id="exportBtn" class="btn btn-success"
-                                    style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
-                                    Export to Excel
-                                </button>
+                            <div class="col-xl-2 col-md-4">
+                                <label class="form-label mb-1">Age Group</label>
+                                <select name="age_group" class="form-control select2-search" data-placeholder="All Age Groups">
+                                    <option value="">All Age Groups</option><script>document.write(PM.ageOptions());document.currentScript.remove()</script></select>
+                            </div>
+                            <div class="col-xl-2 col-md-4">
+                                <label class="form-label mb-1">Category</label>
+                                <select class="form-control" id="categorySelect" multiple></select>
+                                <input type="hidden" name="category" id="categoryHidden" value="">
+                            </div>
+                            <div class="col-xl-2 col-md-4 d-flex align-items-end gap-2">
+                                <a href="mobile-transaction-report.html" class="btn btn-outline-green w-50">Reset</a>
+                                <button type="submit" class="btn btn-primary w-50" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Filter</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <span class="text-sm text-muted">Showing:</span>
-                <span id="periodBadge" class="badge bg-secondary" style="font-size:0.8rem;"></span>
-                <span id="outletBadge" class="badge" style="background-color:rgb(12,99,38);font-size:0.8rem;display:none;"></span>
+                            <script>document.write(PM.alert());document.currentScript.remove()</script>
+            
+            <div class="row mb-4">
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Mobile Revenue</p>
+                            <h5 class="mb-0" data-kpi="totalRevenue"><script>document.write(PM.kpi.totalRevenue);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Transactions</p>
+                            <h5 class="mb-0" data-kpi="totalTransactions"><script>document.write(PM.kpi.totalTransactions);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Quantity Sold</p>
+                            <h5 class="mb-0" data-kpi="totalQuantity"><script>document.write(PM.kpi.totalQuantity);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Unique Members</p>
+                            <h5 class="mb-0" data-kpi="uniqueMembers"><script>document.write(PM.kpi.uniqueMembers);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Average Order Value</p>
+                            <h5 class="mb-0" data-kpi="aov"><script>document.write(PM.kpi.aov);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                                    <div class="col-xl-2 col-md-4 mb-3">
+                        <div class="card dashboard-card"><div class="card-body">
+                            <p class="text-sm text-muted mb-1">Average Items / Transaction</p>
+                            <h5 class="mb-0" data-kpi="avgItemsPerTransaction"><script>document.write(PM.kpi.avgItemsPerTransaction);document.currentScript.remove()</script></h5>
+                        </div></div>
+                    </div>
+                            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-8 mb-4 mb-xl-0">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+                            <h6 class="mb-0">Mobile Sales Trend</h6>
+                            <div class="d-flex gap-2">
+                                <div>
+                                    <label class="control-label" for="trendPeriod">Toggle</label>
+                                    <select id="trendPeriod" class="form-control form-control-sm">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="control-label" for="trendMetric">Metric</label>
+                                    <select id="trendMetric" class="form-control form-control-sm">
+                                        <option value="revenue">Revenue</option>
+                                        <option value="quantity">Quantity Sold</option>
+                                        <option value="transactions">Transaction Count</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body chart-box"><canvas id="salesTrendChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex justify-content-between align-items-end">
+                            <h6 class="mb-0">Mobile Users by Age Group</h6>
+                        </div>
+                        <div class="card-body chart-box"><canvas id="agePieChart"></canvas></div>
+                    </div>
+                </div>
             </div>
 
             <div class="row mb-4">
-                <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">Category GP Contribution</h6>
-                            <small>top 15 categories</small>
+                <div class="col-xl-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+                                <div>
+                                    <h6 class="mb-1">Mobile Performance Breakdown</h6>
+                                    <p class="mb-0 text-sm text-muted">Compare revenue, transaction volume, and average order value.</p>
+                                </div>
+                            </div>
+                            <form id="breakdownForm">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="breakdownDateFrom">Date From</label>
+                                        <input type="date" id="breakdownDateFrom" name="date_from" class="form-control form-control-sm" data-pm-value="dateFrom" value="">
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="breakdownDateTo">Date To</label>
+                                        <input type="date" id="breakdownDateTo" name="date_to" class="form-control form-control-sm" data-pm-value="dateTo" value="">
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="breakdownGroupBy">Group By</label>
+                                        <select data-pm-value="bGroup" id="breakdownGroupBy" name="breakdown_group_by" class="form-control form-control-sm">
+                                            <option value="date" selected>Date</option>
+                                            <option value="outlet" >Outlet</option>
+                                            <option value="age_group" >Age Group</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4" id="intervalControl">
+                                        <label class="control-label" for="breakdownInterval">Interval</label>
+                                        <select data-pm-value="bInterval" id="breakdownInterval" name="breakdown_interval" class="form-control form-control-sm">
+                                            <option value="daily" selected>Daily</option>
+                                            <option value="weekly" >Weekly</option>
+                                            <option value="monthly" >Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4" id="displayControl">
+                                        <label class="control-label" for="breakdownDisplay">Display</label>
+                                        <select data-pm-value="bDisplay" id="breakdownDisplay" name="breakdown_display" class="form-control form-control-sm">
+                                            <option value="top5" >Top 5</option>
+                                            <option value="top10" selected>Top 10</option>
+                                            <option value="bottom5" >Bottom 5</option>
+                                            <option value="all" >All</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <button type="submit" class="btn btn-primary btn-sm mb-0 w-100" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Apply</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="card-body">
-                            <canvas id="gpContributionChart" height="150"></canvas>
-                        </div>
+                        <div class="card-body chart-box"><canvas id="performanceBreakdownChart"></canvas></div>
                     </div>
                 </div>
-                <div class="col-lg-5 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header pb-0">
-                            <h6 class="mb-0">GP% by Category</h6>
-                            <small>lowest 15 categories</small>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+                                <div>
+                                    <h6 class="mb-1">Mobile Transaction Combo Analysis</h6>
+                                    <p class="mb-0 text-sm text-muted">Compare two mobile transaction metrics by outlet or age group.</p>
+                                </div>
+                            </div>
+                            <form id="comboForm">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="comboDateFrom">Date From</label>
+                                        <input type="date" id="comboDateFrom" class="form-control form-control-sm" data-pm-value="dateFrom" value="">
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="comboDateTo">Date To</label>
+                                        <input type="date" id="comboDateTo" class="form-control form-control-sm" data-pm-value="dateTo" value="">
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="comboGroupBy">Group By</label>
+                                        <select data-pm-value="cGroup" id="comboGroupBy" class="form-control form-control-sm">
+                                            <option value="outlet" >Outlet</option>
+                                            <option value="age_group" selected>Age Group</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="comboBarMetric">Bar Metric</label>
+                                        <select data-pm-value="cBar" id="comboBarMetric" class="form-control form-control-sm">
+                                                                                            <option value="revenue" selected>Revenue</option>
+                                                                                            <option value="transaction_count" >Transaction Count</option>
+                                                                                            <option value="quantity_sold" >Quantity Sold</option>
+                                                                                            <option value="total_stamps" >Total Stamps</option>
+                                                                                            <option value="aov" >AOV</option>
+                                                                                    </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <label class="control-label" for="comboLineMetric">Line Metric</label>
+                                        <select data-pm-value="cLine" id="comboLineMetric" class="form-control form-control-sm">
+                                                                                            <option value="revenue" >Revenue</option>
+                                                                                            <option value="transaction_count" selected>Transaction Count</option>
+                                                                                            <option value="quantity_sold" >Quantity Sold</option>
+                                                                                            <option value="total_stamps" >Total Stamps</option>
+                                                                                            <option value="aov" >AOV</option>
+                                                                                    </select>
+                                    </div>
+                                    <div class="col-xl-2 col-md-4">
+                                        <button type="submit" class="btn btn-primary btn-sm mb-0 w-100" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Apply</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="card-body">
-                            <canvas id="gpPctChart" height="150"></canvas>
+                        <div class="card-body chart-box"><canvas id="comboAnalysisChart"></canvas></div>
+                        <div class="px-4 pb-3 text-sm text-muted" id="comboAnalysisNote"></div>
+                        <div class="card-body table-scroll pt-0">
+                            <table class="table table-sm align-items-center mb-0" id="comboAnalysisTable">
+                                <thead><tr><th>Group</th><th class="text-end">Revenue</th><th class="text-end">Transaction Count</th><th class="text-end">Quantity Sold</th><th class="text-end">Total Stamps</th><th class="text-end">AOV</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h6 class="mb-0">Category Margin Breakdown</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <div style="min-width:220px;">
-                            <label class="form-label mb-1">Sort by</label>
-                            <select class="form-control form-control-sm" id="marginSortSelect">
-                                <option value="loss">Highest Loss</option>
-                                <option value="low">Highest Low Margin</option>
-                                <option value="medium">Highest Medium Margin</option>
-                                <option value="high" selected>Highest High Margin</option>
+            <div class="row mb-4">
+                <div class="col-xl-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex justify-content-between align-items-end">
+                            <div>
+                                <h6 class="mb-0">Top Mobile Members</h6>
+                            </div>
+                            <select id="memberSort" class="form-control form-control-sm" style="max-width: 190px;">
+                                <option value="revenue">Revenue</option>
+                                <option value="transactions">Transaction Count</option>
                             </select>
                         </div>
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="categorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-end">
-                            <button type="button" id="resetMarginBreakdownBtn" class="btn btn-outline-green btn-sm mb-0">Reset</button>
+                        <div class="card-body table-scroll">
+                            <table class="table table-sm align-items-center mb-0" id="memberTable">
+                                <thead><tr><th>Member ID</th><th class="text-end">Revenue</th><th class="text-end">Transaction Count</th><th class="text-end">Quantity Bought</th><th class="text-end">Stamps Collected</th><th class="text-end">Average Order Value</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="alert margin-breakdown-note text-sm mb-3 py-2 px-3" role="note">
-                        This table shows the percentage of items in each category that fall into each GP% margin band. It is not the overall margin for the category.
-                    </div>
-                    <div class="margin-breakdown-scroll">
-                        <table class="table table-sm w-100" id="marginBreakdownTable">
-                            <thead>
-                                <tr>
-                                    <th>Category Name</th>
-                                    <th>Loss (&lt;0%)</th>
-                                    <th>Low Margin (0-10%)</th>
-                                    <th>Medium Margin (10-20%)</th>
-                                    <th>High Margin (&gt;20%)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <h6 class="mb-0">Drill-down Items</h6>
-                        <small class="text-muted" id="drilldownSubtitle">Please select a category and margin group</small>
-                    </div>
-                    <div class="d-flex align-items-end flex-wrap gap-2">
-                        <div style="min-width:280px;">
-                            <label class="form-label mb-1">Category</label>
-                            <select class="form-control form-control-sm select2-category" id="drillCategorySelect">
-                                <option value="">All Categories</option>
-                            </select>
-                        </div>
-                        <a id="fullItemReportLink" class="btn btn-sm btn-outline-green disabled mb-0" href="gp-item-report.html">View full item report</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-danger margin-btn" data-margin="loss">Loss</button>
-                        <button type="button" class="btn btn-sm btn-outline-warning margin-btn" data-margin="low">Low</button>
-                        <button type="button" class="btn btn-sm btn-outline-info margin-btn" data-margin="medium">Medium</button>
-                        <button type="button" class="btn btn-sm btn-outline-success margin-btn" data-margin="high">High</button>
-                    </div>
-                    <div id="drillEmpty" class="drill-empty d-flex align-items-center justify-content-center">
-                        Please select a category and margin group
-                    </div>
-                    <div id="drillTableWrap" class="d-none">
-                        <table class="table table-sm w-100" id="drilldownTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Sales</th>
-                                    <th>Cost</th>
-                                    <th>GP</th>
-                                    <th>GP%</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6 class="mb-0">Category Performance</h6>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm w-100" id="categoryPerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Total Sales</th>
-                                <th>Total Cost</th>
-                                <th>Gross Profit</th>
-                                <th>GP%</th>
-                                <th>Quantity Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="fetchError" class="alert alert-danger d-none" role="alert" style="position:relative;">
-                <strong>Failed to load data.</strong> The server may be slow or unavailable.
-                <button type="button" class="btn btn-sm btn-danger ms-3" id="retryBtn">Retry</button>
-                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                    onclick="document.getElementById('fetchError').classList.add('d-none')"></button>
-            </div>
-
-            <div id="loadingOverlay" class="d-none" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;">
-                <div class="d-flex align-items-center gap-2 bg-white shadow rounded px-3 py-2">
-                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                    <span class="text-success fw-semibold" style="font-size:0.85rem;">Loading...</span>
                 </div>
             </div>
         </div>
-
         <footer class="footer pt-3">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
@@ -1360,539 +1377,470 @@
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-const GREEN = 'rgb(12,99,38)';
-const BLUE = 'rgb(54,112,199)';
-const ORANGE = 'rgb(245,158,11)';
-const RED = 'rgb(220,53,69)';
-const TEAL = 'rgb(20,184,166)';
+let ES_DATA = PM.mr.aggs;
+let BREAKDOWN_DATA = PM.mr.breakdown;
+let BREAKDOWN_GROUP_BY = PM.bGroup;
+let COMBO_ANALYSIS = PM.mr.comboAnalysis;
+let MEMBER_ROWS = PM.mr.memberRows;
+let charts = {};
 
-let gpContributionChart;
-let gpPctChart;
-let categoryRows = [];
-let marginRows = [];
-let selectedCategory = '';
-let selectedCategoryName = '';
-let selectedMargin = '';
-let pendingRequests = 0;
+const fmtCurrency = value => new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(value || 0));
+const fmtNum = value => new Intl.NumberFormat('en-SG', { maximumFractionDigits: 2 }).format(Number(value || 0));
 
-function fmtNum(v) { return new Intl.NumberFormat('en-SG').format(Number(v || 0)); }
-function fmtCurrency(v) { return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', minimumFractionDigits: 2 }).format(Number(v || 0)); }
-function fmtPct(v) { return Number(v || 0).toFixed(2) + '%'; }
-function fmtPctShort(v) {
-    return new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(Number(v || 0)) + '%';
-}
-function coloredPct(value, color) {
-    return `<span style="color:${color};font-weight:600;">${fmtPctShort(value)}</span>`;
-}
-function marginBandCell(value, color) {
-    const count = Number(value.count || 0);
-    const pct = Number(value.pct || 0);
-    const label = count === 1 ? 'product' : 'products';
-    return `<span style="color:${color};font-weight:600;">${fmtNum(count)} ${label} (${fmtPctShort(pct)})</span>`;
-}
-function marginLabel(group) {
-    return { loss: 'Loss', low: 'Low', medium: 'Medium', high: 'High' }[group] || '';
-}
-function getParams() {
-    return new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
+function dashboardParams(source) {
+    const globalForm = document.getElementById('filterForm');
+    const params = new URLSearchParams();
+    const dateFrom = source === 'breakdown'
+        ? document.getElementById('breakdownDateFrom').value
+        : source === 'combo'
+        ? document.getElementById('comboDateFrom').value
+        : globalForm.querySelector('[name="date_from"]').value;
+    const dateTo = source === 'breakdown'
+        ? document.getElementById('breakdownDateTo').value
+        : source === 'combo'
+        ? document.getElementById('comboDateTo').value
+        : globalForm.querySelector('[name="date_to"]').value;
+
+    globalForm.querySelector('[name="date_from"]').value = dateFrom;
+    globalForm.querySelector('[name="date_to"]').value = dateTo;
+    document.getElementById('breakdownDateFrom').value = dateFrom;
+    document.getElementById('breakdownDateTo').value = dateTo;
+    document.getElementById('comboDateFrom').value = dateFrom;
+    document.getElementById('comboDateTo').value = dateTo;
+
+    params.set('ajax', 'dashboard');
+    params.set('date_from', dateFrom);
+    params.set('date_to', dateTo);
+    params.set('store_no', globalForm.querySelector('[name="store_no"]').value);
+    params.set('age_group', globalForm.querySelector('[name="age_group"]').value);
+    params.set('category', document.getElementById('categoryHidden').value);
+    params.set('breakdown_group_by', document.getElementById('breakdownGroupBy').value);
+    params.set('breakdown_interval', document.getElementById('breakdownInterval').value);
+    params.set('breakdown_display', document.getElementById('breakdownDisplay').value);
+    params.set('combo_group_by', document.getElementById('comboGroupBy').value);
+    params.set('combo_bar_metric', document.getElementById('comboBarMetric').value);
+    params.set('combo_line_metric', document.getElementById('comboLineMetric').value);
+
+    setSelectValue(globalForm.querySelector('[name="store_no"]'), params.get('store_no'));
+    setSelectValue(globalForm.querySelector('[name="age_group"]'), params.get('age_group'));
+    return params;
 }
 
-const primeShowLoading = window.primeShowLoading;
-const primeHideLoading = window.primeHideLoading;
+function syncBreakdownHiddenFields() {
+    const form = document.getElementById('filterForm');
+    form.querySelector('[name="breakdown_group_by"]').value = document.getElementById('breakdownGroupBy').value;
+    form.querySelector('[name="breakdown_interval"]').value = document.getElementById('breakdownInterval').value;
+    form.querySelector('[name="breakdown_display"]').value = document.getElementById('breakdownDisplay').value;
+}
 
-function showLoading(on) {
-    pendingRequests = on ? pendingRequests + 1 : Math.max(0, pendingRequests - 1);
-    if (pendingRequests > 0 && typeof primeShowLoading === 'function') {
-        primeShowLoading();
-    } else if (pendingRequests === 0 && typeof primeHideLoading === 'function') {
-        primeHideLoading();
+async function refreshDashboard(source = 'global', chartOnly = false) {
+    syncBreakdownHiddenFields();
+    const params = dashboardParams(source);
+    const response = await fetch(`mobile-transaction-report.html?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
+    const data = await response.json();
+    ES_DATA = data.aggs || {};
+    BREAKDOWN_DATA = data.breakdown || { buckets: [] };
+    COMBO_ANALYSIS = data.comboAnalysis || { labels: [], barData: [], lineData: [], rawRows: [] };
+    MEMBER_ROWS = data.memberRows || [];
+    BREAKDOWN_GROUP_BY = data.params?.breakdownGroupBy || document.getElementById('breakdownGroupBy').value;
+    if (!chartOnly) {
+        updateKpis(data.metrics || {});
+        renderSalesTrend();
+        renderAgePie();
+        renderMemberTable();
     }
+    renderPerformanceBreakdown();
+    syncComboControlsFromData(data.params || {});
+    renderComboAnalysis();
+    renderComboAnalysisNote();
+    renderComboAnalysisTable();
+
+    const urlParams = new URLSearchParams(params);
+    urlParams.delete('ajax');
+    history.replaceState(null, '', `mobile-transaction-report.html?${urlParams.toString()}`);
 }
 
-function apiFetch(action, params) {
-    showLoading(true);
-    return fetch('api.php?action=' + action + '&' + params)
-        .then(r => r.json())
-        .finally(() => showLoading(false));
-}
-
-function updateBadges() {
-    const fd = document.querySelector('[name=date_from]').value;
-    const td = document.querySelector('[name=date_to]').value;
-    const outlet = document.getElementById('outletSelect').value;
-    document.getElementById('periodBadge').innerText = fd && td ? fd + ' to ' + td : '2026 YTD';
-
-    const outletBadge = document.getElementById('outletBadge');
-    if (outlet) {
-        outletBadge.innerText = 'Outlet: ' + outlet;
-        outletBadge.style.display = '';
-    } else {
-        outletBadge.style.display = 'none';
-    }
-
-}
-
-function loadOutlets() {
-    return fetch('api.php?action=gp-outlets')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('outletSelect');
-            const current = '';
-            (res.data || []).forEach(store => {
-                const opt = document.createElement('option');
-                opt.value = store.code;
-                opt.text = store.name;
-                if (store.code === current) opt.selected = true;
-                sel.appendChild(opt);
-            });
-        }).catch(console.error);
-}
-
-let _allCats = [];
-const categorySelectIds = ['categorySelect', 'drillCategorySelect'];
-function categoryCodes(cat) {
-    return Array.isArray(cat.codes) ? cat.codes : String(cat.code || '').split(',').filter(Boolean);
-}
-function categoryOptionMatches(cat, value) {
-    if (!value) return false;
-    return cat.code === value || categoryCodes(cat).includes(value);
-}
-function normaliseCategoryCodes(value) {
-    if (Array.isArray(value)) return value.map(String).filter(Boolean);
-    const raw = String(value || '');
-    const found = _allCats.find(cat => categoryOptionMatches(cat, raw));
-    if (found) return categoryCodes(found);
-    return raw.split(',').filter(Boolean);
-}
-function selectedCategoryCodes() {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, selectedCategory));
-    return found ? categoryCodes(found) : String(selectedCategory || '').split(',').filter(Boolean);
-}
-function rowMatchesSelectedCategory(value) {
-    if (!selectedCategory) return true;
-    const activeCodes = selectedCategoryCodes();
-    return normaliseCategoryCodes(value).some(code => activeCodes.includes(code));
-}
-function activeCatParams() {
-    const fd = new FormData(document.getElementById('filterForm'));
-    fd.delete('category'); fd.delete('item_no'); fd.delete('margin_group');
-    return new URLSearchParams(fd).toString();
-}
-function rebuildCategoryDropdown(activeCodes, currentVal) {
-    const primary = document.getElementById('categorySelect');
-    const cur = currentVal !== undefined ? currentVal : (selectedCategory || primary.value);
-    categorySelectIds.forEach(id => {
-        const sel = document.getElementById(id);
-        while (sel.options.length > 1) sel.remove(1);
-        _allCats.forEach(cat => {
-            if (!categoryCodes(cat).some(code => activeCodes.has(code))) return;
-            const opt = document.createElement('option');
-            opt.value = cat.code; opt.text = cat.name;
-            if (categoryOptionMatches(cat, cur)) opt.selected = true;
-            sel.appendChild(opt);
-        });
-        const selected = _allCats.find(cat => categoryOptionMatches(cat, cur));
-        const selectedValue = selected ? selected.code : (cur || '');
-        if (typeof $.fn.select2 !== 'undefined') {
-            $(sel).select2({ placeholder: 'All Categories', allowClear: true, width: '100%' });
-            $(sel).val(selectedValue).trigger('change.select2');
-        } else {
-            sel.value = selectedValue;
-        }
+function updateKpis(metrics) {
+    const values = {
+        totalRevenue: fmtCurrency(metrics.totalRevenue || 0),
+        totalTransactions: fmtNum(metrics.totalTransactions || 0),
+        totalQuantity: fmtNum(metrics.totalQuantity || 0),
+        uniqueMembers: fmtNum(metrics.uniqueMembers || 0),
+        aov: fmtCurrency(metrics.aov || 0),
+        avgItemsPerTransaction: fmtNum(metrics.avgItemsPerTransaction || 0)
+    };
+    Object.entries(values).forEach(([key, value]) => {
+        const node = document.querySelector(`[data-kpi="${key}"]`);
+        if (node) node.textContent = value;
     });
 }
-function loadCategories() {
-    const current = '';
-    return Promise.all([
-        fetch('api.php?action=product-groups').then(r => r.json()),
-        fetch('api.php?action=active-categories&' + activeCatParams()).then(r => r.json()),
-    ]).then(([pgRes, acRes]) => {
-        _allCats = pgRes.data || [];
-        rebuildCategoryDropdown(new Set(acRes.data || []), current);
-        if (current) {
-            const found = _allCats.find(c => categoryOptionMatches(c, current));
-            if (found) selectedCategoryName = found.name;
-            if (found) selectedCategory = found.code;
-        }
-        updateBadges();
-    }).catch(console.error);
+
+function metricValue(bucket, metric) {
+    if (metric === 'quantity') return bucket.quantity?.value || 0;
+    if (metric === 'transactions') return bucket.transactions?.value || 0;
+    return moneyAmount(bucket.revenue?.value || 0);
 }
-function refreshActiveCats() {
-    fetch('api.php?action=active-categories&' + activeCatParams())
+
+function moneyAmount(value) {
+    return Number(value || 0) / 100;
+}
+
+// ─── Category multi-select ────────────────────────────────────────────────────
+let _allCats = [];
+
+function rebuildCategoryDropdown(currentVal) {
+    const sel    = document.getElementById('categorySelect');
+    const hidden = document.getElementById('categoryHidden');
+    const raw    = currentVal !== undefined ? currentVal : (hidden ? hidden.value : '');
+    const curArr = raw ? raw.split(',').map(v => v.trim()).filter(Boolean) : [];
+
+    if (typeof $.fn.select2 !== 'undefined' && $(sel).data('select2')) $(sel).select2('destroy');
+    while (sel.options.length > 0) sel.remove(0);
+
+    _allCats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id; opt.text = cat.id + ' - ' + cat.text;
+        sel.appendChild(opt);
+    });
+
+    if (typeof $.fn.select2 !== 'undefined') {
+        $(sel).select2({
+            placeholder: 'All Categories',
+            allowClear: true,
+            width: '100%',
+            templateResult: function (item) {
+                if (!item.id) return item.text;
+                const level = Math.max(0, Math.floor((item.id.length - 2) / 2));
+                if (level === 0) {
+                    return $('<span>').css({
+                        display: 'block', fontWeight: '700',
+                        background: '#e8edf3', color: '#1a3a5c',
+                        margin: '-4px -6px', padding: '4px 10px',
+                    }).text(item.text);
+                }
+                return $('<span>').css('padding-left', (level * 14) + 'px').text(item.text);
+            },
+        });
+        $(sel).val(curArr).trigger('change');
+        $(sel).off('change.cats').on('change.cats', function () {
+            if (hidden) hidden.value = ($(this).val() || []).join(',');
+        });
+    }
+}
+
+function loadCategories() {
+    const current = PM.mr.params.category;
+    fetch('api.php?action=product-groups')
         .then(r => r.json())
-        .then(res => rebuildCategoryDropdown(new Set(res.data || [])))
+        .then(res => {
+            _allCats = res.data || [];
+            rebuildCategoryDropdown(current);
+        })
         .catch(console.error);
 }
 
-function chartRows(rows, sortKey, direction, limit) {
-    return [...rows]
-        .sort((a, b) => direction === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey])
-        .slice(0, limit);
+function initSearchDropdowns() {
+    if (!window.jQuery || !$.fn.select2) return;
+    $('.select2-search').each(function() {
+        const $select = $(this);
+        if ($select.data('select2')) return;
+        $select.select2({
+            width: '100%',
+            placeholder: $select.data('placeholder') || 'Select',
+            allowClear: true
+        });
+    });
 }
 
-function renderContributionChart(rows) {
-    const dataRows = chartRows(rows, 'gp', 'desc', 15).reverse();
-    const ctx = document.getElementById('gpContributionChart').getContext('2d');
-    if (gpContributionChart) gpContributionChart.destroy();
-    gpContributionChart = new Chart(ctx, {
-        type: 'bar',
+function setSelectValue(selector, value) {
+    const element = typeof selector === 'string' ? document.querySelector(selector) : selector;
+    if (!element) return;
+    element.value = value || '';
+    if (window.jQuery && $.fn.select2 && $(element).data('select2')) {
+        $(element).trigger('change.select2');
+    }
+}
+
+function renderSalesTrend() {
+    const period = document.getElementById('trendPeriod').value;
+    const metric = document.getElementById('trendMetric').value;
+    const buckets = ES_DATA[`sales_${period}`]?.buckets || [];
+    const labels = buckets.map(b => b.key_as_string);
+    const values = buckets.map(b => metricValue(b, metric));
+    const label = document.getElementById('trendMetric').selectedOptions[0].text;
+    if (charts.salesTrend) charts.salesTrend.destroy();
+    charts.salesTrend = new Chart(document.getElementById('salesTrendChart'), {
+        type: 'line',
+        data: { labels, datasets: [{ label, data: values, borderColor: '#0c6326', backgroundColor: 'rgba(12,99,38,.15)', borderWidth: 3, pointRadius: 3, pointHoverRadius: 6, pointHitRadius: 14, tension: .3, fill: true }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'nearest', axis: 'x', intersect: false },
+            plugins: {
+                tooltip: {
+                    mode: 'nearest',
+                    intersect: false,
+                    callbacks: {
+                        title: items => items[0]?.label || '',
+                        label: ctx => `${label}: ${metric === 'revenue' ? fmtCurrency(ctx.parsed.y) : fmtNum(ctx.parsed.y)}`
+                    }
+                }
+            },
+            scales: { y: { beginAtZero: true, ticks: { callback: v => metric === 'revenue' ? fmtCurrency(v) : fmtNum(v) } } }
+        }
+    });
+}
+
+function bucketRows(name) {
+    return ES_DATA[name]?.buckets || [];
+}
+
+function renderAgePie() {
+    const rows = bucketRows('age_groups').filter(row => !['NA', 'Unknown'].includes(String(row.key)));
+    if (charts.agePie) charts.agePie.destroy();
+    charts.agePie = new Chart(document.getElementById('agePieChart'), {
+        type: 'pie',
+        data: { labels: rows.map(r => r.key), datasets: [{ data: rows.map(r => r.members?.value || 0), backgroundColor: ['#0c6326','#2563eb','#b45309','#7c3aed','#be123c','#0891b2','#4d7c0f'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function renderPerformanceBreakdown() {
+    const rows = BREAKDOWN_DATA.buckets || [];
+    const labels = rows.map(row => row.key_as_string || row.key || 'Unknown');
+    const revenue = rows.map(row => moneyAmount(row.revenue?.value || 0));
+    const transactions = rows.map(row => Number(row.transactions?.value || 0));
+    const aov = rows.map((row, idx) => transactions[idx] > 0 ? revenue[idx] / transactions[idx] : 0);
+
+    if (charts.performanceBreakdown) charts.performanceBreakdown.destroy();
+    charts.performanceBreakdown = new Chart(document.getElementById('performanceBreakdownChart'), {
         data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP',
-                data: dataRows.map(r => r.gp),
-                backgroundColor: GREEN
-            }]
+            labels,
+            datasets: [
+                { type: 'bar', label: 'Revenue ($)', data: revenue, yAxisID: 'yMoney', backgroundColor: 'rgba(12,99,38,.72)', borderColor: '#0c6326', borderWidth: 1, borderRadius: 5 },
+                { type: 'line', label: 'Transactions', data: transactions, yAxisID: 'yTransactions', borderColor: '#2563eb', backgroundColor: '#2563eb', borderWidth: 3, pointRadius: 3, tension: .3 },
+                { type: 'line', label: 'AOV ($)', data: aov, yAxisID: 'yMoney', borderColor: '#b45309', backgroundColor: '#b45309', borderWidth: 3, pointRadius: 3, tension: .3 }
+            ]
         },
         options: {
-            indexAxis: 'y',
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtCurrency(context.parsed.x) } }
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const row = rows[ctx.dataIndex] || {};
+                            const rowRevenue = moneyAmount(row.revenue?.value || 0);
+                            const rowTransactions = Number(row.transactions?.value || 0);
+                            const rowAov = rowTransactions > 0 ? rowRevenue / rowTransactions : 0;
+                            if (ctx.dataset.label === 'Revenue ($)') return `Revenue: ${fmtCurrency(rowRevenue)}`;
+                            if (ctx.dataset.label === 'Transactions') return `Transactions: ${fmtNum(rowTransactions)}`;
+                            return `AOV: ${fmtCurrency(rowAov)}`;
+                        }
+                    }
+                }
             },
             scales: {
-                x: { ticks: { callback: v => '$' + fmtNum(v) } }
+                yMoney: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Revenue ($) / AOV ($)' }, ticks: { callback: v => fmtCurrency(v) } },
+                yTransactions: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: 'Transactions' }, ticks: { callback: v => fmtNum(v) } },
+                x: { ticks: { maxRotation: BREAKDOWN_GROUP_BY === 'date' ? 45 : 60, minRotation: 0 } }
             }
         }
     });
 }
 
-function renderGpPctChart(rows) {
-    const dataRows = chartRows(rows, 'gp_pct', 'asc', 15);
-    const ctx = document.getElementById('gpPctChart').getContext('2d');
-    if (gpPctChart) gpPctChart.destroy();
-    gpPctChart = new Chart(ctx, {
-        type: 'bar',
+function metricFormatter(metric, value) {
+    return ['revenue', 'aov'].includes(metric) ? fmtCurrency(value) : fmtNum(value);
+}
+
+function ensureDistinctComboMetrics(changedControl = 'bar') {
+    const bar = document.getElementById('comboBarMetric');
+    const line = document.getElementById('comboLineMetric');
+    if (!bar || !line || bar.value !== line.value) return;
+    if (changedControl === 'line') {
+        bar.value = line.value === 'revenue' ? 'transaction_count' : 'revenue';
+    } else {
+        line.value = bar.value === 'transaction_count' ? 'revenue' : 'transaction_count';
+    }
+}
+
+function syncComboControlsFromData(params) {
+    if (params.comboGroupBy) document.getElementById('comboGroupBy').value = params.comboGroupBy;
+    if (params.comboBarMetric) document.getElementById('comboBarMetric').value = params.comboBarMetric;
+    if (params.comboLineMetric) document.getElementById('comboLineMetric').value = params.comboLineMetric;
+    ensureDistinctComboMetrics();
+}
+
+function renderComboAnalysis() {
+    const rows = COMBO_ANALYSIS.rawRows || [];
+    const barMetric = COMBO_ANALYSIS.barMetric || 'revenue';
+    const lineMetric = COMBO_ANALYSIS.lineMetric || 'transaction_count';
+
+    if (charts.comboAnalysis) charts.comboAnalysis.destroy();
+    charts.comboAnalysis = new Chart(document.getElementById('comboAnalysisChart'), {
         data: {
-            labels: dataRows.map(r => r.category),
-            datasets: [{
-                label: 'GP%',
-                data: dataRows.map(r => r.gp_pct),
-                backgroundColor: dataRows.map(r => Number(r.gp_pct) < 10 ? RED : TEAL)
-            }]
+            labels: COMBO_ANALYSIS.labels || [],
+            datasets: [
+                {
+                    type: 'bar',
+                    label: COMBO_ANALYSIS.barLabel || 'Revenue ($)',
+                    data: COMBO_ANALYSIS.barData || [],
+                    yAxisID: 'yBar',
+                    order: 2,
+                    backgroundColor: 'rgba(107,125,106,.68)',
+                    borderColor: '#6b7d6a',
+                    borderWidth: 1,
+                    borderRadius: 5
+                },
+                {
+                    type: 'line',
+                    label: COMBO_ANALYSIS.lineLabel || 'Transaction Count',
+                    data: COMBO_ANALYSIS.lineData || [],
+                    yAxisID: 'yLine',
+                    order: 1,
+                    showLine: true,
+                    spanGaps: true,
+                    fill: false,
+                    borderColor: '#4b5563',
+                    backgroundColor: '#4b5563',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#4b5563',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    tension: .3
+                }
+            ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: context => fmtPct(context.parsed.y) } }
+                tooltip: {
+                    callbacks: {
+                        title: items => {
+                            const row = rows[items[0]?.dataIndex] || {};
+                            return row.group || items[0]?.label || '';
+                        },
+                        label: ctx => {
+                            const metric = ctx.dataset.yAxisID === 'yBar' ? barMetric : lineMetric;
+                            return `${ctx.dataset.label}: ${metricFormatter(metric, ctx.parsed.y)}`;
+                        },
+                        afterBody: items => {
+                            const row = rows[items[0]?.dataIndex] || {};
+                            return [
+                                `Revenue: ${fmtCurrency(row.revenue || 0)}`,
+                                `Transaction Count: ${fmtNum(row.transaction_count || 0)}`,
+                                `Quantity Sold: ${fmtNum(row.quantity_sold || 0)}`,
+                                `Total Stamps: ${fmtNum(row.total_stamps || 0)}`,
+                                `AOV: ${fmtCurrency(row.aov || 0)}`
+                            ];
+                        }
+                    }
+                }
             },
             scales: {
-                y: { ticks: { callback: v => v + '%' } }
+                x: { title: { display: true, text: document.getElementById('comboGroupBy').selectedOptions[0].text }, ticks: { maxRotation: 60, minRotation: 0, autoSkip: true, maxTicksLimit: 20 } },
+                yBar: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: COMBO_ANALYSIS.barLabel || 'Bar Metric' }, ticks: { callback: v => metricFormatter(barMetric, v) } },
+                yLine: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: COMBO_ANALYSIS.lineLabel || 'Line Metric' }, ticks: { callback: v => metricFormatter(lineMetric, v) } }
             }
         }
     });
 }
 
-function renderCategoryTable(rows) {
-    const data = rows.map(r => [
-        r.category,
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0),
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name' },
-            { title: 'Total Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Total Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Gross Profit', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? `<span class="badge bg-${d < 10 ? 'danger' : 'success'}">${fmtPct(d)}</span>` : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[3, 'desc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#categoryPerformanceTable')) {
-        $('#categoryPerformanceTable').DataTable().clear().destroy();
-        $('#categoryPerformanceTable').empty();
-    }
-    $('#categoryPerformanceTable').DataTable(options);
+function renderComboAnalysisTable() {
+    const rows = COMBO_ANALYSIS.rawRows || [];
+    const tbody = document.querySelector('#comboAnalysisTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = rows.map(row => `
+        <tr>
+            <td>${escapeHtml(row.group)}</td>
+            <td class="text-end">${fmtCurrency(row.revenue || 0)}</td>
+            <td class="text-end">${fmtNum(row.transaction_count || 0)}</td>
+            <td class="text-end">${fmtNum(row.quantity_sold || 0)}</td>
+            <td class="text-end">${fmtNum(row.total_stamps || 0)}</td>
+            <td class="text-end">${fmtCurrency(row.aov || 0)}</td>
+        </tr>
+    `).join('');
 }
 
-function renderMarginTable(rows) {
-    const sortColumnMap = { loss: 1, low: 2, medium: 3, high: 4 };
-    const sortMode = document.getElementById('marginSortSelect').value || 'high';
-    const data = rows.map(r => [
-        r.category,
-        { count: Number(r.loss_count || 0), pct: Number(r.loss_pct || 0) },
-        { count: Number(r.low_count || 0), pct: Number(r.low_pct || 0) },
-        { count: Number(r.medium_count || 0), pct: Number(r.medium_pct || 0) },
-        { count: Number(r.high_count || 0), pct: Number(r.high_pct || 0) },
-        r.category_code,
-        (r.category_codes || [r.category_code]).join(',')
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Category Name', className: 'text-start' },
-            { title: 'Loss (<0%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e74c3c') : d.pct },
-            { title: 'Low Margin (0-10%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#e67e22') : d.pct },
-            { title: 'Medium Margin (10-20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#f1c40f') : d.pct },
-            { title: 'High Margin (>20%)', className: 'text-end', render: (d, t) => t === 'display' ? marginBandCell(d, '#2ecc71') : d.pct },
-            { title: 'category_code', visible: false },
-            { title: 'category_codes', visible: false }
-        ],
-        pageLength: 25,
-        order: [[sortColumnMap[sortMode] || 1, 'desc']],
-        autoWidth: false,
-        scrollX: false
-    };
-    if ($.fn.DataTable.isDataTable('#marginBreakdownTable')) {
-        $('#marginBreakdownTable').DataTable().clear().destroy();
-        $('#marginBreakdownTable').empty();
-    }
-    $('#marginBreakdownTable').DataTable(options);
+function renderComboAnalysisNote() {
+    const node = document.getElementById('comboAnalysisNote');
+    if (!node) return;
+    node.textContent = COMBO_ANALYSIS.note || '';
 }
 
-function visibleMarginRows() {
-    return selectedCategory
-        ? marginRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : marginRows;
+function updateBreakdownControls() {
+    const groupBy = document.getElementById('breakdownGroupBy')?.value || 'date';
+    const intervalControl = document.getElementById('intervalControl');
+    const displayControl = document.getElementById('displayControl');
+    if (intervalControl) intervalControl.style.display = groupBy === 'date' ? '' : 'none';
+    if (displayControl) displayControl.style.display = groupBy === 'outlet' ? '' : 'none';
+    syncBreakdownHiddenFields();
 }
 
-function visibleCategoryRows() {
-    return selectedCategory
-        ? categoryRows.filter(row => rowMatchesSelectedCategory(row.category_codes || row.category_code))
-        : categoryRows;
+function renderMemberTable() {
+    const sort = document.getElementById('memberSort').value;
+    const rows = (MEMBER_ROWS || []).map(row => ({
+        member: row.member_id,
+        revenue: Number(row.revenue || 0),
+        transactions: Number(row.transactions || 0),
+        quantity: Number(row.quantity || 0),
+        stamps: Number(row.stamps || 0),
+        stampTransactions: Number(row.stamp_transactions || 0),
+        ageGroup: row.age_group || 'Unknown',
+        gender: row.gender || 'Unknown',
+        aov: Number(row.aov || 0)
+    })).sort((a,b) => b[sort] - a[sort]).slice(0, 25);
+    document.querySelector('#memberTable tbody').innerHTML = rows.map(r => `
+        <tr><td>${escapeHtml(r.member)}</td><td class="text-end">${fmtCurrency(r.revenue)}</td><td class="text-end">${fmtNum(r.transactions)}</td><td class="text-end">${fmtNum(r.quantity)}</td><td class="text-end">${fmtNum(r.stamps)}</td><td class="text-end">${fmtCurrency(r.aov)}</td></tr>
+    `).join('');
 }
 
-function setSelectedCategory(code, name, syncDropdown) {
-    const found = _allCats.find(cat => categoryOptionMatches(cat, code || ''));
-    selectedCategory = found ? found.code : (code || '');
-    selectedCategoryName = found ? found.name : (name || '');
-    if (syncDropdown) {
-        categorySelectIds.forEach(id => {
-            const sel = document.getElementById(id);
-            const dropdownValue = found ? found.code : selectedCategory;
-            if (typeof $.fn.select2 !== 'undefined') $('#' + id).val(dropdownValue).trigger('change.select2');
-            else sel.value = dropdownValue;
-        });
-    }
-    if (marginRows.length) {
-        renderMarginTable(visibleMarginRows());
-    }
-    if (categoryRows.length) {
-        renderCategoryTable(visibleCategoryRows());
-    }
-    highlightSelectedCategory();
-    updateBadges();
-    updateItemReportLink();
-    if (selectedCategory && !selectedMargin) {
-        setMarginGroup('high');
-        return;
-    }
-    maybeLoadDrilldown();
+function escapeHtml(value) {
+    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function highlightSelectedCategory() {
-    ['#categoryPerformanceTable', '#marginBreakdownTable'].forEach(selector => {
-        if (!$.fn.DataTable.isDataTable(selector)) return;
-        const table = $(selector).DataTable();
-        table.rows().every(function() {
-            const data = this.data();
-            $(this.node()).toggleClass('selected-category', rowMatchesSelectedCategory(data[5]) || rowMatchesSelectedCategory(data[6]) || rowMatchesSelectedCategory(data[7]));
-        });
-    });
-}
-
-function setMarginGroup(group) {
-    selectedMargin = group || '';
-    document.getElementById('marginGroupInput').value = selectedMargin;
-    document.querySelectorAll('.margin-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.margin === selectedMargin);
-    });
-    updateItemReportLink();
-    maybeLoadDrilldown();
-}
-
-function updateItemReportLink() {
-    const link = document.getElementById('fullItemReportLink');
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || '');
-    params.set('margin_group', selectedMargin || '');
-    link.href = 'gp-item-report.html?' + params.toString();
-    link.classList.toggle('disabled', !selectedCategory || !selectedMargin);
-}
-
-function renderDrilldown(rows) {
-    if (!rows.length) {
-        resetDrilldownMessage('No items found for the selected category and margin group');
-        return;
-    }
-    document.getElementById('drillEmpty').classList.add('d-none');
-    document.getElementById('drillTableWrap').classList.remove('d-none');
-    const data = rows.map(r => [
-        r.item_name,
-        r.item_no,
-        r.uom || '',
-        Number(r.sales || 0),
-        Number(r.cost || 0),
-        Number(r.gp || 0),
-        Number(r.gp_pct || 0),
-        Number(r.quantity || 0)
-    ]);
-    const options = {
-        data,
-        columns: [
-            { title: 'Item Name' },
-            { title: 'Item Code' },
-            { title: 'UOM' },
-            { title: 'Sales', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'Cost', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP', render: (d, t) => t === 'display' ? fmtCurrency(d) : d },
-            { title: 'GP%', render: (d, t) => t === 'display' ? fmtPct(d) : d },
-            { title: 'Quantity Sold', render: (d, t) => t === 'display' ? fmtNum(d) : d }
-        ],
-        pageLength: 25,
-        order: [[6, 'asc']],
-        scrollX: true
-    };
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    $('#drilldownTable').DataTable(options);
-}
-
-function resetDrilldownMessage(message) {
-    if ($.fn.DataTable.isDataTable('#drilldownTable')) {
-        $('#drilldownTable').DataTable().clear().destroy();
-        $('#drilldownTable').empty();
-    }
-    document.getElementById('drillTableWrap').classList.add('d-none');
-    const empty = document.getElementById('drillEmpty');
-    empty.innerText = message;
-    empty.classList.remove('d-none');
-}
-
-function maybeLoadDrilldown() {
-    const categoryCode = selectedCategory;
-    if (!categoryCode || !selectedMargin) {
-        resetDrilldownMessage('Please select a category and margin group');
-        document.getElementById('drilldownSubtitle').innerText = 'Please select a category and margin group';
-        return;
-    }
-    document.getElementById('drilldownSubtitle').innerText =
-        (selectedCategoryName || $('#categorySelect option:selected').text() || categoryCode) + ' - ' + marginLabel(selectedMargin);
-
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', categoryCode);
-    params.set('margin_group', selectedMargin);
-    apiFetch('gp-category-drilldown', params.toString())
-        .then(res => renderDrilldown(res.data || []))
-        .catch(err => {
-            console.error('gp-category-drilldown error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        });
-}
-
-function fetchDashboard() {
-    if (typeof window.primeBeginLoading === 'function') {
-        window.primeBeginLoading();
-    }
-
-    pendingRequests = 0;
-    document.getElementById('fetchError').classList.add('d-none');
-    selectedCategory = document.getElementById('categorySelect').value;
-    selectedCategoryName = selectedCategory ? $('#categorySelect option:selected').text() : '';
-    updateBadges();
-    updateItemReportLink();
-    refreshActiveCats();
-
-    return apiFetch('gp-category-dashboard', getParams())
-        .then(res => {
-            categoryRows = res.data.categories || [];
-            marginRows = res.data.margin_breakdown || [];
-            renderContributionChart(categoryRows);
-            renderGpPctChart(categoryRows);
-            renderMarginTable(visibleMarginRows());
-            renderCategoryTable(visibleCategoryRows());
-            highlightSelectedCategory();
-            maybeLoadDrilldown();
-        })
-        .catch(err => {
-            console.error('gp-category-dashboard error:', err);
-            document.getElementById('fetchError').classList.remove('d-none');
-        })
-        .finally(() => {
-            if (typeof window.primeEndLoading === 'function') {
-                window.primeEndLoading();
-            }
-        });
-}
-
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchDashboard();
+document.getElementById('trendPeriod').addEventListener('change', renderSalesTrend);
+document.getElementById('trendMetric').addEventListener('change', renderSalesTrend);
+document.getElementById('breakdownGroupBy').addEventListener('change', updateBreakdownControls);
+document.getElementById('filterForm').addEventListener('submit', event => {
+    event.preventDefault();
+    refreshDashboard('global');
 });
-
-document.getElementById('resetBtn').addEventListener('click', function() {
-    const today = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    document.querySelector('[name=date_from]').value = '2026-01-01';
-    document.querySelector('[name=date_to]').value = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
-    document.getElementById('outletSelect').value = '';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-    fetchDashboard();
+document.getElementById('breakdownForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const globalForm = document.getElementById('filterForm');
+    const sameDateRange = globalForm.querySelector('[name="date_from"]').value === document.getElementById('breakdownDateFrom').value
+        && globalForm.querySelector('[name="date_to"]').value === document.getElementById('breakdownDateTo').value;
+    refreshDashboard('breakdown', sameDateRange);
 });
-
-document.getElementById('exportBtn').addEventListener('click', function() {
-    const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
-    params.set('category', selectedCategory || document.getElementById('categorySelect').value || '');
-    params.set('margin_group', selectedMargin || '');
-    window.location.href = '#export-gp-category-report.php?' + params.toString();
+document.getElementById('breakdownDateFrom').addEventListener('change', () => refreshDashboard('breakdown'));
+document.getElementById('breakdownDateTo').addEventListener('change', () => refreshDashboard('breakdown'));
+document.getElementById('comboForm').addEventListener('submit', event => {
+    event.preventDefault();
+    ensureDistinctComboMetrics();
+    refreshDashboard('combo');
 });
+document.getElementById('comboDateFrom').addEventListener('change', () => refreshDashboard('combo'));
+document.getElementById('comboDateTo').addEventListener('change', () => refreshDashboard('combo'));
+document.getElementById('comboBarMetric').addEventListener('change', () => ensureDistinctComboMetrics('bar'));
+document.getElementById('comboLineMetric').addEventListener('change', () => ensureDistinctComboMetrics('line'));
+document.getElementById('memberSort').addEventListener('change', renderMemberTable);
 
-document.getElementById('retryBtn').addEventListener('click', fetchDashboard);
-
-document.querySelectorAll('.margin-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        setMarginGroup(this.dataset.margin === selectedMargin ? '' : this.dataset.margin);
-    });
-});
-
-$('#categorySelect, #drillCategorySelect').on('change', function() {
-    setSelectedCategory(this.value, $('#' + this.id + ' option:selected').text() || '', true);
-});
-
-document.getElementById('marginSortSelect').addEventListener('change', function() {
-    renderMarginTable(visibleMarginRows());
-    highlightSelectedCategory();
-});
-
-document.getElementById('resetMarginBreakdownBtn').addEventListener('click', function() {
-    document.getElementById('marginSortSelect').value = 'high';
-    setMarginGroup('');
-    setSelectedCategory('', '', true);
-});
-
-$('#categoryPerformanceTable').on('click', 'tbody tr', function() {
-    const table = $('#categoryPerformanceTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[6], data[0], true);
-});
-
-$('#marginBreakdownTable').on('click', 'tbody tr', function() {
-    const table = $('#marginBreakdownTable').DataTable();
-    const data = table.row(this).data();
-    if (data) setSelectedCategory(data[5], data[0], true);
-});
-
-setMarginGroup(selectedMargin);
-Promise.all([loadOutlets(), loadCategories()]).finally(fetchDashboard);
+initSearchDropdowns();
+loadCategories();
+renderSalesTrend();
+renderAgePie();
+updateBreakdownControls();
+renderPerformanceBreakdown();
+renderComboAnalysis();
+renderComboAnalysisNote();
+renderComboAnalysisTable();
+renderMemberTable();
 </script>
-
 </html>

@@ -421,6 +421,72 @@ var DATA = (function () {
     });
   }
 
+  // Road geometry. roads.js holds the OSRM line for every pair of places, the
+  // same geometry the driver app stores on a route at Start. Without it a leg
+  // falls back to a straight line, which is what the portal draws too.
+  var legCache = {};
+
+  function decode(str) {
+    var out = [], i = 0, lat = 0, lng = 0;
+    while (i < str.length) {
+      for (var k = 0; k < 2; k++) {
+        var b, shift = 0, r = 0;
+        do { b = str.charCodeAt(i++) - 63; r |= (b & 31) << shift; shift += 5; } while (b >= 32);
+        var d = (r & 1) ? ~(r >> 1) : (r >> 1);
+        if (k === 0) lat += d; else lng += d;
+      }
+      out.push([lat / 1e5, lng / 1e5]);
+    }
+    return out;
+  }
+
+  function road(from, to) {
+    var key = from + '|' + to;
+    if (legCache[key]) return legCache[key];
+    var a = place(from), b = place(to);
+    var enc = window.ROADS && window.ROADS.legs[key];
+    legCache[key] = enc ? [[a.lat, a.lng]].concat(decode(enc), [[b.lat, b.lng]]) : [[a.lat, a.lng], [b.lat, b.lng]];
+    return legCache[key];
+  }
+
+  // A run of places joined by road. starts[k] is the index in line where leg
+  // k begins, so starts[k + 1] is where it ends.
+  function roadPath(names) {
+    var line = [], starts = [];
+    for (var i = 0; i < names.length - 1; i++) {
+      var leg = road(names[i], names[i + 1]);
+      starts.push(Math.max(0, line.length - 1));
+      line = line.concat(line.length ? leg.slice(1) : leg);
+    }
+    starts.push(Math.max(0, line.length - 1));
+    return { line: line, starts: starts };
+  }
+
+  // Index of the vertex in line[from..to] closest to pt.
+  function nearestOn(line, pt, from, to) {
+    var best = Infinity, bi = from || 0;
+    for (var i = from || 0; i <= (to == null ? line.length - 1 : to); i++) {
+      var dy = line[i][0] - pt[0], dx = (line[i][1] - pt[1]) * 0.9998;
+      var d = dx * dx + dy * dy;
+      if (d < best) { best = d; bi = i; }
+    }
+    return bi;
+  }
+
+  // The leg of a finished trip where the driver went off the plan.
+  function detour(tripId) {
+    var d = window.ROADS && window.ROADS.detours[tripId];
+    return d ? { leg: d.leg, line: decode(d.poly) } : null;
+  }
+
+  // Put each live truck on the road of the leg it is driving.
+  live.forEach(function (r) {
+    var path = roadPath([r.depot].concat(r.stops));
+    var k = Math.min(r.visited, path.starts.length - 1);
+    r.atIndex = nearestOn(path.line, r.at, path.starts[k], path.starts[Math.min(k + 1, path.starts.length - 1)]);
+    r.at = path.line[r.atIndex].slice();
+  });
+
   var statusLabel = { 1: 'Idle', 2: 'In Transit', 3: 'Unavailable' };
   var statusClass = { 1: 'idle', 2: 'in_transit', 3: 'unavailable' };
 
@@ -447,6 +513,7 @@ var DATA = (function () {
     transferOrders: transferOrders, committedOrders: committedOrders, lockedOrders: lockedOrders,
     polOrders: polOrders, polBatches: polBatches,
     place: place, vehicle: vehicle, coords: coords, routeLine: routeLine,
+    road: road, roadPath: roadPath, nearestOn: nearestOn, detour: detour,
     statusLabel: statusLabel, statusClass: statusClass, capacity: capacity, relTime: relTime
   };
 }());

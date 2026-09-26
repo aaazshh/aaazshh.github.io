@@ -76,6 +76,7 @@
 
   </div>
 
+  <script src="roads.js"></script>
   <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
@@ -208,15 +209,20 @@
       });
     }
 
-    // The plan, split three ways: already driven, the leg being driven now, and
-    // the rest of the run. Only the live leg is drawn loud.
+    // The plan on the road, split three ways: already driven, the leg being
+    // driven now, and the rest of the run. Only the live leg is drawn loud.
+    routes.forEach(function (r) { r.path = DATA.roadPath([r.depot].concat(r.stops)); });
+
+    function legEnd(r) {
+      var s = r.path.starts;
+      return s[Math.min(r.visited + 1, s.length - 1)];
+    }
+
     function geometry(r, color) {
-      var line = DATA.routeLine(r);
-      var at = Math.min(r.visited, line.length - 1);
-      var driven = line.slice(0, at + 1).concat([r.at]);
-      var ahead = [r.at].concat(line.slice(at + 1));
-      var leg = ahead.slice(0, 2);
-      var later = ahead.slice(1);
+      var line = r.path.line, idx = r.atIndex, end = legEnd(r);
+      var driven = line.slice(0, idx + 1);
+      var leg = r.nextStop ? line.slice(idx, end + 1) : [];
+      var later = line.slice(end);
       var out = [];
 
       if (driven.length > 1) {
@@ -234,21 +240,13 @@
       return out;
     }
 
-    // The GPS breadcrumb behind the plan. Faked here by wobbling the planned line,
-    // which is what a real trail looks like next to it.
+    // The GPS breadcrumb behind the truck: pings along the road it drove, each
+    // off by the few metres a phone's fix wanders.
     function trail(r, i) {
-      var line = DATA.routeLine(r).slice(0, Math.max(2, r.visited + 1));
-      var pts = [];
-      line.forEach(function (p, n) {
-        pts.push(p);
-        if (n === line.length - 1) return;
-        var q = line[n + 1];
-        for (var t = 0.25; t < 1; t += 0.25) {
-          pts.push([
-            p[0] + (q[0] - p[0]) * t + (Math.random() - 0.5) * 0.004,
-            p[1] + (q[1] - p[1]) * t + (Math.random() - 0.5) * 0.004
-          ]);
-        }
+      var seed = r.id;
+      function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; }
+      var pts = r.path.line.slice(0, r.atIndex + 1).map(function (p, n, all) {
+        return n === 0 || n === all.length - 1 ? p : [p[0] + rnd() * 0.00012, p[1] + rnd() * 0.00012];
       });
       return L.polyline(pts, {
         color: routeColorDark(i), weight: 2.5, opacity: 0.85, dashArray: '4,6', lineCap: 'round'
@@ -460,14 +458,21 @@
     stamp();
 
     // The real page gets these positions from the driver app's GPS pings. Here
-    // the moving trucks drift towards the stop they are heading for.
+    // each moving truck carries on along its road towards the stop it is
+    // heading for, and waits there.
+    function metres(a, b) {
+      var dy = (b[0] - a[0]) * 111320, dx = (b[1] - a[1]) * 111320 * Math.cos(a[0] * Math.PI / 180);
+      return Math.sqrt(dx * dx + dy * dy);
+    }
     setInterval(function () {
       routes.forEach(function (r) {
         if (!r.speed || !r.nextStop) return;
-        r.at = [
-          r.at[0] + (r.nextStop.lat - r.at[0]) * 0.04 + (Math.random() - 0.5) * 0.0008,
-          r.at[1] + (r.nextStop.lng - r.at[1]) * 0.04 + (Math.random() - 0.5) * 0.0008
-        ];
+        var line = r.path.line, end = legEnd(r) - 1, go = r.speed / 3.6 * 5 * 3;
+        while (go > 0 && r.atIndex < end) {
+          go -= metres(line[r.atIndex], line[r.atIndex + 1]);
+          r.atIndex++;
+        }
+        r.at = line[r.atIndex].slice();
       });
       renderMap();
       stamp();

@@ -436,14 +436,6 @@ var Art = (function () {
       ctx.fillRect(0, 0, f.w, f.h);
       var cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
       if (swim > 0) {
-        for (var i = 0; i < 3; i++) {
-          var rt = Math.min(1, Math.max(0, (swim - i * 0.16) / (1 - i * 0.16)));
-          if (rt <= 0) continue;
-          var rad = size * (0.18 + 0.75 * rt);
-          ctx.strokeStyle = 'rgba(255,255,255,' + (1 - rt) * 0.55 + ')';
-          ctx.lineWidth = 2.6 * (1 - rt) + 0.6;
-          ctx.beginPath(); ctx.ellipse(cx, cy, rad, rad * 1.15 / 2, 0, 0, Math.PI * 2); ctx.stroke();
-        }
         for (var b = 0; b < 6; b++) {
           var ph = b / 6, bt = Math.min(1, Math.max(0, (swim - ph * 0.35) / (1 - ph * 0.35)));
           if (bt <= 0) continue;

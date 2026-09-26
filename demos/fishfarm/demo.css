@@ -39,3 +39,11 @@
 }
 .ff-thumb-empty i { font-size: 26px; opacity: 0.6; }
 html[data-theme="dark"] .ff-thumb-empty { background: rgba(255, 255, 255, 0.04); }
+
+/* The portal only docks its sidenav from 1200px (Argon's xl) and the header
+   has no toggle below that, so in a desktop window the menu would vanish.
+   Keep it docked down to tablet width. */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .g-sidenav-show:not(.rtl) .sidenav { transform: translateX(0); }
+  .g-sidenav-show .sidenav.fixed-start + .main-content { margin-left: 17.125rem !important; }
+}

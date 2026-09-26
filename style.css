@@ -47,6 +47,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .skip-link:focus { transform: none; }
 
+/* The custom pointer, drawn by cursor.js. The real one is hidden only once
+   the script has taken over, and only for mice. */
+.has-book-cursor, .has-book-cursor * { cursor: none !important; }
+.book-cursor {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 6px 12px;
+  filter: drop-shadow(1px 2px 0 rgb(74 35 54 / 0.18));
+  transition: opacity 120ms ease;
+  will-change: transform;
+}
+.book-cursor.is-shown { opacity: 1; }
+.book-cursor canvas { display: block; image-rendering: pixelated; }
+
 /* The desktop is the whole site. One viewport, never taller, never scrolled.
    Anything too long for the screen scrolls inside its own window. */
 .desktop {
@@ -55,7 +73,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   overflow: hidden;
   isolation: isolate;
   background: var(--stone);
+  /* Dragging across the wallpaper must not select it or pick up a picture.
+     Text inside windows can still be selected. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
+.pane { user-select: text; -webkit-user-select: text; }
+.desktop img { -webkit-user-drag: none; }
 
 /* Full bleed. The painting is fitted like cover, but steered so the journal
    stays in frame whatever shape the window is. */
@@ -106,7 +131,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(100% + 1px);
+  width: calc(100% + 2px);
+  outline: 1px solid transparent;
   height: 100%;
   background-size: 310px 385px;
   background-repeat: no-repeat;
@@ -118,8 +144,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Shading across each strip, from the angle at one edge to the angle at the
    other, so the curve reads as one smooth bend rather than eight facets. */
 .jr-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-.jr-front::after { background: linear-gradient(90deg, rgb(118 78 44 / var(--a0, 0)), rgb(118 78 44 / var(--a1, 0))); }
-.jr-back::after { background: linear-gradient(270deg, rgb(118 78 44 / var(--a0, 0)), rgb(118 78 44 / var(--a1, 0))); }
+.jr-front::after {
+  background:
+    linear-gradient(90deg, rgb(118 78 44 / var(--f0d, 0)), rgb(118 78 44 / var(--f1d, 0))),
+    linear-gradient(90deg, rgb(255 251 238 / var(--f0l, 0)), rgb(255 251 238 / var(--f1l, 0)));
+}
+.jr-back::after {
+  background:
+    linear-gradient(270deg, rgb(118 78 44 / var(--b0d, 0)), rgb(118 78 44 / var(--b1d, 0))),
+    linear-gradient(270deg, rgb(255 251 238 / var(--b0l, 0)), rgb(255 251 238 / var(--b1l, 0)));
+}
 .jr-cast {
   position: absolute;
   inset: 0;
@@ -133,6 +167,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .jr-cast-l { background: linear-gradient(270deg, rgb(70 44 26 / 0.9), rgb(70 44 26 / 0.35) calc(var(--reach) * 0.45), transparent var(--reach)); }
 
 .jr-flowers, .jr-petals, .jr-things { position: absolute; inset: 0; pointer-events: none; }
+.jr-things { isolation: isolate; }
 .jr-flower {
   position: absolute;
   transform-origin: var(--ox, 50%) var(--oy, 100%);
@@ -142,6 +177,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes jr-sway { 50% { transform: rotate(var(--a, 0.6deg)) translateY(-0.5px); } }
 
 .jr-pen, .jr-brush { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: grab; touch-action: none; user-select: none; }
+.jr-pen { pointer-events: none; }
+.jr-hit { position: absolute; inset: 0; pointer-events: auto; }
 .jr-bob { width: 100%; height: 100%; animation: jr-bob var(--d, 6s) ease-in-out var(--dl, 0s) infinite; }
 .jr-pen img, .jr-brush img {
   display: block;
@@ -152,7 +189,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transform: rotate(var(--tilt, 0deg));
   transition: transform 250ms, filter 250ms;
 }
-.jr-pen:hover img, .jr-brush:hover img { transform: rotate(var(--tilt, 0deg)) translate(-1px, -3px); filter: drop-shadow(3px 6px 4px rgb(70 44 26 / 0.3)); }
+.jr-pen:has(.jr-hit:hover) img, .jr-brush:hover img { transform: rotate(var(--tilt, 0deg)) translate(-1px, -3px); filter: drop-shadow(3px 6px 4px rgb(70 44 26 / 0.3)); }
 .jr-pen.is-held, .jr-brush.is-held { cursor: grabbing; }
 .jr-pen.is-held img, .jr-brush.is-held img {
   transform: rotate(var(--tilt, 0deg)) translate(-3px, -8px) scale(1.04);

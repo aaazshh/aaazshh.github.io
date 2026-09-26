@@ -834,6 +834,18 @@
       background: #fff; color: var(--brand);
       font: 700 17px Roboto, sans-serif; cursor: pointer;
     }
+    /* The driver's own truck: DriverAvatarMarker, centred on the fix. */
+    .nav-truck { display: grid; place-items: center; cursor: grab; }
+    .nav-truck.is-held { cursor: grabbing; }
+    .nav-truck-halo { position: absolute; inset: 0; border-radius: 50%; background: rgba(42, 157, 143, 0.15); }
+    .nav-truck-disc {
+      position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(42, 157, 143, 0.92); border: 2px solid #fff; box-sizing: border-box;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18); transition: transform 0.15s ease;
+    }
+    .nav-truck-disc img { width: 34px; height: 34px; object-fit: contain; pointer-events: none; }
+    .nav-truck.is-held .nav-truck-disc { transform: scale(1.15); }
+    .nav-truck.is-held .nav-truck-halo { background: rgba(42, 157, 143, 0.28); }
   </style>
 </head>
 <body>
@@ -920,6 +932,7 @@
             </button>
           </div>
           <div class="left">
+            <button type="button" class="circlebtn on" id="auto-btn" aria-label="Pause auto drive"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></button>
             <button type="button" class="circlebtn on" id="follow-btn" aria-label="Recenter">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
             </button>
@@ -1031,6 +1044,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="roads.js"></script>
   <script src="data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
   <script src="tiles.js"></script>
@@ -1796,16 +1810,66 @@
 
     /* ---- the map ---- */
 
+    // The truck drives the road, not the crow's line: the leg it is on runs
+    // from the last place it left (the depot, then each stop it confirms) to
+    // the stop it is heading for, on the same OSRM geometry the real app draws.
+    var I_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>';
+    var I_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"></path></svg>';
+    var drive = { key: '', line: [], idx: 0, auto: true, holding: false, declined: null, told: false };
+    var truck = null, routeCasing = null, routeLine = null;
+
+    function fromName() {
+      var done = stops.filter(function (s) { return s.state === 'done'; });
+      return done.length ? done[done.length - 1].name : TRIP.depot;
+    }
+
+    function syncLeg() {
+      var i = nextStop();
+      if (i === -1) { drive.key = ''; drive.line = []; drive.idx = 0; return; }
+      var key = fromName() + '|' + stops[i].name;
+      if (drive.key === key) return;
+      drive.key = key;
+      drive.line = DATA.road(fromName(), stops[i].name).slice();
+      drive.idx = NAV.here ? DATA.nearestOn(drive.line, NAV.here) : 0;
+      if (!NAV.here) NAV.here = drive.line[0].slice();
+    }
+
+    // What is left to drive: the rest of this leg from the truck, then every
+    // stop still to do in order.
+    function roadAhead() {
+      var i = nextStop();
+      if (i === -1 || !NAV.here) return [];
+      var ahead = [NAV.here].concat(drive.line.slice(drive.idx + 1));
+      var rest = stops.slice(i).map(function (s) { return s.name; });
+      if (rest.length > 1) ahead = ahead.concat(DATA.roadPath(rest).line.slice(1));
+      return ahead;
+    }
+
+    function paintRoute() {
+      var ahead = roadAhead();
+      routeCasing.setLatLngs(ahead);
+      routeLine.setLatLngs(ahead);
+    }
+
+    // DriverAvatarMarker: the vehicle on a disc in the avatar colour, a soft
+    // halo behind it, centred on the GPS fix.
+    var truckIcon = L.divIcon({
+      className: 'nav-truck', iconSize: [64, 64], iconAnchor: [32, 32],
+      html: '<span class="nav-truck-halo"></span><span class="nav-truck-disc">' +
+        '<img src="assets/vehicles/truck.png" alt="" draggable="false"></span>'
+    });
+
     function drawMap() {
       if (!map) {
         map = L.map('map', { zoomControl: false }).setView([1.3350, 103.8500], 13);
         basemap(map);
         map.pins = L.layerGroup().addTo(map);
+        routeCasing = L.polyline([], { color: '#fff', weight: 9, opacity: 0.9, lineJoin: 'round', lineCap: 'round' }).addTo(map);
+        routeLine = L.polyline([], { color: '#2a9d8f', weight: 5, opacity: 0.95, lineJoin: 'round', lineCap: 'round' }).addTo(map);
       }
+      syncLeg();
       map.pins.clearLayers();
-
-      var line = stops.map(function (s) { return [s.lat, s.lng]; });
-      L.polyline(line, { color: '#2a9d8f', weight: 5, opacity: 0.9 }).addTo(map.pins);
+      paintRoute();
 
       // A teardrop pin with a white casing, its tip on the coordinate.
       stops.forEach(function (s, i) {
@@ -1824,57 +1888,117 @@
         }).bindPopup('<strong>' + s.name + '</strong><br>' + s.addr).addTo(map.pins);
       });
 
-      if (NAV.here) {
-        L.marker(NAV.here, {
-          icon: L.divIcon({
-            className: '', iconSize: [0, 0], iconAnchor: [0, 0],
-            html: '<div class="cc-driver-avatar"><span class="cc-driver-disc" style="background:#264653">' +
-              '<img src="assets/vehicles/truck.png" alt="" onerror="this.style.display=\'none\'"></span>' +
-              '<span class="cc-driver-pin" style="background:#264653">' + TRIP.plate + '</span></div>'
-          }),
-          zIndexOffset: 1000
-        }).addTo(map.pins);
+      if (NAV.here && !truck) {
+        truck = L.marker(NAV.here, { icon: truckIcon, draggable: true, autoPan: true, zIndexOffset: 1000, keyboard: false }).addTo(map);
+        truck.on('dragstart', function () {
+          drive.holding = true;
+          truck.getElement().classList.add('is-held');
+        });
+        truck.on('drag', function () {
+          var p = truck.getLatLng();
+          NAV.here = [p.lat, p.lng];
+          paintRoute();
+          checkArrival();
+        });
+        truck.on('dragend', function () {
+          drive.holding = false;
+          truck.getElement().classList.remove('is-held');
+          rejoin();
+          paintNextCard();
+          paintSheet();
+          paintRoute();
+          checkArrival();
+        });
       }
+      if (truck && NAV.here) truck.setLatLng(NAV.here);
 
+      // Street level on the truck, the way turn-by-turn opens.
       if (!map.fitted) {
-        map.fitBounds(L.polyline(line).getBounds(), { padding: [50, 50] });
+        if (NAV.here) map.setView(NAV.here, 15);
+        else map.fitBounds(L.latLngBounds(stops.map(function (s) { return [s.lat, s.lng]; })), { padding: [50, 50] });
         map.fitted = true;
       }
       setTimeout(function () { map.invalidateSize(); }, 60);
     }
 
-    /* The GPS the driver app would be reporting. The truck creeps towards the
-       stop it is heading for, and the arrival prompt fires when it lands
-       inside the geofence, the same trigger the real screen uses. */
-    setInterval(function () {
-      if (document.querySelector('.view.is-on').id !== 'view-map') return;
+    // Wherever the truck was dropped, it picks the leg back up at the nearest
+    // point of road, driving over to it first if it was left off the road.
+    function rejoin() {
+      if (!drive.line.length) return;
+      var n = DATA.nearestOn(drive.line, NAV.here);
+      if (metres(NAV.here, drive.line[n]) < 25) {
+        drive.idx = n;
+        NAV.here = drive.line[n].slice();
+      } else {
+        drive.line = [NAV.here.slice()].concat(drive.line.slice(n));
+        drive.idx = 0;
+      }
+      if (truck) truck.setLatLng(NAV.here);
+    }
 
+    function checkArrival() {
       var i = nextStop();
-      if (i === -1) { NAV.speed = 0; document.getElementById('speed').textContent = '0 km/h'; return; }
-
-      var target = [stops[i].lat, stops[i].lng];
-      if (!NAV.here) NAV.here = [stops[0].lat - 0.02, stops[0].lng - 0.02];
-
-      NAV.here = [
-        NAV.here[0] + (target[0] - NAV.here[0]) * 0.12,
-        NAV.here[1] + (target[1] - NAV.here[1]) * 0.12
-      ];
-
-      var away = metres(NAV.here, target);
-      NAV.speed = away > 400 ? 38 + Math.round(Math.sin(Date.now() / 3000) * 8) : Math.round(away / 30);
-      document.getElementById('speed').textContent = NAV.speed + ' km/h';
-
-      if (NAV.following && map) map.panTo(NAV.here, { animate: true, duration: 0.8 });
-
-      paintNextCard();
-      paintSheet();
-      drawMap();
-
-      if (away <= ARRIVAL_RADIUS_M && arrivalFor === null &&
+      if (i === -1 || !NAV.here) return;
+      var away = metres(NAV.here, [stops[i].lat, stops[i].lng]);
+      if (away > ARRIVAL_RADIUS_M * 1.5 && drive.declined === i) drive.declined = null;
+      if (away <= ARRIVAL_RADIUS_M && arrivalFor === null && drive.declined !== i &&
           !document.getElementById('arrival-scrim').classList.contains('show')) {
         askArrival(i);
       }
-    }, 2500);
+    }
+    document.getElementById('arrival-no').addEventListener('click', function () { drive.declined = nextStop(); });
+
+    document.getElementById('auto-btn').addEventListener('click', function () {
+      drive.auto = !drive.auto;
+      this.classList.toggle('on', drive.auto);
+      this.setAttribute('aria-label', drive.auto ? 'Pause auto drive' : 'Resume auto drive');
+      this.innerHTML = drive.auto ? I_PAUSE : I_PLAY;
+      toast(drive.auto ? 'Auto drive on. The truck follows the road to the next stop.' : 'Auto drive paused. Drag the truck to drive it yourself.');
+    });
+
+    /* The GPS the driver app would be reporting. The truck follows the road
+       towards the stop it is heading for, and the arrival prompt fires when it
+       lands inside the geofence, the same trigger the real screen uses. Hold
+       and drag the truck to move it by hand. */
+    var tick = 0;
+    setInterval(function () {
+      if (document.querySelector('.view.is-on').id !== 'view-map' || !map) return;
+      if (!drive.told) {
+        drive.told = true;
+        toast('Drag the truck to drive it yourself, or pause auto drive to stop it.');
+      }
+
+      var i = nextStop();
+      syncLeg();
+      var moving = false;
+      if (i !== -1 && drive.auto && !drive.holding && arrivalFor === null) {
+        var go = 120;
+        while (go > 0 && drive.idx < drive.line.length - 1) {
+          var a = drive.line[drive.idx], b = drive.line[drive.idx + 1], step = metres(a, b);
+          if (step > go) {
+            var f = go / step;
+            drive.line[drive.idx] = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+            go = 0;
+          } else {
+            go -= step;
+            drive.idx++;
+          }
+          moving = true;
+        }
+        NAV.here = drive.line[drive.idx].slice();
+      }
+
+      NAV.speed = moving ? 38 + Math.round(Math.sin(Date.now() / 3000) * 8) : 0;
+      document.getElementById('speed').textContent = NAV.speed + ' km/h';
+      if (!drive.holding) {
+        if (truck && NAV.here) truck.setLatLng(NAV.here);
+        paintRoute();
+      }
+      if (NAV.following && moving) map.panTo(NAV.here, { animate: true, duration: 0.4 });
+
+      if (++tick % 6 === 0) { paintNextCard(); paintSheet(); }
+      checkArrival();
+    }, 400);
 
     function clockNow() {
       var d = new Date();

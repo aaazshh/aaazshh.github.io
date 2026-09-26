@@ -1,7 +1,8 @@
 // A little guide for first visits: every few seconds a star flies to the next
 // thing worth clicking (experience/, then prime-supermarket/, then a demo
-// button), leaves a trail of twinkles, bursts when it lands and shows a small
-// bubble. Once any demo has been opened it retires for good.
+// button), leaves a trail of twinkles, bursts when it lands and makes the
+// thing glow. Inside prime-supermarket/ it takes the Portal and App buttons in
+// turn. Once any demo has been opened it retires for good.
 
 (function () {
   'use strict';
@@ -13,27 +14,20 @@
   var windowLayer = document.getElementById('windows');
   var still = window.matchMedia('(prefers-reduced-motion: reduce)');
   var COLORS = ['#f7c8d8', '#f3dc9b', '#d8c8f2', '#fff4d6', '#c9e6dd'];
-  var SPARK = '<svg class="guide-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.9 5.2 5.3 9.6 10.5 10.5-5.2.9-9.6 5.3-10.5 10.5C11.1 17.3 6.7 12.9 1.5 12 6.7 11.1 11.1 6.7 12 1.5Z"/></svg>';
 
   var canvas = document.createElement('canvas');
   canvas.className = 'guide-layer';
   canvas.setAttribute('aria-hidden', 'true');
   desktop.appendChild(canvas);
   var ctx = canvas.getContext('2d');
-  var bubble = document.createElement('div');
-  bubble.className = 'guide-bubble';
-  bubble.setAttribute('role', 'status');
-  desktop.appendChild(bubble);
-
-  var particles = [], comet = null, running = false, retired = false, timer = null, hideTimer = null;
+  var particles = [], comet = null, running = false, retired = false, timer = null, chipTurn = 0, lastAt = null;
 
   function retire() {
     if (retired) return;
     retired = true;
     try { localStorage.setItem(DONE, '1'); } catch (e) {}
     clearTimeout(timer);
-    bubble.classList.remove('show');
-    setTimeout(function () { canvas.remove(); bubble.remove(); }, 400);
+    setTimeout(function () { canvas.remove(); }, 400);
   }
 
   function visible(el) {
@@ -46,21 +40,23 @@
     return !!hit && (hit === el || el.contains(hit));
   }
 
-  // What to point at right now, and what the bubble says.
+  // What to point at right now.
   function nextStep() {
     if (windowLayer.querySelector('.window-demo')) { retire(); return null; }
     var prime = windowLayer.querySelector('[data-window-id="prime"]:not(.is-min)');
     if (prime) {
-      var chip = prime.querySelector('.chip.is-live');
-      return visible(chip) ? { el: chip, text: 'try one of these' } : null;
+      // Each hint lands on the next Portal or App button down the list.
+      var chips = Array.prototype.filter.call(prime.querySelectorAll('.chip.is-live'), visible);
+      if (!chips.length) return null;
+      return { el: chips[chipTurn++ % chips.length], chip: true };
     }
     var exp = windowLayer.querySelector('[data-window-id="experience"]:not(.is-min)');
     if (exp) {
       var folder = exp.querySelector('[data-open="prime"]');
-      return visible(folder) ? { el: folder, text: 'open me' } : null;
+      return visible(folder) ? { el: folder } : null;
     }
     var icon = document.querySelector('.icon[data-open="experience"]');
-    return visible(icon) ? { el: icon.querySelector('.glyph') || icon, text: 'start here' } : null;
+    return visible(icon) ? { el: icon.querySelector('.glyph') || icon } : null;
   }
 
   function fit() {
@@ -142,38 +138,31 @@
     schedule();
   }
 
-  function showBubble(step) {
-    var box = desktop.getBoundingClientRect(), r = step.el.getBoundingClientRect();
-    bubble.innerHTML = SPARK + '<span>' + step.text + '</span>';
-    var x = r.left - box.left + r.width / 2, y = r.top - box.top;
-    bubble.style.left = Math.max(12, Math.min(box.width - 150, x)) + 'px';
-    bubble.style.top = Math.max(52, y - 12) + 'px';
-    bubble.classList.remove('show');
-    void bubble.offsetWidth;
-    bubble.classList.add('show');
-    step.el.classList.remove('is-guided');
-    void step.el.offsetWidth;
-    step.el.classList.add('is-guided');
-    setTimeout(function () { step.el.classList.remove('is-guided'); }, 2600);
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(function () { bubble.classList.remove('show'); }, 3400);
+  function glow(step) {
+    var el = step.el;
+    el.classList.remove('is-guided');
+    void el.offsetWidth;
+    el.classList.add('is-guided');
+    setTimeout(function () { el.classList.remove('is-guided'); }, 2600);
   }
 
   function hint() {
     if (retired) return;
     var step = nextStep();
     if (step) {
-      if (still.matches) showBubble(step);
+      if (still.matches) glow(step);
       else {
         var box = desktop.getBoundingClientRect(), r = step.el.getBoundingClientRect();
         var b = { x: r.left - box.left + r.width / 2, y: r.top - box.top + r.height / 2 };
-        var a = { x: box.width * (0.55 + Math.random() * 0.3), y: 60 + Math.random() * 40 };
-        var c = { x: (a.x + b.x) / 2 + (Math.random() - 0.5) * 160, y: Math.min(a.y, b.y) - 90 };
-        comet = { a: a, b: b, c: c, t: 0, dur: 1.15, done: function () { showBubble(step); } };
+        // Between buttons in the same window the star hops from the last one.
+        var a = step.chip && lastAt ? lastAt : { x: box.width * (0.55 + Math.random() * 0.3), y: 60 + Math.random() * 40 };
+        lastAt = step.chip ? b : null;
+        var c = { x: (a.x + b.x) / 2 + (Math.random() - 0.5) * 160, y: Math.min(a.y, b.y) - (step.chip ? 50 : 90) };
+        comet = { a: a, b: b, c: c, t: 0, dur: step.chip ? 0.8 : 1.15, done: function () { glow(step); } };
         if (!running) loop();
       }
     }
-    timer = setTimeout(hint, 7000);
+    timer = setTimeout(hint, step && step.chip ? 3200 : 7000);
   }
 
   // A click anywhere pushes the next hint back, so it never talks over someone

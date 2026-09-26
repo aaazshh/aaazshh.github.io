@@ -684,8 +684,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .platforms { padding: 0 12px 12px 12px; }
 }
 
-/* First visit guide: a star flies to the next thing to click and a small
-   bubble says what it is. The canvas never takes a click. */
+/* First visit guide: a star flies to the next thing to click and makes it
+   glow. The canvas never takes a click. */
 .guide-layer {
   position: absolute;
   inset: 0;
@@ -694,62 +694,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 100%;
   pointer-events: none;
 }
-.guide-bubble {
-  position: absolute;
-  z-index: 7;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 13px 7px 10px;
-  border-radius: 999px;
-  background: #fff8ee;
-  box-shadow: 0 0 0 1.5px #f1cdd8, 0 8px 22px rgb(114 89 66 / 0.22);
-  color: var(--accent);
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -100%) scale(0.6);
-  transform-origin: 50% 130%;
-  transition: opacity 220ms ease, transform 320ms cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.guide-bubble::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  width: 10px;
-  height: 10px;
-  background: inherit;
-  border-radius: 0 0 3px 0;
-  box-shadow: 1.5px 1.5px 0 #f1cdd8;
-  transform: translateX(-50%) rotate(45deg);
-}
-.guide-bubble.show {
-  opacity: 1;
-  transform: translate(-50%, -100%) scale(1);
-  animation: guide-bob 1.6s ease-in-out 320ms infinite;
-}
-.guide-spark { width: 13px; height: 13px; fill: #e9b4c6; animation: guide-twinkle 1.2s ease-in-out infinite; }
 .is-guided { animation: guide-glow 1.3s ease-out 2; }
 @keyframes guide-glow {
   0% { filter: drop-shadow(0 0 0 rgb(243 220 155 / 0)); }
   35% { filter: drop-shadow(0 0 10px rgb(243 220 155 / 0.95)) drop-shadow(0 0 3px #fff8ee); }
   100% { filter: drop-shadow(0 0 0 rgb(243 220 155 / 0)); }
 }
-@keyframes guide-bob {
-  50% { transform: translate(-50%, calc(-100% - 4px)) scale(1); }
-}
-@keyframes guide-twinkle {
-  50% { transform: rotate(45deg) scale(0.75); fill: #f0cf7a; }
+/* A chip lit by the star also lifts a touch and catches a gold edge. */
+.chip.is-guided { animation: guide-chip 1.3s ease-out 2; }
+@keyframes guide-chip {
+  0% { box-shadow: inset 0 0 0 1px rgb(114 89 66 / 0.24), 0 0 0 0 rgb(243 220 155 / 0); transform: none; }
+  35% { box-shadow: inset 0 0 0 1px #e8c878, 0 0 12px 3px rgb(243 220 155 / 0.85); transform: translateY(-1px) scale(1.06); }
+  100% { box-shadow: inset 0 0 0 1px rgb(114 89 66 / 0.24), 0 0 0 0 rgb(243 220 155 / 0); transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .jr-flower, .jr-bob, .jr-glow { animation: none; }
   .jr-flower img { filter: none; }
-  .guide-bubble.show, .guide-spark { animation: none; }
-  .is-guided { animation-duration: 2.6s; animation-iteration-count: 1; }
+  .is-guided, .chip.is-guided { animation-duration: 2.6s; animation-iteration-count: 1; }
   .window { animation: none; }
   .icon .glyph, .file .glyph, .dock a, .dock-win, .chip.is-live { transition: none; }
   .dock-min li { animation: none; }

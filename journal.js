@@ -121,7 +121,9 @@
      holds back the free edge more than the spine. So a turning page curls,
      trails its edge, and settles onto the stack instead of swinging over like
      a board. Each strip shows its own slice of the page image on both sides. */
-  var SEG = 16, SW = LW / SEG, D2R = Math.PI / 180;
+  // A sheet is as wide as the painted paper, a little narrower than the right
+  // page's frame, which also takes in the page edges and some desk.
+  var SHEET = 266, SEG = 16, SW = SHEET / SEG, D2R = Math.PI / 180;
   function img(name) { return 'url("' + ART + name + '")'; }
   var SPREAD = [[img('page-right.webp'), img('page-1.webp')], [img('page-2.webp'), img('page-3.webp')],
                 [img('page-4.webp'), img('page-5.webp')], [img('page-6.webp'), img('page-7.webp')]];
@@ -135,17 +137,16 @@
   book.appendChild(baseR);
 
   var leaves = SPREAD.map(function (faces, i) {
-    var leafEl = el('div', 'jr-leaf');
+    var leafEl = el('div', 'jr-leaf', 'width:' + SHEET + 'px');
     var segs = [];
     var parent = leafEl;
     for (var k = 0; k < SEG; k++) {
       var seg = el('div', 'jr-seg', 'left:' + (k ? SW : 0) + 'px;width:' + SW + 'px');
-      var front = el('div', 'jr-face jr-front', 'background-image:' + faces[0] + ';background-position:' + (-k * SW) + 'px 0');
-      var back = el('div', 'jr-face jr-back', 'background-image:' + faces[1] + ';background-position:' + (-(SEG - 1 - k) * SW) + 'px 0;transform-origin:' + SW / 2 + 'px 50%');
-      // The left page is narrower than the leaf, so the last bit of the back
-      // hangs off the book and is cut away.
-      var hide = (LW - SP) - (SEG - 1 - k) * SW;
-      if (hide > 0) back.style.clipPath = 'inset(0 0 0 ' + Math.min(hide, SW + 1) + 'px)';
+      // The first page is the painted one, cropped to the sheet; the rest are
+      // painted at the sheet's width.
+      var fw = i === 0 ? LW : SHEET;
+      var front = el('div', 'jr-face jr-front', 'background-image:' + faces[0] + ';background-size:' + fw + 'px 385px;background-position:' + (-k * SW) + 'px 0');
+      var back = el('div', 'jr-face jr-back', 'background-image:' + faces[1] + ';background-size:' + SHEET + 'px 385px;background-position:' + (-(SEG - 1 - k) * SW) + 'px 0;transform-origin:' + SW / 2 + 'px 50%');
       seg.appendChild(front);
       seg.appendChild(back);
       parent.appendChild(seg);
@@ -177,7 +178,7 @@
     return LZ - (nx * LX + nz * LZ);
   }
   function setShade(seg, prop, v) {
-    seg.style.setProperty('--' + prop + 'd', Math.max(0, v * 0.42).toFixed(3));
+    seg.style.setProperty('--' + prop + 'd', Math.min(0.2, Math.max(0, v * 0.24)).toFixed(3));
     seg.style.setProperty('--' + prop + 'l', Math.max(0, -v * 0.9).toFixed(3));
   }
 
@@ -315,10 +316,10 @@
       var mid = PX[SEG >> 1] + PX[SEG];
       if (mid >= 0) {
         var under = i + 1 < N && !moving[i + 1] ? leaves[i + 1].castF : baseR.firstChild;
-        cast(under, amount, reachR / LW * 100 + 12);
+        cast(under, amount, reachR / SHEET * 100 + 12);
       } else {
         var below = i > 0 && !moving[i - 1] ? leaves[i - 1].castB : baseL.firstChild;
-        cast(below, amount, reachL / LW * 100 + 12);
+        cast(below, amount, reachL / SHEET * 100 + 12);
       }
     }
   }
@@ -390,7 +391,7 @@
     if (on) {
       var s = sheet(i);
       joints(s.phi);
-      s.hand = { seg: SEG - 1, x: LW * Math.cos(24 * D2R), z: LW * Math.sin(24 * D2R) * 0.8, lx: PX[SEG], lz: PZ[SEG], k: 1200, c: 70 };
+      s.hand = { seg: SEG - 1, x: SHEET * Math.cos(24 * D2R), z: SHEET * Math.sin(24 * D2R) * 0.8, lx: PX[SEG], lz: PZ[SEG], k: 1200, c: 70 };
       s.drive = 0;
     } else if (moving[i] && moving[i].hand && !held) {
       moving[i].hand = null;
@@ -399,7 +400,7 @@
   root.addEventListener('pointermove', function (e) {
     if (held || e.pointerType !== 'mouse') return;
     var st = toStage(e.clientX, e.clientY), lp = toBook(st[0], st[1]);
-    var want = current < N && lp[0] > SP + LW * 0.72 && lp[0] < SP + LW + 12 && lp[1] > 0 && lp[1] < FH ? current : -1;
+    var want = current < N && lp[0] > SP + SHEET * 0.72 && lp[0] < SP + SHEET + 8 && lp[1] > 0 && lp[1] < FH ? current : -1;
     if (want === peekLeaf) return;
     if (peekLeaf >= 0) peek(peekLeaf, false);
     peekLeaf = want;

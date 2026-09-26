@@ -1,5 +1,5 @@
-// The pointer: a little pink pixel-art book. Over anything that can be
-// clicked, its pages start turning. Only for mice and trackpads; touch
+// The pointer: a little brown pixel-art book. It holds still, and over
+// anything that can be clicked or dragged its pages start turning. Only for mice and trackpads; touch
 // screens keep their own behaviour, and so does any iframe (the demos).
 
 (function () {
@@ -11,8 +11,9 @@
   var GW = 22, GH = 22, SCALE = 2, HEAD = 3;   // HEAD: room above for a standing page      // grid cells, and CSS pixels per cell
   var HOT_X = 3, HOT_Y = 3 + HEAD;             // the top corner of the left page is the tip
 
-  var INK = [74, 35, 54], COVER = [244, 128, 176], COVER_HI = [255, 186, 214], COVER_LO = [214, 86, 146];
-  var PAGE = [255, 251, 252], PAGE_SHADE = [241, 214, 226], STACK = [236, 200, 215], BACK = [247, 232, 239];
+  // Browns from the painting and the site's own accent.
+  var INK = [58, 38, 26], COVER = [146, 104, 70], COVER_HI = [190, 146, 104], COVER_LO = [110, 76, 50];
+  var PAGE = [255, 250, 240], PAGE_SHADE = [236, 220, 198], STACK = [226, 206, 180], BACK = [246, 236, 220];
 
   function poly(ctx, pts) {
     ctx.beginPath();
@@ -150,10 +151,11 @@
   vc.drawImage(REST, 0, 0);
   document.documentElement.classList.add('has-book-cursor');
 
+  // Anything that does something when pressed, or can be picked up and moved.
   var CLICKABLE = 'a[href], button, [role="button"], label, select, summary, input, textarea, [data-open], [data-demo],' +
-    ' .jr-pen, .jr-brush, .jr-book, .titlebar, .grip';
+    ' [draggable="true"], .icon, .jr-hit, .jr-brush, .jr-book, .titlebar, .grip';
 
-  var x = -100, y = -100, tilt = 0, lastX = null, shown = false;
+  var x = -100, y = -100, shown = false;
   var hovering = false, pressed = false, flip = -1, clock = 0, pause = 0, raf = 0, then = 0;
 
   function show(on) {
@@ -167,11 +169,6 @@
     var dt = then ? Math.min(0.05, (now - then) / 1000) : 0.016;
     then = now;
     var busy = false;
-
-    // Lean a touch into the direction of travel, and settle back.
-    tilt += ((lastX === null ? 0 : clamp((x - lastX) * 0.9, -10, 10)) - tilt) * Math.min(1, dt * 14);
-    lastX = x;
-    if (Math.abs(tilt) > 0.05) busy = true;
 
     if (still.matches) {
       flip = -1;
@@ -195,8 +192,8 @@
       }
     }
 
-    el.style.transform = 'translate3d(' + (x - HOT_X * SCALE) + 'px,' + (y - HOT_Y * SCALE) + 'px,0) rotate(' + tilt.toFixed(2) +
-      'deg) scale(' + (pressed ? 0.88 : 1) + ')';
+    el.style.transform = 'translate3d(' + (x - HOT_X * SCALE) + 'px,' + (y - HOT_Y * SCALE) + 'px,0)' +
+      (pressed && hovering ? ' scale(0.9)' : '');
     if (busy) raf = requestAnimationFrame(loop);
     else then = 0;
   }
@@ -215,6 +212,12 @@
     var t = e.target;
     var on = !!(t && t.closest && t.closest(CLICKABLE));
     if (on && !hovering && flip < 0) { flip = 0; clock = 0; pause = 0; }
+    if (!on && hovering) {
+      // Off the target: the book closes back to still at once.
+      flip = -1;
+      vc.clearRect(0, 0, GW, GH);
+      vc.drawImage(REST, 0, 0);
+    }
     hovering = on;
     kick();
   });

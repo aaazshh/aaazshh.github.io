@@ -140,6 +140,7 @@
 
   </div>
 
+  <script src="roads.js"></script>
   <script src="data.js"></script>
   <script src="shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
@@ -231,7 +232,7 @@
 
     /* ---- playback ---- */
 
-    var map = null, trackLine = null, marker = null, stopLayer = null;
+    var map = null, trackLine = null, plannedLayer = null, marker = null, stopLayer = null;
     var track = [], playing = false, progress = 0, mult = 1, rafId = null;
     var wallStart = 0, progStart = 0;
     var BASE_SECONDS = 24;   // a whole trip replays in about this long at 1x
@@ -243,23 +244,34 @@
       stopLayer = L.layerGroup().addTo(map);
     }
 
-    // The planned line with GPS-looking wobble on it, which is what the stored
-    // breadcrumb looks like next to the plan.
+    // Planned: the road through the stops as OSRM laid it out at Start, frozen
+    // as planned_polyline. Actual: the GPS breadcrumb the phone sent, which
+    // follows the roads the driver really took, detour included, and stops at
+    // the last stop reached.
+    function plannedLine(trip) {
+      return DATA.roadPath([trip.depot].concat(trip.stops.map(function (s) { return s.name; }))).line;
+    }
+
     function buildTrack(trip) {
-      var line = [DATA.place(trip.depot)].concat(trip.stops.map(function (s) { return DATA.place(s.name); }))
-        .map(function (p) { return [p.lat, p.lng]; });
-      var pts = [];
-      line.forEach(function (p, i) {
-        pts.push(p);
-        if (i === line.length - 1) return;
-        var q = line[i + 1];
-        for (var t = 0.1; t < 1; t += 0.1) {
-          pts.push([
-            p[0] + (q[0] - p[0]) * t + (Math.random() - 0.5) * 0.003,
-            p[1] + (q[1] - p[1]) * t + (Math.random() - 0.5) * 0.003
-          ]);
+      var names = [trip.depot].concat(trip.stops.map(function (s) { return s.name; }));
+      var reached = trip.stops.filter(function (s) { return s.at; }).length;
+      var d = DATA.detour(trip.id), line = [];
+      for (var k = 0; k < reached; k++) {
+        var leg = d && d.leg === k ? d.line : DATA.road(names[k], names[k + 1]);
+        line = line.concat(line.length ? leg.slice(1) : leg);
+      }
+      // One ping every 40 m or so, each a few metres off like a phone's fix.
+      var seed = trip.id, pts = [line[0]];
+      function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; }
+      for (var i = 0; i < line.length - 1; i++) {
+        var p = line[i], q = line[i + 1];
+        var dy = (q[0] - p[0]) * 111320, dx = (q[1] - p[1]) * 111320;
+        var n = Math.max(1, Math.round(Math.sqrt(dx * dx + dy * dy) / 40));
+        for (var j = 1; j <= n; j++) {
+          var t = j / n;
+          pts.push([p[0] + (q[0] - p[0]) * t + rnd() * 0.00008, p[1] + (q[1] - p[1]) * t + rnd() * 0.00008]);
         }
-      });
+      }
       return pts;
     }
 
@@ -309,7 +321,17 @@
 
       track = buildTrack(trip);
       if (trackLine) map.removeLayer(trackLine);
-      trackLine = L.polyline(track, { color: '#2a9d8f', weight: 4, opacity: 0.8 }).addTo(map);
+      if (plannedLayer) map.removeLayer(plannedLayer);
+      plannedLayer = L.polyline(plannedLine(trip), { color: '#7c3aed', weight: 4, opacity: 0.75, dashArray: '10 7' }).addTo(map);
+      trackLine = L.polyline(track, { color: '#3b82f6', weight: 3, opacity: 0.9 }).addTo(map);
+      if (!document.getElementById('tr-map-legend')) {
+        var legend = document.createElement('div');
+        legend.id = 'tr-map-legend';
+        legend.className = 'tr-map-legend';
+        legend.innerHTML = '<span class="tr-legend-item"><span class="tr-legend-line tr-legend-planned"></span>Planned (original)</span>' +
+          '<span class="tr-legend-item"><span class="tr-legend-line tr-legend-actual"></span>Actual</span>';
+        $('tr-map').appendChild(legend);
+      }
 
       stopLayer.clearLayers();
       trip.stops.forEach(function (s, i) {
@@ -335,7 +357,7 @@
         zIndexOffset: 1000
       }).addTo(map);
 
-      map.fitBounds(trackLine.getBounds(), { padding: [40, 40] });
+      map.fitBounds(plannedLayer.getBounds().extend(trackLine.getBounds()), { padding: [40, 40] });
 
       stopPlay();
       progress = 0;

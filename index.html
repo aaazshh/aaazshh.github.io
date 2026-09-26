@@ -185,10 +185,9 @@
             <span class="row-note">Flutter app over a Laravel backend, no web side to it</span>
           </button>
           <span class="platforms">
-            <span class="chip" title="Mobile app">
+            <button type="button" class="chip is-live" data-demo="hq/mobile.html" data-kind="phone" data-label="HQ, staff app" title="Mobile app, opens in a phone" aria-label="Open the HQ staff app">
               <svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><use href="#pf-phone"></use></svg>
-              <span class="sr-only">Mobile app</span>
-            </span>
+            </button>
           </span>
         </li>
         <li class="system">
@@ -240,8 +239,16 @@
 
     <template data-window="hq" data-title="prime-supermarket/hq" data-icon="folder">
       <p>A Flutter app over a Laravel backend, phone only. No web front end was ever
-        built for it, so the workflows live entirely in the app.</p>
-      <p class="stub">Screenshots go here.</p>
+        built for it, so the workflows live entirely in the app. The Laravel side is a
+        versioned REST API that signs staff in through IAM and Microsoft, books meeting
+        rooms through Microsoft Graph with a clash check, raises IT tickets in TeamsWork,
+        takes kitchen meal orders, lists intranet memos and runs a bulletin board with
+        audience rules.</p>
+      <p class="demo-open">Open the <button type="button" class="link" data-demo="hq/mobile.html" data-kind="phone" data-label="HQ, staff app">staff app</button>.
+        Every screen in its home grid and More tab, in all four languages, with a copy of
+        the API's routes running in the page, so a room booked on Monday blocks the next
+        booking and a post's audience decides who sees it. People are guest accounts and
+        the rooms, tickets, menus and memos are sample data.</p>
     </template>
 
     <template data-window="iam" data-title="prime-supermarket/iam" data-icon="folder">

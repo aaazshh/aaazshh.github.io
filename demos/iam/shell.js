@@ -258,7 +258,7 @@ var Shell = (function () {
     el.textContent = text;
     el.classList.add('show');
     clearTimeout(el.timer);
-    el.timer = setTimeout(function () { el.classList.remove('show'); }, 3400);
+    el.timer = setTimeout(function () { el.classList.remove('show'); }, Math.max(3400, text.length * 55));
   }
 
   document.addEventListener('click', function (e) {

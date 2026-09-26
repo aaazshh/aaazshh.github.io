@@ -209,11 +209,27 @@
       if (updated) parts.push('updated ' + updated + ' role(s)');
       if (removed) parts.push('removed ' + removed + ' role(s)');
       var message = parts.length ? 'Successfully ' + parts.join(' and ') + ' for ' + label + '.' : 'No changes made to roles for ' + label + '.';
+      // Where the other demos will let this account in, through iam-sso.js.
+      var WHERE = { 'Fish Farm': 'the Fish Farm portal and crew app', HQ: 'the HQ staff app', Logistics: 'the Logistics driver app' };
+      var who = IAM.find('users', userId), apps = [];
+      activeRoles(userId).forEach(function (rid) {
+        var name = portal(IAM.find('roles', rid).portal_id).name;
+        if (WHERE[name] && apps.indexOf(WHERE[name]) === -1) apps.push(WHERE[name]);
+      });
+      if (apps.length && !who.is_microsoft) {
+        try {
+          sessionStorage.setItem('iam-sso-hint', who.username + ' can now sign in to ' +
+            apps.join(', ').replace(/, ([^,]*)$/, ' and $1') + ' with this username and password.');
+        } catch (err) {}
+      }
       S.go('access-list', 1, 'update', message);
     });
   }
 
   function accessList() {
+    var hint = null;
+    try { hint = sessionStorage.getItem('iam-sso-hint'); sessionStorage.removeItem('iam-sso-hint'); } catch (e) {}
+    if (hint) setTimeout(function () { S.toast(hint); }, 900);
     var status = S.q('status'); if (status === null) status = '1';
     var portalFilter = Number(S.q('portal_id') || 0);
     var list = db.access.filter(function (a) {

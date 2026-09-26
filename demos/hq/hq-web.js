@@ -377,12 +377,32 @@ var HqWeb = (function () {
     // IAM public-api.php?action=login: the walkthrough's accounts sign in with
     // their own username as the password; anything else is refused as IAM would.
     var u = db.users.filter(function (x) { return x.username.toLowerCase() === String(b.username).trim().toLowerCase(); })[0];
-    if (!u || String(b.password) !== u.username) {
-      return json(401, { success: false, message: 'Invalid credentials.', error: 'Invalid username or password.' });
-    }
-    return signIn(u, false);
+    if (u && String(b.password) === u.username) return signIn(u, false);
+    // Accounts made in the IAM demo are checked by IAM itself.
+    var sso = window.IAMSSO ? IAMSSO.signIn('HQ', b.username, b.password) : { ok: false, reason: 'no-user' };
+    if (sso.ok) return signIn(provision(sso), false);
+    if (sso.reason === 'no-role') return json(403, { success: false, message: sso.message, error: sso.message });
+    return json(401, { success: false, message: 'Invalid credentials.', error: 'Invalid username or password.' });
   }, true);
   on('POST', '/auth/microsoft/login', function () { return signIn(db.users[0], true); }, true);
+  // UserService::syncFromIam: match the IAM role by name (Staff when it has no
+  // match here) and the department by code, then create or update the user.
+  function provision(sso) {
+    var roleId = { 'super admin': 1, admin: 2, staff: 3 }[sso.role.trim().toLowerCase()] || 3;
+    // IAM and hq-web name some departments differently.
+    var ALIAS = { ACC: 'ACCT', ITD: 'IT', OPS: 'OPS_RTL', ANP: 'AP', MK: 'MKTG', PAC: 'PAC_SF', BUYER: 'MERCH', ADMIN: 'ADM',
+      MGMT: 'GCEOO', 'P96 Ops': 'OPS_BM', MDHQ: 'MERCH_HQ' };
+    var code = ALIAS[sso.user.department] || sso.user.department;
+    var dept = db.departments.filter(function (d) { return d.code === code; })[0];
+    var u = db.users.filter(function (x) { return x.username.toLowerCase() === sso.user.username.toLowerCase(); })[0];
+    if (!u) {
+      u = { id: next('users'), username: sso.user.username, name: sso.user.name, email: sso.user.email, department_id: dept ? dept.id : 16 };
+      db.users.push(u);
+    }
+    u.role_id = roleId;
+    if (dept) u.department_id = dept.id;
+    return u;
+  }
   function signIn(u, isMicrosoft) {
     u.is_microsoft = isMicrosoft;
     db.session = { user_id: u.id, token: 'hq.' + Math.random().toString(36).slice(2), refresh: Math.random().toString(36).slice(2), is_microsoft: isMicrosoft };

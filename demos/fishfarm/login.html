@@ -76,6 +76,7 @@
     <script src="assets/js/core/bootstrap.min.js"></script>
     <script src="assets/js/ff-ocean.js"></script>
     <script src="assets/js/ff-logo-draw.js"></script>
+    <script src="../iam-sso.js"></script>
     <script>
         FFOcean.mount(document.getElementById('ff-ocean'), {
             intensity: 1,
@@ -109,7 +110,17 @@
             if (!pw) pErr = 'Please enter your password.';
             if (!uErr && !pErr) {
                 var u = USERS.filter(function (x) { return x.status_id === 1 && (at > 0 ? x.email === who : x.username === who); })[0];
-                if (!u) uErr = 'No account found with that email or username.';
+                // Not a portal account: ask IAM, which is how an account made in
+                // the IAM demo, with a Fish Farm role, gets in.
+                var sso = u ? null : IAMSSO.signIn('Fish Farm', who, pw);
+                if (sso && sso.ok) {
+                    u = { id: 1000 + sso.user.id, username: sso.user.username, email: sso.user.email, name: sso.user.name,
+                        role_id: sso.role === 'Super Admin' ? 1 : 2, status_id: 1 };
+                    pw = u.username;
+                }
+                if (!u && sso && sso.reason === 'bad-password') pErr = sso.message;
+                else if (!u && sso && sso.reason !== 'no-user') uErr = sso.message;
+                else if (!u) uErr = 'No account found with that email or username.';
                 else if (pw !== u.username) pErr = 'The password you entered was not valid.';
                 else {
                     try { sessionStorage.setItem('ff-portal-user', JSON.stringify({ id: u.id, username: u.username, name: u.name, email: u.email, role_id: u.role_id })); } catch (e2) {}

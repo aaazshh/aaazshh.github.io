@@ -243,7 +243,11 @@
         status_id: status, employee_id: document.getElementById('employee_id').value.trim() || null,
         reset_password: document.getElementById('resetPasswordCheckbox').checked ? 1 : 0, portal_fields: portalFields
       };
-      if (!ms) { patch.username = username; patch.email = email; patch.name = name; patch.password = 'hashed'; }
+      if (!ms) {
+        patch.username = username; patch.email = email; patch.name = name;
+        // password_hash on the way in; an untouched edit keeps the stored hash.
+        patch.password = edit && password === user.password ? user.password : IAMSSO.hash(password);
+      }
       if (edit) {
         IAM.update('users', user.id, patch);
         S.go('users-list', 1, 'edit', 'Successfully edited user: ' + (ms ? user.username : username) + '.');

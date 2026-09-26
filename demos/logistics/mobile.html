@@ -1044,6 +1044,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="../iam-sso.js"></script>
   <script src="roads.js"></script>
   <script src="data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
@@ -2275,11 +2276,23 @@
       if (go.disabled) return;
       go.disabled = true;
       go.innerHTML = '<span class="spinner"></span>';
+      // An account made in the IAM demo signs in as itself if it holds a
+      // Logistics role; IAM's refusal stands if it does not. The walkthrough's
+      // own driver signs in with anything else.
+      var sso = IAMSSO.signIn('Logistics', document.getElementById('email').value, document.getElementById('pw').value);
       setTimeout(function () {
         go.disabled = false;
         go.textContent = 'Sign In';
+        if (!sso.ok && sso.reason !== 'no-user') { toast(sso.message); return; }
+        if (sso.ok) {
+          document.getElementById('pf-name').textContent = sso.user.name;
+          document.getElementById('pf-email').textContent = sso.user.email;
+          document.getElementById('pf-initials').textContent = sso.user.name.slice(0, 2).toUpperCase();
+          document.getElementById('pf-role').textContent = sso.role.replace(/_/g, ' ').toUpperCase();
+        }
         show('run');
-        toast('Signed in. Today\u2019s run came down with the token.');
+        toast(sso.ok ? 'Signed in through IAM as ' + sso.user.username + '. Today\u2019s run came down with the token.'
+          : 'Signed in. Today\u2019s run came down with the token.');
       }, 900);
     });
 

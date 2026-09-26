@@ -640,9 +640,18 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>';
       setTimeout(function () {
-        // A guestN account signs in as that guest; any other name stays the admin.
+        // An IAM account with a Fish Farm role signs in as itself; IAM's refusal
+        // stands for one that exists without the role. Otherwise a guestN
+        // account signs in as that guest and any other name stays the admin.
+        var sso = IAMSSO.signIn('Fish Farm', u, p);
+        if (!sso.ok && sso.reason !== 'no-user') {
+          btn.disabled = false;
+          btn.textContent = t('login');
+          return errorPopup(sso.message);
+        }
         var g = /^guest(\d+)$/i.exec(u.trim());
-        if (g) me = { id: 100 + +g[1], username: 'guest' + g[1], email: 'guest' + g[1] + '@mail.com', role_id: 3 }
+        if (sso.ok) me = { id: 1000 + sso.user.id, username: sso.user.username, email: sso.user.email, role_id: sso.role === 'Super Admin' ? 1 : 2 };
+        else if (g) me = { id: 100 + +g[1], username: 'guest' + g[1], email: 'guest' + g[1] + '@mail.com', role_id: 3 }
         else me = { id: 2, username: 'Maram Aashna', email: 'maram.aashna@mail.com', role_id: 1 };
         try { sessionStorage.setItem('ff-app-token', '1'); sessionStorage.setItem('ff-app-user', JSON.stringify(me)); } catch (err) {}
         var logoBox = node.querySelector('.prime-canvas').getBoundingClientRect(), host = app.getBoundingClientRect();

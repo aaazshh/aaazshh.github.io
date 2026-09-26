@@ -17,6 +17,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/member-point-transaction-report.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -767,17 +768,16 @@
                     <form method="GET" class="row g-3">
                         <div class="col-md-2">
                             <label class="filter-label">Date From</label>
-                            <input type="date" class="form-control" name="date_from" value="2026-06-27">
+                            <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
                         </div>
                         <div class="col-md-2">
                             <label class="filter-label">Date To</label>
-                            <input type="date" class="form-control" name="date_to" value="2026-09-25">
+                            <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
                         </div>
                         <div class="col-md-2">
                             <label class="filter-label">Transaction Type</label>
                             <select class="form-control" name="transaction_type">
-                                <option value="">All</option>
-                                                            </select>
+                                <option value="">All</option><script>document.write(PM.typeOptions());document.currentScript.remove()</script></select>
                         </div>
                         <div class="col-md-3 d-flex align-items-end gap-2">
                             <button type="submit" class="btn btn-success mb-0" style="background-color: rgb(12,99,38);">Filter</button>
@@ -789,22 +789,22 @@
 
             <div class="row mb-4">
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Point Transactions</p><h4>0</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Point Transactions</p><h4><script>document.write(PM.nf(PM.totalTransactions));document.currentScript.remove()</script></h4></div></div>
                 </div>
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Points Earned</p><h4>0</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Points Earned</p><h4><script>document.write(PM.nf(PM.totalPointsEarned));document.currentScript.remove()</script></h4></div></div>
                 </div>
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Points Expired</p><h4>0</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Total Points Expired</p><h4><script>document.write(PM.nf(PM.totalPointsExpired));document.currentScript.remove()</script></h4></div></div>
                 </div>
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Unique Members</p><h4>0</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Unique Members</p><h4><script>document.write(PM.nf(PM.uniqueMembers));document.currentScript.remove()</script></h4></div></div>
                 </div>
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Avg Points Per Transaction</p><h4>0.00</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Avg Points Per Transaction</p><h4><script>document.write(PM.nf(PM.avgPointsPerTransaction, 2));document.currentScript.remove()</script></h4></div></div>
                 </div>
                 <div class="col-xl col-md-4 col-sm-6 mb-4">
-                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Latest Retention Rate</p><h4>0.00%</h4></div></div>
+                    <div class="card report-card"><div class="card-body"><p class="text-sm text-uppercase font-weight-bold mb-1">Latest Retention Rate</p><h4><script>document.write(PM.nf(PM.latestRetention, 2));document.currentScript.remove()</script>%</h4></div></div>
                 </div>
             </div>
 
@@ -1198,7 +1198,7 @@
     }
 </script>
     <script>
-        const REPORT_DATA = {"memberSegmentation":[{"segment":"Low Activity","count":0},{"segment":"Medium Activity","count":0},{"segment":"High Activity","count":0},{"segment":"Very High Activity","count":0}],"typeBreakdown":[],"pointBalanceDistribution":[{"bucket":"0-50 stamps","count":0},{"bucket":"51-100 stamps","count":0},{"bucket":"101-200 stamps","count":0},{"bucket":"201-500 stamps","count":0},{"bucket":"501-1000 stamps","count":0},{"bucket":"1000+ stamps","count":0}],"retentionTrend":[]};
+        const REPORT_DATA = PM.chartData;
         const chartColors = ['#0c6326', '#11cdef', '#fb6340', '#5e72e4', '#2dce89', '#f5365c'];
 
         function numberTick(value) {

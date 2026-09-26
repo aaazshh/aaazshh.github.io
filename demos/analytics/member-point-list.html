@@ -17,6 +17,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/member-point-list.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -756,17 +757,16 @@
                     <form method="GET" class="row g-3">
                         <div class="col-md-2">
                             <label class="filter-label">Date From</label>
-                            <input type="date" class="form-control" name="date_from" value="2026-06-27">
+                            <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
                         </div>
                         <div class="col-md-2">
                             <label class="filter-label">Date To</label>
-                            <input type="date" class="form-control" name="date_to" value="2026-09-25">
+                            <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
                         </div>
                         <div class="col-md-2">
                             <label class="filter-label">Transaction Type</label>
                             <select class="form-control" name="transaction_type">
-                                <option value="">All</option>
-                                                            </select>
+                                <option value="">All</option><script>document.write(PM.typeOptions());document.currentScript.remove()</script></select>
                         </div>
                         <div class="col-md-2">
                             <label class="filter-label">Member ID</label>
@@ -801,11 +801,7 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                                                                                        <tr>
-                                    <td colspan="9" class="text-center text-muted">No point transactions found.</td>
-                                </tr>
-                                                    </tbody>
+                        <tbody><script>document.write(PM.body());document.currentScript.remove()</script></tbody>
                     </table>
                 </div>
             </div>

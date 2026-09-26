@@ -18,6 +18,7 @@
     <script src="mock/dashboard.js"></script>
     <script src="mock/crm.js"></script>
     <script src="mock/mobile.js"></script>
+    <script src="mock/pages/game-winning.js"></script>
     <link rel="stylesheet" href="demo.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -785,23 +786,21 @@
                         <div class="row g-3">
                             <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Winning Date From</label>
-                                <input type="date" class="form-control" name="date_from" value="2026-09-01">
+                                <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
                             </div>
                             <div class="col-xl-2 col-md-4">
                                 <label class="form-label mb-1">Winning Date To</label>
-                                <input type="date" class="form-control" name="date_to" value="2026-09-24">
+                                <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
                             </div>
                                                             <div class="col-xl-3 col-md-4">
                                     <label class="form-label mb-1">Game ID</label>
                                     <select class="form-control select2-search" name="game_id" data-placeholder="All Games">
-                                        <option value="">All Games</option>
-                                                                                                                    </select>
+                                        <option value="">All Games</option><script>document.write(PM.optionsHtml('game'));document.currentScript.remove()</script></select>
                                 </div>
                                                             <div class="col-xl-3 col-md-4">
                                     <label class="form-label mb-1">Prize Type / Prize Item</label>
                                     <select class="form-control select2-search" name="prize_pool_id" data-placeholder="All Prize Types / Prize Items">
-                                        <option value="">All Prize Types / Prize Items</option>
-                                                                                                                    </select>
+                                        <option value="">All Prize Types / Prize Items</option><script>document.write(PM.optionsHtml('pool'));document.currentScript.remove()</script></select>
                                 </div>
                                                         <div class="col-xl-2 col-md-4 d-flex align-items-end gap-2">
                                 <a href="game-winning.html" class="btn btn-outline-green mb-0 w-50">Reset</a>
@@ -817,37 +816,37 @@
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Total Winning Records</p>
-                            <h5 class="mb-0">0</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[0][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Unique Winners</p>
-                            <h5 class="mb-0">0</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[1][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Active Winning Games</p>
-                            <h5 class="mb-0">0</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[2][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Prize Categories</p>
-                            <h5 class="mb-0">0</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[3][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Prize Types / Prize Items</p>
-                            <h5 class="mb-0">0</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[4][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                                     <div class="col-xl-2 col-md-4 col-sm-6">
                         <div class="card dashboard-card"><div class="card-body p-3">
                             <p class="text-sm text-muted mb-1">Average Wins per Winner</p>
-                            <h5 class="mb-0">0.00</h5>
+                            <h5 class="mb-0"><script>document.write(PM.esc(PM.cards[5][1]));document.currentScript.remove()</script></h5>
                         </div></div>
                     </div>
                             </div>
@@ -1274,11 +1273,11 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const TREND_BUCKETS = [];
-const GAME_ROWS = [];
-const PRIZE_POOL_ROWS = [];
-const RANKED_PRIZE_ROWS = {"top10":[],"bottom10":[]};
-const MEMBER_ROWS = [];
+const TREND_BUCKETS = PM.trendBuckets;
+const GAME_ROWS = PM.gameRows;
+const PRIZE_POOL_ROWS = PM.prizePoolRows;
+const RANKED_PRIZE_ROWS = PM.rankedPrizeRows;
+const MEMBER_ROWS = PM.memberRows;
 
 const GREEN = 'rgb(12,99,38)';
 const BLUE = 'rgb(37,99,235)';

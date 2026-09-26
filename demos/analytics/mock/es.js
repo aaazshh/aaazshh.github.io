@@ -188,6 +188,10 @@ var Es = (function () {
         });
         var size = s.size == null ? 10 : s.size;
         out[name] = { doc_count_error_upper_bound: 0, sum_other_doc_count: Math.max(0, docs.length), buckets: buckets.slice(0, size) };
+      } else if (type === 'rare_terms') {
+        var rc = {}, ro = [];
+        docs.forEach(function (d) { var k = get(d, s.field); if (k == null || k === '') return; if (!(k in rc)) { rc[k] = 0; ro.push(k); } rc[k]++; });
+        out[name] = { buckets: ro.filter(function (k) { return rc[k] <= (s.max_doc_count || 1); }).map(function (k) { return { key: k, doc_count: rc[k] }; }) };
       } else if (type === 'filter') {
         var hit = docs.filter(function (d) { return match(d, s); });
         out[name] = withSub({ doc_count: hit.length }, hit);

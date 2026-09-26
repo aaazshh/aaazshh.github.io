@@ -41,6 +41,7 @@
   function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
   function el(tag, cls, css) {
     var e = document.createElement(tag);
+    if (tag === 'img') e.draggable = false;
     if (cls) e.className = cls;
     if (css) e.style.cssText = css;
     return e;
@@ -80,190 +81,24 @@
         '<animate attributeName="scale" values="3;7;2;6;3" dur="3.8s" repeatCount="indefinite"/></feDisplacementMap></filter>';
   root.appendChild(defs);
 
-  /* Page art ----------------------------------------------------------------- */
-
-  /* The pages are painted in the picture's own palette and run through a
-     wobble and a soft blur, on warm paper with the same top right light, so a
-     turned page reads as part of the painting instead of a sticker on it.
-     Each page is one SVG image, drawn once, that the page strips all share. */
-
-  var T = '#c7804f', T2 = '#e2ad80', T3 = '#f1d6b8';     // terracotta
-  var L = '#a58ccf', L2 = '#cbbbe6', L3 = '#e8dff4';     // lilac
-  var BR = '#7a5537', TX = '#cdb9a2', SK = '#b8967a';     // ink, text, sketch
-
-  function lines(x, y, w, n, gap, col) {
-    var s = '';
-    gap = gap || 11;
-    for (var i = 0; i < n; i++) {
-      var ww = w * (i === n - 1 ? 0.4 + rnd() * 0.3 : 0.78 + rnd() * 0.22);
-      var yy = y + i * gap + (rnd() - 0.5);
-      s += '<path d="M' + x + ' ' + yy.toFixed(1) + ' h' + ww.toFixed(1) + '" stroke="' + (col || TX) +
-        '" stroke-width="2.6" stroke-linecap="round" opacity="' + (0.7 + rnd() * 0.3).toFixed(2) + '"/>';
-    }
-    return s;
-  }
-  function flower(cx, cy, r, c, c2) {
-    var s = '';
-    for (var i = 0; i < 5; i++) {
-      s += '<ellipse cx="' + cx + '" cy="' + (cy - r * 0.55) + '" rx="' + (r * 0.38) + '" ry="' + (r * 0.58) +
-        '" fill="' + (i % 2 ? (c2 || L2) : (c || L)) + '" transform="rotate(' + (i * 72 + 8) + ' ' + cx + ' ' + cy + ')"/>';
-    }
-    return s + '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.22) + '" fill="#fbf3e6"/>' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.11) + '" fill="#dcae62"/>';
-  }
-  function leaf(x, y, l, ang, c) {
-    return '<path d="M0 0 Q ' + l * 0.5 + ' ' + (-l * 0.35) + ' ' + l + ' 0 Q ' + l * 0.5 + ' ' + l * 0.35 + ' 0 0Z" fill="' +
-      (c || T2) + '" transform="translate(' + x + ' ' + y + ') rotate(' + ang + ')"/>';
-  }
-  function sprig(x, y, h, c) {
-    var s = '<path d="M' + x + ' ' + y + ' C ' + (x + 6) + ' ' + (y - h * 0.4) + ', ' + (x - 6) + ' ' + (y - h * 0.7) + ', ' + x + ' ' + (y - h) +
-      '" stroke="' + (c || T) + '" stroke-width="2" fill="none"/>';
-    for (var i = 1; i < 6; i++) {
-      var yy = y - h * i / 6;
-      s += leaf(x, yy, 12 + rnd() * 6, -30 - rnd() * 20, i % 2 ? T2 : (c || T)) +
-        leaf(x, yy - 4, 12 + rnd() * 6, -150 + rnd() * 20, i % 2 ? (c || T) : T2);
-    }
-    return s;
-  }
-  function ring(cx, cy, r, c) {
-    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#fbf3e6" stroke="' + (c || SK) + '" stroke-width="2"/>' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r - 3.5) + '" fill="none" stroke="' + (c || SK) + '" stroke-width=".8" opacity=".6"/>';
-  }
-  function wash(x, y, w, h, c, o) {
-    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + Math.min(w, h) * 0.3 +
-      '" fill="' + c + '" opacity="' + (o || 0.7) + '" filter="url(#wash)"/>';
-  }
-  function blot(cx, cy, r, c, o) {
-    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + c + '" opacity="' + (o || 0.7) + '" filter="url(#wash)"/>';
-  }
-  function tape(x, y, w, ang) {
-    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="17" fill="#e9dcc4" opacity=".78" transform="rotate(' +
-      ang + ' ' + (x + w / 2) + ' ' + (y + 8) + ')"/>';
-  }
-
-  // back: a left hand page, spine on its right and only x 35..310 showing.
-  function page(art, back, n) {
-    var gut = back
-      ? '<linearGradient id="g" x1="1" y1="0" x2="0" y2="0">'
-      : '<linearGradient id="g" x1="0" y1="0" x2="1" y2="0">';
-    return 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 385" width="310" height="385" preserveAspectRatio="none">' +
-      '<defs>' +
-        '<linearGradient id="p" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#fffff6"/><stop offset="1" stop-color="#fbf9e3"/></linearGradient>' +
-        '<radialGradient id="sun" cx=".88" cy=".04" r="1"><stop offset="0" stop-color="#fffffa" stop-opacity="1"/><stop offset=".6" stop-color="#fffaf0" stop-opacity="0"/></radialGradient>' +
-        gut + '<stop offset="0" stop-color="#7a5236" stop-opacity=".2"/><stop offset=".07" stop-color="#7a5236" stop-opacity=".07"/><stop offset=".22" stop-color="#7a5236" stop-opacity="0"/></linearGradient>' +
-        '<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="' + n + '"/>' +
-          '<feColorMatrix values="0 0 0 0 .45  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .03 0"/></filter>' +
-        '<filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="' + (n + 3) + '" result="t"/>' +
-          '<feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation=".4"/></filter>' +
-        '<filter id="wash" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="3" seed="' + (n + 9) + '" result="t"/>' +
-          '<feDisplacementMap in="SourceGraphic" in2="t" scale="14" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="1.6"/></filter>' +
-      '</defs>' +
-      '<rect width="310" height="385" fill="url(#p)"/>' +
-      '<rect width="310" height="385" filter="url(#grain)"/>' +
-      '<g filter="url(#ink)" opacity=".78" style="mix-blend-mode:multiply" fill="none">' + art + '</g>' +
-      '<rect width="310" height="385" fill="url(#sun)"/>' +
-      '<rect width="310" height="385" fill="url(#g)"/>' +
-      '</svg>') + '")';
-  }
-
-  var P = [];
-  // Spread one: hello, and the portals.
-  P[1] = page(
-    '<path d="M62 46 h96" stroke="' + BR + '" stroke-width="7" stroke-linecap="round" opacity=".55"/>' +
-    '<path d="M62 62 h60" stroke="' + T + '" stroke-width="3" stroke-linecap="round" opacity=".7"/>' +
-    lines(62, 84, 200, 3) +
-    blot(172, 196, 68, L3, 0.9) +
-    '<path d="M168 262 C 160 230 178 204 166 170" stroke="' + T + '" stroke-width="2.4"/>' +
-    leaf(166, 238, 40, -28, T2) + leaf(164, 218, 36, -152, T) + leaf(168, 196, 26, -40, T2) +
-    flower(166, 158, 38, L, L2) + flower(214, 206, 16, T2, T3) + flower(118, 214, 13, L2, L3) +
-    tape(70, 118, 62, -24) + tape(222, 248, 58, -24) +
-    lines(62, 296, 210, 6), true, 1);
-  P[2] = page(
-    wash(34, 38, 246, 176, T3, 0.8) +
-    '<rect x="40" y="46" width="232" height="158" rx="8" fill="#fbf4e8" stroke="' + SK + '" stroke-width="1.8"/>' +
-    '<path d="M40 64 h232" stroke="' + SK + '" stroke-width="1.4"/>' +
-    '<circle cx="52" cy="55" r="3" fill="' + T + '"/><circle cx="62" cy="55" r="3" fill="' + T2 + '"/><circle cx="72" cy="55" r="3" fill="' + L2 + '"/>' +
-    '<rect x="40" y="64" width="48" height="140" fill="' + T3 + '"/>' +
-    lines(48, 80, 30, 6, 16, T2) +
-    '<rect x="100" y="76" width="50" height="34" rx="4" fill="' + L3 + '"/><rect x="158" y="76" width="50" height="34" rx="4" fill="' + T3 + '"/>' +
-    '<rect x="216" y="76" width="46" height="34" rx="4" fill="' + L3 + '"/>' +
-    '<path d="M104 184 C 124 160 138 172 154 150 S 190 158 206 134 S 240 142 258 124" stroke="' + T + '" stroke-width="2.4"/>' +
-    '<path d="M104 190 h154" stroke="' + SK + '" stroke-width="1.2"/>' +
-    lines(30, 238, 236, 7) + flower(252, 338, 14, T, T2) + sprig(230, 364, 40, T), false, 2);
-  // Spread two: the apps, and the delivery routes.
-  P[3] = page(
-    blot(120, 150, 70, T3, 0.85) + blot(214, 170, 60, L3, 0.9) +
-    '<rect x="68" y="56" width="86" height="164" rx="14" fill="#fbf4e8" stroke="' + SK + '" stroke-width="2"/>' +
-    '<path d="M98 64 h26" stroke="' + SK + '" stroke-width="3" stroke-linecap="round"/>' +
-    '<rect x="78" y="78" width="66" height="36" rx="6" fill="' + T2 + '" opacity=".8"/>' +
-    lines(80, 128, 60, 5, 15, TX) +
-    '<rect x="176" y="84" width="86" height="164" rx="14" fill="#fbf4e8" stroke="' + SK + '" stroke-width="2"/>' +
-    '<path d="M206 92 h26" stroke="' + SK + '" stroke-width="3" stroke-linecap="round"/>' +
-    '<path d="M188 212 C 196 180 222 190 226 160 S 244 128 250 112" stroke="' + L + '" stroke-width="2.4" stroke-dasharray="1 6" stroke-linecap="round"/>' +
-    '<circle cx="250" cy="112" r="6" fill="' + T + '"/><circle cx="188" cy="212" r="4" fill="' + L + '"/>' +
-    lines(62, 280, 214, 6), true, 3);
-  P[4] = page(
-    blot(90, 110, 56, L3, 0.9) + blot(220, 250, 70, T3, 0.85) + blot(230, 90, 36, L3, 0.7) +
-    '<path d="M62 76 C 90 130 60 170 120 196 S 200 190 206 240 S 170 300 236 318" stroke="' + SK + '" stroke-width="2.2" stroke-dasharray="2 7" stroke-linecap="round"/>' +
-    ring(62, 76, 13) + ring(120, 196, 11) + ring(206, 240, 12) +
-    '<path d="M236 326 C 226 312 224 302 236 296 C 248 302 246 312 236 326 Z" fill="' + T + '"/><circle cx="236" cy="306" r="3.4" fill="#fbf3e6"/>' +
-    '<g transform="translate(142 128) rotate(-12)"><rect x="0" y="0" width="30" height="16" rx="2" fill="' + L2 + '" stroke="' + L + '" stroke-width="1.2"/>' +
-      '<path d="M30 5 h8 l6 6 v5 h-14 z" fill="' + T2 + '" stroke="' + T + '" stroke-width="1.2"/>' +
-      '<circle cx="8" cy="18" r="3.4" fill="' + BR + '" opacity=".7"/><circle cx="36" cy="18" r="3.4" fill="' + BR + '" opacity=".7"/></g>' +
-    lines(30, 350, 150, 2), false, 4);
-  // Spread three: the fish farm, and the numbers.
-  P[5] = page(
-    '<path d="M50 150 C 90 136 120 164 160 150 S 240 136 292 150 L 292 250 C 250 262 214 240 170 252 S 90 262 50 250 Z" fill="' + L3 + '" filter="url(#wash)" opacity=".95"/>' +
-    '<g transform="translate(126 190)"><ellipse rx="28" ry="12" fill="' + T2 + '"/><path d="M24 0 L42 -12 L38 0 L42 12 Z" fill="' + T + '"/>' +
-      '<path d="M-6 -11 Q 2 -20 10 -11" fill="' + T + '"/><circle cx="-16" cy="-3" r="2.2" fill="' + BR + '"/>' +
-      '<path d="M-4 -8 Q 2 0 -4 8 M 4 -9 Q 10 0 4 9" stroke="' + T + '" stroke-width="1" opacity=".6"/></g>' +
-    '<g transform="translate(222 222) scale(-.7 .7)"><ellipse rx="28" ry="12" fill="' + L2 + '"/><path d="M24 0 L42 -12 L38 0 L42 12 Z" fill="' + L + '"/>' +
-      '<circle cx="-16" cy="-3" r="2.4" fill="' + BR + '"/></g>' +
-    '<path d="M70 176 q10 -6 20 0 t20 0 M 190 170 q10 -6 20 0 t20 0 M 160 236 q10 -6 20 0 t20 0" stroke="' + L + '" stroke-width="1.6"/>' +
-    '<path d="M62 60 h110" stroke="' + BR + '" stroke-width="7" stroke-linecap="round" opacity=".5"/>' + lines(62, 80, 200, 3) +
-    [0, 1, 2].map(function (i) {
-      var y = 288 + i * 26;
-      return '<rect x="62" y="' + y + '" width="13" height="13" rx="3" stroke="' + T + '" stroke-width="1.6" fill="#fbf4e8"/>' +
-        (i < 2 ? '<path d="M65 ' + (y + 6) + ' l4 4 l7 -10" stroke="' + T + '" stroke-width="2"/>' : '') + lines(86, y + 7, 180, 1);
-    }).join(''), true, 5);
-  P[6] = page(
-    wash(28, 40, 250, 170, L3, 0.75) +
-    '<path d="M44 190 h222" stroke="' + SK + '" stroke-width="1.6"/>' +
-    [58, 96, 70, 128, 104, 150].map(function (h, i) {
-      return '<rect x="' + (54 + i * 36) + '" y="' + (190 - h) + '" width="22" height="' + h + '" rx="3" fill="' + [T2, L2, T3, T, L2, T2][i] + '"/>';
-    }).join('') +
-    '<path d="M60 120 C 100 100 120 96 150 80 S 220 60 262 44" stroke="' + L + '" stroke-width="2.2"/>' +
-    '<circle cx="262" cy="44" r="4" fill="' + L + '"/>' +
-    '<g transform="translate(66 250)"><rect x="0" y="16" width="36" height="30" rx="6" fill="' + T2 + '" stroke="' + T + '" stroke-width="1.4"/>' +
-      '<path d="M8 16 v-6 a10 10 0 0 1 20 0 v6" stroke="' + T + '" stroke-width="3"/><circle cx="18" cy="30" r="3.4" fill="' + BR + '" opacity=".7"/></g>' +
-    lines(120, 262, 150, 3) + lines(30, 318, 236, 4), false, 6);
-  // Spread four: a bouquet to end on, and the endpaper.
-  P[7] = page(
-    blot(170, 170, 92, T3, 0.85) + blot(210, 130, 48, L3, 0.8) +
-    sprig(130, 280, 110, T) + sprig(224, 286, 116, T) + sprig(176, 300, 140, BR) +
-    flower(172, 150, 42, L, L2) + flower(222, 196, 28, T2, T3) + flower(118, 190, 26, L2, L3) + flower(210, 112, 18, T, T2) +
-    '<path d="M150 318 q14 -12 28 0 q14 12 28 0" stroke="' + T + '" stroke-width="2"/>' +
-    lines(82, 342, 180, 2), true, 7);
-  var pat = '';
-  for (var py = 30; py < 385; py += 46) {
-    for (var px = ((py / 46) % 2 ? 30 : 52); px < 310; px += 44) {
-      pat += (px + py) % 3 ? flower(px, py, 9, T2, T3) : flower(px, py, 9, L2, L3);
-    }
-  }
-  P[8] = page(blot(155, 190, 150, T3, 0.5) + pat, false, 8);
+  // Nothing on the desk is a file to drag out of the page.
+  root.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  root.addEventListener('selectstart', function (e) { e.preventDefault(); });
 
   /* The book ---------------------------------------------------------------- */
 
   var book = el('div', 'jr-book');
   stage.appendChild(book);
+  // The homography handles the flat book. Height off the page is given its own
+  // direction on screen: up the picture, leaning slightly with the desk, and
+  // converging toward a vanishing point far below, the way the painting's
+  // camera looks down at the table.
+  var UPX = -0.1, UPY = -0.86, VANISH = 2600;
   (function place() {
-    var d = 1400, cx = FW / 2, cy = FH / 2;
-    var H4 = [[HM[0][0], HM[0][1], 0, HM[0][2]], [HM[1][0], HM[1][1], 0, HM[1][2]], [0, 0, 1, 0], [HM[2][0], HM[2][1], 0, HM[2][2]]];
-    var Pm = [[1, 0, -cx / d, 0], [0, 1, -cy / d, 0], [0, 0, 1, 0], [0, 0, -1 / d, 1]];
-    var M = H4.map(function (r) {
-      return [0, 1, 2, 3].map(function (j) { return r.reduce(function (s, v, k) { return s + v * Pm[k][j]; }, 0); });
-    });
+    var M = [[HM[0][0], HM[0][1], UPX, HM[0][2]],
+             [HM[1][0], HM[1][1], UPY, HM[1][2]],
+             [0, 0, 1, 0],
+             [HM[2][0], HM[2][1], UPY / VANISH, HM[2][2]]];
     var cm = [];
     for (var j = 0; j < 4; j++) for (var i = 0; i < 4; i++) cm.push(M[i][j]);
     book.style.transform = 'matrix3d(' + cm.join(',') + ')';
@@ -279,16 +114,21 @@
     return [v[0] / v[2], v[1] / v[2]];
   }
 
-  /* Every leaf is cut into strips hinged one onto the next, so it can bend as
-     it turns instead of swinging over like a board. Each strip shows its own
-     slice of the same page image on both sides. */
-  var SEG = 8, SW = LW / SEG;
-  var TEX_R = 'url("' + ART + 'page-right.webp")';
-  var SPREAD = [[TEX_R, P[1]], [P[2], P[3]], [P[4], P[5]], [P[6], P[7]]];
+  /* Every leaf is cut into strips hinged one onto the next, and the strips are
+     driven by a small simulation of a sheet of paper seen edge on: each hinge
+     has an angle, neighbouring strips are held together by bending springs,
+     gravity pulls every strip toward whichever side it is over, and the air
+     holds back the free edge more than the spine. So a turning page curls,
+     trails its edge, and settles onto the stack instead of swinging over like
+     a board. Each strip shows its own slice of the page image on both sides. */
+  var SEG = 16, SW = LW / SEG, D2R = Math.PI / 180;
+  function img(name) { return 'url("' + ART + name + '")'; }
+  var SPREAD = [[img('page-right.webp'), img('page-1.webp')], [img('page-2.webp'), img('page-3.webp')],
+                [img('page-4.webp'), img('page-5.webp')], [img('page-6.webp'), img('page-7.webp')]];
   var N = SPREAD.length;
 
-  var baseL = el('div', 'jr-base jr-base-l', 'background-image:url("' + ART + 'page-left.webp")');
-  var baseR = el('div', 'jr-base jr-base-r', 'background-image:' + P[8]);
+  var baseL = el('div', 'jr-base jr-base-l', 'background-image:' + img('page-left.webp'));
+  var baseR = el('div', 'jr-base jr-base-r', 'background-image:' + img('page-8.webp'));
   baseL.appendChild(el('div', 'jr-cast jr-cast-l'));
   baseR.appendChild(el('div', 'jr-cast jr-cast-r'));
   book.appendChild(baseL);
@@ -302,7 +142,10 @@
       var seg = el('div', 'jr-seg', 'left:' + (k ? SW : 0) + 'px;width:' + SW + 'px');
       var front = el('div', 'jr-face jr-front', 'background-image:' + faces[0] + ';background-position:' + (-k * SW) + 'px 0');
       var back = el('div', 'jr-face jr-back', 'background-image:' + faces[1] + ';background-position:' + (-(SEG - 1 - k) * SW) + 'px 0;transform-origin:' + SW / 2 + 'px 50%');
-      if (k === SEG - 1) back.style.clipPath = 'inset(0 0 0 ' + (LW - SP) + 'px)';
+      // The left page is narrower than the leaf, so the last bit of the back
+      // hangs off the book and is cut away.
+      var hide = (LW - SP) - (SEG - 1 - k) * SW;
+      if (hide > 0) back.style.clipPath = 'inset(0 0 0 ' + Math.min(hide, SW + 1) + 'px)';
       seg.appendChild(front);
       seg.appendChild(back);
       parent.appendChild(seg);
@@ -318,67 +161,115 @@
   });
 
   var current = 0;          // leaves before this one lie on the left
-  var moving = {};          // leaf index -> its spring state while it moves
+  var moving = {};          // leaf index -> its sheet while it moves
   var lifts = 0;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  function restAngle(i) { return i < current ? -180 : 0; }
-  function stackZ(i, a) { return a < -90 ? (i + 1) * 0.5 : (N - i) * 0.5; }
-  function shade(t) { return (0.36 * Math.pow(Math.abs(Math.sin(t * Math.PI / 180)), 1.2)).toFixed(3); }
+  function restPhi(i) { return i < current ? 180 : 0; }
+  function stackZ(i, flipped) { return flipped ? (i + 1) * 0.1 : (N - i) * 0.1; }
 
-  // Lays one leaf out: A is the angle at the spine, B how far the free edge
-  // runs ahead of it (negative) or trails behind it (positive).
-  function pose(i, A, B, z) {
-    var lf = leaves[i];
-    var prev = 0, th = [];
+  // Light from the upper right. Returns how much darker (positive) or
+  // brighter (negative) a face is than when it lies flat.
+  var LX = 0.55, LZ = 0.835;
+  function light(phi, back) {
+    var nx = -Math.sin(phi * D2R), nz = Math.cos(phi * D2R);
+    if (back) { nx = -nx; nz = -nz; }
+    return LZ - (nx * LX + nz * LZ);
+  }
+  function setShade(seg, prop, v) {
+    seg.style.setProperty('--' + prop + 'd', Math.max(0, v * 0.42).toFixed(3));
+    seg.style.setProperty('--' + prop + 'l', Math.max(0, -v * 0.9).toFixed(3));
+  }
+
+  // Lays one leaf out from its strip angles (0 flat on the right, 180 flat on
+  // the left).
+  function pose(i, phi, z) {
+    var lf = leaves[i], prev = 0;
     for (var k = 0; k < SEG; k++) {
-      var t = (k + 0.5) / SEG;
-      th.push(clamp(A + B * Math.pow(t, 1.6), -180, 0));
-    }
-    for (k = 0; k < SEG; k++) {
       var seg = lf.segs[k];
-      var rel = th[k] - prev;
-      prev = th[k];
+      var a = -phi[k], rel = a - prev;
+      prev = a;
       seg.style.transform = k ? 'rotateY(' + rel.toFixed(3) + 'deg)' : 'translateZ(' + z.toFixed(2) + 'px) rotateY(' + rel.toFixed(3) + 'deg)';
-      var left = k ? (th[k - 1] + th[k]) / 2 : th[0];
-      var right = k < SEG - 1 ? (th[k] + th[k + 1]) / 2 : th[k];
-      seg.style.setProperty('--a0', shade(left));
-      seg.style.setProperty('--a1', shade(right));
+      var p0 = k ? (phi[k - 1] + phi[k]) / 2 : phi[0];
+      var p1 = k < SEG - 1 ? (phi[k] + phi[k + 1]) / 2 : phi[k];
+      setShade(seg, 'f0', light(p0, false));
+      setShade(seg, 'f1', light(p1, false));
+      setShade(seg, 'b0', light(p0, true));
+      setShade(seg, 'b1', light(p1, true));
     }
   }
 
+  var FLAT = [];
   function settleLeaf(i) {
-    var a = restAngle(i), z = stackZ(i, a);
-    pose(i, a, 0, z);
+    var r = restPhi(i), flipped = r === 180, z = stackZ(i, flipped);
+    for (var k = 0; k < SEG; k++) FLAT[k] = r;
+    pose(i, FLAT, z);
     var lf = leaves[i];
-    lf.castF.style.transform = 'translateZ(' + (z + 0.3) + 'px)';
-    lf.castB.style.transform = 'translateZ(' + (z + 0.3) + 'px) rotateY(-180deg)';
-    lf.el.classList.toggle('is-flipped', a === -180);
+    lf.castF.style.transform = 'translateZ(' + (z + 0.04) + 'px)';
+    lf.castB.style.transform = 'translateZ(' + (z + 0.04) + 'px) rotateY(-180deg)';
+    lf.el.classList.toggle('is-flipped', flipped);
   }
   leaves.forEach(function (lf, i) { settleLeaf(i); });
 
-  function state(i) {
+  function sheet(i) {
     if (!moving[i]) {
-      var a = restAngle(i);
-      moving[i] = { A: a, v: 0, B: 0, bv: 0, T: a, drag: null, peek: false, path: null };
+      var r = restPhi(i), phi = new Float64Array(SEG), w = new Float64Array(SEG);
+      for (var k = 0; k < SEG; k++) phi[k] = r;
+      moving[i] = { phi: phi, w: w, target: r, hand: null, drive: 0 };
     }
     var s = moving[i];
-    s.z = N * 0.5 + 1.5 + (lifts++ % 6) * 0.35;
+    s.z = N * 0.1 + 0.2 + (lifts++ % 6) * 0.05;
     leaves[i].el.classList.add('is-turning');
     return s;
   }
 
-  // Sets a released page on its way. A flick already moving the right way
-  // gets there sooner; a page let go from standing still takes its time.
-  function glide(s) {
-    var dist = Math.abs(s.T - s.A);
-    var along = (s.T - s.A) * s.v > 0 ? Math.min(1, Math.abs(s.v) / 600) : 0;
-    s.path = { from: s.A, t: 0, dur: (0.2 + 0.42 * dist / 180) * (1 - along * 0.45) };
+  // Where the strips' joints are, edge on: x along the book, z up off it.
+  var PX = new Float64Array(SEG + 1), PZ = new Float64Array(SEG + 1);
+  function joints(phi) {
+    for (var k = 0; k < SEG; k++) {
+      PX[k + 1] = PX[k] + SW * Math.cos(phi[k] * D2R);
+      PZ[k + 1] = PZ[k] + SW * Math.sin(phi[k] * D2R);
+    }
   }
 
-  function spring(x, v, target, k, c, dt) {
-    v += (-k * (x - target) - c * v) * dt;
-    return [x + v * dt, v];
+  var G = 2300, KB = 2200, AIR = 4, INNER = 25, PUSH = 5000;
+  function simulate(s, h) {
+    var phi = s.phi, w = s.w, hand = s.hand;
+    var toLeft = s.target === 180;
+    var tip = phi[SEG - 1];
+    var over = toLeft ? tip : 180 - tip;          // how far the edge has come
+    var push = !hand && s.drive ? PUSH * (toLeft ? 1 : -1) * clamp((128 - over) / 36, 0, 1) : 0;
+    var fx = 0, fz = 0, g = 0;
+    if (hand) {
+      joints(phi);
+      g = hand.seg;
+      // A spring from the grabbed joint to the hand, like fingers on the page.
+      var vx = (PX[g + 1] - hand.lx) / h, vz = (PZ[g + 1] - hand.lz) / h;
+      hand.lx = PX[g + 1]; hand.lz = PZ[g + 1];
+      fx = (hand.x - PX[g + 1]) * hand.k - vx * hand.c;
+      fz = (hand.z - PZ[g + 1]) * hand.k - vz * hand.c;
+    }
+    for (var k = 0; k < SEG; k++) {
+      var t = k / (SEG - 1);
+      var tau = -G * Math.cos(phi[k] * D2R) * (1 - t * 0.7);
+      if (k > 0) tau += KB * (phi[k - 1] - phi[k]) + INNER * (w[k - 1] - w[k]);
+      if (k < SEG - 1) tau += KB * (phi[k + 1] - phi[k]) + INNER * (w[k + 1] - w[k]);
+      tau += push * (1 - t);
+      tau -= AIR * w[k] * (0.2 + 1.6 * t);
+      if (hand && k <= g) {
+        var dx = PX[g + 1] - PX[k], dz = PZ[g + 1] - PZ[k];
+        tau += (dx * fz - dz * fx) / (dx * dx + dz * dz + 100) * 57.3 / (g + 1) * 3;
+      }
+      // The last few degrees before the stack: a cushion of air.
+      var gap = toLeft ? 180 - phi[k] : phi[k];
+      if (gap < 14 && (toLeft ? w[k] > 0 : w[k] < 0)) tau -= w[k] * 9 * (1 - gap / 14);
+      w[k] += tau / (1 - t * 0.5) * h;
+    }
+    for (k = 0; k < SEG; k++) {
+      phi[k] += w[k] * h;
+      if (phi[k] < 0) { phi[k] = 0; if (w[k] < 0) w[k] *= -0.06; }
+      if (phi[k] > 180) { phi[k] = 180; if (w[k] > 0) w[k] *= -0.06; }
+    }
   }
 
   var casts = [];
@@ -396,63 +287,56 @@
     var keys = Object.keys(moving);
     clearCasts();
     if (!keys.length) return;
+    var sub = Math.max(1, Math.ceil(dt * 240)), h = dt / sub;
     for (var n = 0; n < keys.length; n++) {
-      var i = +keys[n], s = moving[i];
-      var sub = Math.max(1, Math.ceil(dt / (1 / 120))), h = dt / sub;
-      for (var q = 0; q < sub; q++) {
-        var r, lift = Math.sin(-s.A * Math.PI / 180), bt;
-        if (s.drag) {
-          r = spring(s.A, s.v, s.drag.target, 320, 34, h);
-          bt = -s.drag.dir * 18 * lift + s.v * 0.02;
-        } else if (s.path) {
-          // Chasing a point that eases along from where the page was let go
-          // to where it lands, so it lifts off gently instead of snapping.
-          var pa = s.path;
-          pa.t = Math.min(pa.dur, pa.t + h);
-          var e = pa.t / pa.dur;
-          e = e < 0.5 ? 2 * e * e : 1 - Math.pow(-2 * e + 2, 2) / 2;
-          r = spring(s.A, s.v, pa.from + (s.T - pa.from) * e, 260, 30, h);
-          if (pa.t >= pa.dur) s.path = null;
-          bt = -s.v * 0.07 * Math.min(1, lift * 2.2);
-        } else {
-          r = spring(s.A, s.v, s.T, s.peek ? 160 : 90, s.peek ? 24 : 18, h);
-          bt = -s.v * 0.07 * Math.min(1, lift * 2.2);
+      var i = +keys[n], s = moving[i], k;
+      for (var q = 0; q < sub; q++) simulate(s, h);
+      if (!s.hand) {
+        var still = true;
+        for (k = 0; k < SEG && still; k++) still = Math.abs(s.phi[k] - s.target) < 0.05 && Math.abs(s.w[k]) < 2;
+        if (still) {
+          delete moving[i];
+          leaves[i].el.classList.remove('is-turning');
+          settleLeaf(i);
+          continue;
         }
-        s.A = r[0]; s.v = r[1];
-        // The stack stops a page dead, it does not bounce off it.
-        if (s.A > 0) { s.A = 0; if (s.v > 0) s.v = 0; }
-        if (s.A < -180) { s.A = -180; if (s.v < 0) s.v = 0; }
-        r = spring(s.B, s.bv, clamp(bt, -44, 44), 170, 11, h);
-        s.B = r[0]; s.bv = r[1];
       }
-      if (!s.drag && !s.path && Math.abs(s.A - s.T) < 0.03 && Math.abs(s.v) < 1 && Math.abs(s.B) < 0.05 && Math.abs(s.bv) < 1) {
-        delete moving[i];
-        leaves[i].el.classList.remove('is-turning');
-        settleLeaf(i);
-        continue;
-      }
-      pose(i, s.A, s.B, s.z);
+      pose(i, s.phi, s.z);
 
-      // The lifted page throws a soft shadow onto whatever it is leaving and
-      // whatever it is about to cover.
-      var chord = s.A + s.B * 0.4;
-      var up = Math.sin(-chord * Math.PI / 180);
-      if (chord > -90) {
+      // The lifted page throws a soft shadow onto the page it is leaving or the
+      // one it is about to cover, as far out as it overhangs.
+      joints(s.phi);
+      var top = 0, reachR = 0, reachL = 0;
+      for (k = 1; k <= SEG; k++) {
+        top = Math.max(top, PZ[k]);
+        if (PX[k] > 0) reachR = Math.max(reachR, PX[k]); else reachL = Math.max(reachL, -PX[k]);
+      }
+      var amount = 0.36 * Math.min(1, top / 90);
+      var mid = PX[SEG >> 1] + PX[SEG];
+      if (mid >= 0) {
         var under = i + 1 < N && !moving[i + 1] ? leaves[i + 1].castF : baseR.firstChild;
-        cast(under, 0.34 * up, Math.cos(chord * Math.PI / 180) * 92 + 14);
+        cast(under, amount, reachR / LW * 100 + 12);
       } else {
         var below = i > 0 && !moving[i - 1] ? leaves[i - 1].castB : baseL.firstChild;
-        cast(below, 0.34 * up, -Math.cos(chord * Math.PI / 180) * 92 + 14);
+        cast(below, amount, reachL / LW * 100 + 12);
       }
     }
   }
 
-  /* Turning by hand. The page follows the pointer on a stiff spring, so it has
-     a little weight to it, and is let go on a softer one that keeps whatever
-     speed the flick gave it. */
-  var PEEK = -13;
+  /* Turning by hand. The grabbed point of the page is pulled toward the
+     pointer by a spring, lifted along the arc the page would sweep, and the
+     rest of the sheet follows the way paper does. */
   var peekLeaf = -1;
   var held = null;
+
+  function aimHand(s, lx) {
+    var r = (s.hand.seg + 1) * SW;
+    var x = clamp(lx - SP, -r, r);
+    // A little inside the page's reach, so the sheet bows as it is carried.
+    var lift = Math.sqrt(Math.max(0, r * r - x * x));
+    s.hand.x = x * 0.97;
+    s.hand.z = lift * 0.9 + 6;
+  }
 
   book.addEventListener('pointerdown', function (e) {
     if (e.button !== 0 || held) return;
@@ -462,21 +346,23 @@
     else if (lp[0] < SP && current > 0) { i = current - 1; dir = -1; }
     else return;
     e.preventDefault();
-    var s = state(i);
-    s.peek = false;
-    s.path = null;
+    var s = sheet(i);
     if (peekLeaf === i) peekLeaf = -1;
-    var grab = dir > 0 ? Math.max(lp[0] - SP, 60) : Math.max(SP - lp[0], 60);
-    s.drag = { dir: dir, grab: grab, target: s.A, x: e.clientX, y: e.clientY, t: performance.now(), moved: false };
+    var reach = Math.abs(lp[0] - SP);
+    var seg = clamp(Math.round(reach / SW) - 1, SEG >> 1, SEG - 1);
+    joints(s.phi);
+    s.hand = { seg: seg, x: PX[seg + 1], z: PZ[seg + 1], lx: PX[seg + 1], lz: PZ[seg + 1], k: 2600, c: 90 };
+    s.drive = 0;
+    aimHand(s, lp[0]);
+    var d = { dir: dir, x: e.clientX, y: e.clientY, t: performance.now(), moved: false };
     held = { i: i, id: e.pointerId };
     root.classList.add('is-grabbing');
 
     function move(ev) {
       if (ev.pointerId !== held.id) return;
       var p = toStage(ev.clientX, ev.clientY), l = toBook(p[0], p[1]);
-      if (Math.abs(ev.clientX - s.drag.x) + Math.abs(ev.clientY - s.drag.y) > 6) s.drag.moved = true;
-      var c = clamp((l[0] - SP) / s.drag.grab, -1, 1);
-      s.drag.target = -Math.acos(c) * 180 / Math.PI;
+      if (Math.abs(ev.clientX - d.x) + Math.abs(ev.clientY - d.y) > 6) d.moved = true;
+      aimHand(s, l[0]);
     }
     function up(ev) {
       if (ev.pointerId !== held.id) return;
@@ -484,14 +370,14 @@
       removeEventListener('pointerup', up);
       removeEventListener('pointercancel', up);
       root.classList.remove('is-grabbing');
-      var d = s.drag;
+      var tip = s.phi[SEG - 1], spin = s.w[SEG >> 1];
       var tap = !d.moved && performance.now() - d.t < 400 && ev.type === 'pointerup';
-      var done = d.dir > 0 ? (s.A < -90 || s.v < -220) : (s.A > -90 || s.v > 220);
+      var done = d.dir > 0 ? (tip > 80 || spin > 160) : (tip < 100 || spin < -160);
       if (tap) done = true;
       if (done) current += d.dir;
-      s.T = d.dir > 0 ? (done ? -180 : 0) : (done ? 0 : -180);
-      glide(s);
-      s.drag = null;
+      s.target = restPhi(i);
+      s.hand = null;
+      s.drive = done ? 1 : 0;
       held = null;
     }
     addEventListener('pointermove', move);
@@ -500,32 +386,39 @@
   });
 
   // A mouse near the outer edge lifts the corner a little, to say it turns.
+  function peek(i, on) {
+    if (on) {
+      var s = sheet(i);
+      joints(s.phi);
+      s.hand = { seg: SEG - 1, x: LW * Math.cos(24 * D2R), z: LW * Math.sin(24 * D2R) * 0.8, lx: PX[SEG], lz: PZ[SEG], k: 1200, c: 70 };
+      s.drive = 0;
+    } else if (moving[i] && moving[i].hand && !held) {
+      moving[i].hand = null;
+    }
+  }
   root.addEventListener('pointermove', function (e) {
     if (held || e.pointerType !== 'mouse') return;
     var st = toStage(e.clientX, e.clientY), lp = toBook(st[0], st[1]);
-    var want = current < N && lp[0] > SP + LW * 0.7 && lp[0] < SP + LW + 12 && lp[1] > 0 && lp[1] < FH ? current : -1;
+    var want = current < N && lp[0] > SP + LW * 0.72 && lp[0] < SP + LW + 12 && lp[1] > 0 && lp[1] < FH ? current : -1;
     if (want === peekLeaf) return;
-    if (peekLeaf >= 0 && moving[peekLeaf] && moving[peekLeaf].peek) moving[peekLeaf].T = restAngle(peekLeaf);
+    if (peekLeaf >= 0) peek(peekLeaf, false);
     peekLeaf = want;
-    if (want >= 0 && (!moving[want] || moving[want].peek)) {
-      var s = state(want);
-      s.peek = true;
-      s.T = PEEK;
-    }
+    if (want >= 0 && (!moving[want] || moving[want].target === 0)) peek(want, true);
   });
   root.addEventListener('pointerleave', function () {
-    if (peekLeaf >= 0 && moving[peekLeaf] && moving[peekLeaf].peek) moving[peekLeaf].T = restAngle(peekLeaf);
+    if (peekLeaf >= 0) peek(peekLeaf, false);
     peekLeaf = -1;
   });
 
   function turn(dir) {
     var i = dir > 0 ? current : current - 1;
     if (i < 0 || i >= N || held) return;
-    var s = state(i);
-    s.peek = false;
+    if (peekLeaf === i) peekLeaf = -1;
+    var s = sheet(i);
     current += dir;
-    s.T = restAngle(i);
-    glide(s);
+    s.target = restPhi(i);
+    s.hand = null;
+    s.drive = 1;
   }
   // Arrow keys turn pages, but only when nothing else wants them.
   addEventListener('keydown', function (e) {
@@ -566,7 +459,21 @@
 
   var things = el('div', 'jr-things');
   stage.appendChild(things);
+  // Things lying on the desk beyond the top of the book sit underneath it, so a
+  // page standing up as it turns hides them the way it would a real pen.
+  var behind = el('div', 'jr-things');
+  stage.insertBefore(behind, book);
   var topZ = 5;
+
+  function layer(node, a, b) {
+    var under = true;
+    for (var i = 0; i <= 8 && under; i++) {
+      var p = toBook(a[0] + (b[0] - a[0]) * i / 8, a[1] + (b[1] - a[1]) * i / 8);
+      under = p[1] < -6;          // past the top edge; beside the book does not count
+    }
+    var want = under ? behind : things;
+    if (node.parentNode !== want) want.appendChild(node);
+  }
 
   function dragger(node, onMove, onUp) {
     node.addEventListener('pointerdown', function (e) {
@@ -575,6 +482,7 @@
       e.stopPropagation();
       node.style.zIndex = ++topZ;
       node.classList.add('is-held');
+      if (node.parentNode !== things) things.appendChild(node);
       var id = e.pointerId;
       var begin = onMove(e, true);
       function move(ev) { if (ev.pointerId === id) onMove(ev, false, begin); }
@@ -603,6 +511,15 @@
     img.src = ART + m.src;
     bob.appendChild(img);
     pen.appendChild(bob);
+    // Only the pen itself takes the pointer, a strip along its length, so the
+    // page under the empty corners of its box still turns.
+    var ux = Math.cos(ang), uy = Math.sin(ang), hw = 11, ext = 6;
+    var ax = m.a[0] - m.x - ux * ext, ay = m.a[1] - m.y - uy * ext;
+    var bx = m.b[0] - m.x + ux * ext, by = m.b[1] - m.y + uy * ext;
+    var hit = el('div', 'jr-hit', 'clip-path:polygon(' + [
+      [ax - uy * hw, ay + ux * hw], [bx - uy * hw, by + ux * hw], [bx + uy * hw, by - ux * hw], [ax + uy * hw, ay - ux * hw]
+    ].map(function (p) { return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(',') + ')');
+    pen.appendChild(hit);
     things.appendChild(pen);
     var x = 0, y = 0;
     dragger(pen, function (e, first, b) {
@@ -612,7 +529,11 @@
       pen.style.translate = x + 'px ' + y + 'px';
       pen.style.setProperty('--tilt', clamp((e.clientX - b.lx) * 0.9, -12, 12) + 'deg');
       b.lx = e.clientX;
-    }, function () { pen.style.setProperty('--tilt', '0deg'); });
+    }, function () {
+      pen.style.setProperty('--tilt', '0deg');
+      layer(pen, [m.a[0] + x, m.a[1] + y], [m.b[0] + x, m.b[1] + y]);
+    });
+    layer(pen, m.a, m.b);
   });
 
   // The brush. Pick it up and it paints; drag the tip through the ink tray to
@@ -633,7 +554,12 @@
   function placeBrush() {
     brush.style.transform = 'translate(' + (tip.x - TIPX).toFixed(1) + 'px,' + (tip.y - TIPY).toFixed(1) + 'px) rotate(' + tilt.toFixed(1) + 'deg)';
   }
+  function layerBrush() {
+    var r = tilt * D2R;
+    layer(brush, [tip.x, tip.y], [tip.x + Math.cos(r) * BW * 0.97, tip.y + Math.sin(r) * BW * 0.97]);
+  }
   placeBrush();
+  layerBrush();
 
   function dab(x0, y0, x1, y1, speed) {
     var dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy);
@@ -692,6 +618,7 @@
   }, function () {
     tilt = -21;
     placeBrush();
+    layerBrush();
     clearTimeout(dryTimer);
     dryTimer = setTimeout(dry, 6000);
   });

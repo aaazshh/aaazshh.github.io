@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="mock/world.js"></script>
+    <script src="mock/net.js"></script>
+    <script src="mock/esagg.js"></script>
+    <script src="mock/common.js"></script>
+    <script src="mock/pm.js"></script>
+    <script src="mock/gp.js"></script>
+    <script src="mock/penetration.js"></script>
+    <script src="mock/pricing.js"></script>
+    <script src="mock/reports.js"></script>
+    <script src="mock/pos.js"></script>
+    <script src="mock/nosale.js"></script>
+    <script src="mock/pages/no-sale-report.js"></script>
+    <link rel="stylesheet" href="demo.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="./assets/img/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+</head><title>No Sale &amp; Slow Moving Report</title>
+
+<head>
+    <style>
+        .btn-outline-green {
+            border: 1px solid rgb(12, 99, 38);
+            color: rgb(12, 99, 38);
+        }
+
+        .btn-outline-green:hover {
+            background-color: rgb(12, 99, 38);
+            color: white;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(31, 41, 55, 0.08);
+            height: 100%;
+        }
+
+        .dashboard-card .card-header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.25rem;
+        }
+
+        .control-label {
+            color: #344767;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .chart-box {
+            height: 320px;
+            position: relative;
+        }
+
+        .chart-box canvas {
+            height: 290px !important;
+            max-height: 290px;
+            width: 100% !important;
+        }
+
+        .kpi-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .kpi-sub {
+            color: #67748e;
+            font-size: 0.75rem;
+        }
+
+        .status-pill {
+            border-radius: 999px;
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.02rem;
+            padding: 0.3rem 0.6rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-no_sale {
+            background: #fdecec;
+            color: #b42318;
+        }
+
+        .status-slow {
+            background: #fff5e6;
+            color: #b45309;
+        }
+
+        .status-no_pos_sale {
+            background: #eef2ff;
+            color: #3538cd;
+        }
+
+        .status-healthy {
+            background: #e7f4ec;
+            color: #0c6326;
+        }
+
+        .status-out_of_stock {
+            background: #f2f4f7;
+            color: #667085;
+        }
+
+        .window-note {
+            color: #67748e;
+            font-size: 0.82rem;
+        }
+
+        #noSaleTable tbody tr {
+            cursor: pointer;
+        }
+
+        #noSaleTable tbody tr:hover {
+            background: #f7faf9;
+        }
+
+        .drill-backdrop {
+            background: rgba(20, 27, 45, 0.55);
+            display: none;
+            inset: 0;
+            position: fixed;
+            z-index: 1080;
+        }
+
+        .drill-backdrop.open {
+            display: block;
+        }
+
+        .drill-dialog {
+            background: #fff;
+            border-radius: 10px;
+            left: 50%;
+            max-height: 88vh;
+            max-width: 900px;
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 92%;
+        }
+
+        .network-note {
+            border-left: 3px solid #b45309;
+            background: #fffaf2;
+            border-radius: 4px;
+            color: #475467;
+            font-size: 0.82rem;
+            padding: 0.6rem 0.75rem;
+        }
+
+        .network-note.network-note-quiet {
+            background: #f7f8fa;
+            border-left-color: #98a2b3;
+        }
+
+        .drill-tabs {
+            background: #f2f4f7;
+            border-radius: 999px;
+            display: inline-flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+        }
+
+        .drill-tab {
+            background: transparent;
+            border: 0;
+            border-radius: 999px;
+            color: #475467;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.45rem 1rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .drill-tab:hover {
+            color: #0c6326;
+        }
+
+        .drill-tab.active {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+            color: #0c6326;
+        }
+
+        .drill-txn-scroll {
+            max-height: 46vh;
+            overflow-y: auto;
+        }
+
+        .drill-txn-scroll thead th {
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .uom-chip {
+            background: #f2f4f7;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.75rem;
+            margin: 0.15rem 0.25rem 0 0;
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
+
+    
+<html>
+
+<head>
+</head>
+
+<body>
+    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Sticky header section -->
+        <div class="position-sticky top-0 z-index-sticky bg-white">
+            <div class="sidenav-header">
+                <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+                    aria-hidden="true" id="iconSidenav"></i>
+                <a class="navbar-brand m-0" href="#">
+                    <img src="./assets/img/logos/prime-logo.jpg" class="navbar-brand-img h-100" alt="main_logo">
+                    <span class="ms-1 font-weight-bold">Analytic Dashboard</span>
+                </a>
+            </div>
+
+            <hr class="horiznavbl dark mt-0">
+        </div>
+
+        <!-- Scrollable menu section -->
+        <div class="overflow-auto" style="max-height: calc(100vh - 170px);">
+            <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 3.293l6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+                                    <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+                                </svg>
+                            </div>
+                            <span class="nav-link-text">Home</span>
+                        </a>
+                    </li>
+                                            <li class="nav-item has-submenu"> <!-- Users -->
+                            <a class="nav-link" href="#manageUsers" data-bs-toggle="collapse" data-bs-target="#manageUsers"
+                                aria-controls="manageUsers">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Users</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+                                                        <div id="manageUsers" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="users-list.html">
+                                            <span class="sidenav-mini-icon">UL</span>
+                                            <span class="sidenav-normal">Users List</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            
+                        <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageStatistics" data-bs-toggle="collapse" data-bs-target="#manageStatistics"
+                                aria-controls="manageStatistics" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Statistics</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageStatistics" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="overview.html">
+                                            <span class="sidenav-mini-icon">OV</span>
+                                            <span class="sidenav-normal">Overview</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="comparison.html">
+                                            <span class="sidenav-mini-icon">CP</span>
+                                            <span class="sidenav-normal">Comparison</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="graphs.html">
+                                            <span class="sidenav-mini-icon">GR</span>
+                                            <span class="sidenav-normal">Graph</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="product-mapping.html">
+                                            <span class="sidenav-mini-icon">MP</span>
+                                            <span class="sidenav-normal">Product Mapping</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#basket-insights.php">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="basket-summary.html">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="pricing-insights.html">
+                                            <span class="sidenav-mini-icon">PI</span>
+                                            <span class="sidenav-normal">Price Insights</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#forecast.php">
+                                            <span class="sidenav-mini-icon">FC</span>
+                                            <span class="sidenav-normal">Revenue Forecast</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- Customer Insights hidden from sidebar; file kept intact -->
+                                                                        <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#stock-risk-insights.php">
+                                            <span class="sidenav-mini-icon">SRI</span>
+                                            <span class="sidenav-normal">Stock Risk Insights</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#store-performance.php">
+                                            <span class="sidenav-mini-icon">SP</span>
+                                            <span class="sidenav-normal">Store Performance</span>
+                                        </a>
+                                    </li> -->
+
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="share-of-basket-report.html">
+                                            <span class="sidenav-mini-icon">SB</span>
+                                            <span class="sidenav-normal">Share of Basket</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#retail-intelligence.php">
+                                            <span class="sidenav-mini-icon">RI</span>
+                                            <span class="sidenav-normal">Retail Intelligence</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#operational-intelligence.php">
+                                            <span class="sidenav-mini-icon">OI</span>
+                                            <span class="sidenav-normal">Operational Intelligence</span>
+                                        </a>
+                                    </li> -->
+                                </ul>
+                            </div>
+                        </li>
+
+
+                    
+                                            <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
+                                aria-controls="manageReports" aria-expanded="true">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
+                                        <path d="M4 0h5.5L14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5 1v3h3L9 1z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Reports</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                                <ul class="nav ms-4">
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
+                                            aria-controls="basketReports" aria-expanded=""
+                                            id="basketReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="basketFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="basketFolderIconFull"></i>
+                                                Basket Reports
+                                            </span>
+                                        </a>
+                                        
+                                        <div id="basketReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="basket-summary.html">
+                                                        <span class="sidenav-mini-icon">BS</span>
+                                                        <span class="sidenav-normal">Basket Summary</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="penetration-report.html">
+                                                        <span class="sidenav-mini-icon">PR</span>
+                                                        <span class="sidenav-normal">Penetration Report</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="share-of-basket-report.html">
+                                                        <span class="sidenav-mini-icon">SB</span>
+                                                        <span class="sidenav-normal">Share of Basket</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
+                                            aria-controls="gpReports" aria-expanded=""
+                                            id="gpReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
+                                                Gross Profit Reports
+                                            </span>
+                                        </a>
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-report-summary.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Summary Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-item-report.html">
+                                                        <span class="sidenav-mini-icon">IR</span>
+                                                        <span class="sidenav-normal">Item Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-category-report.html">
+                                                        <span class="sidenav-mini-icon">CR</span>
+                                                        <span class="sidenav-normal">Category Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <!-- transaction report -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#transactionReports" data-bs-toggle="collapse" data-bs-target="#transactionReports"
+                                            aria-controls="transactionReports" aria-expanded=""
+                                            id="transactionReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="transactionFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="transactionFolderIconFull"></i>
+                                                Transaction Reports
+                                            </span>
+                                        </a>
+                                        <div id="transactionReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <!-- POS Report is a folder: the dashboard plus the line-level
+                                                     drill-down that sits behind its numbers. -->
+                                                <li class="nav-item has-submenu">
+                                                    <a class="nav-link no-collapse-arrow pos-reports-toggle" href="#posReports" data-bs-toggle="collapse" data-bs-target="#posReports"
+                                                        aria-controls="posReports" aria-expanded=""
+                                                        id="posReportsToggle">
+                                                        <span class="sidenav-mini-icon"><i class="fa fa-folder" id="posFolderIcon"></i></span>
+                                                        <span class="sidenav-normal">
+                                                            <i class="fa fa-folder me-1" id="posFolderIconFull"></i>
+                                                            POS Report
+                                                        </span>
+                                                    </a>
+                                                    <div id="posReports" class="collapse submenu submenu-3 ">
+                                                        <ul class="nav ms-3">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link " href="pos-transction-report.html">
+                                                                    <span class="sidenav-mini-icon">POSD</span>
+                                                                    <span class="sidenav-normal">POS Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link " href="pos-detailed-transaction-report.html">
+                                                                    <span class="sidenav-mini-icon">PDT</span>
+                                                                    <span class="sidenav-normal">Detailed Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                                                                                <li class="nav-item">
+                                                    <a class="nav-link " href="mobile-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">MR</span>
+                                                        <span class="sidenav-normal">Mobile Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- point reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#pointReports" data-bs-toggle="collapse" data-bs-target="#pointReports"
+                                            aria-controls="pointReports" aria-expanded=""
+                                            id="pointReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="pointFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="pointFolderIconFull"></i>
+                                                Point Reports
+                                            </span>
+                                        </a>
+                                        <div id="pointReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-list.html">
+                                                        <span class="sidenav-mini-icon">PL</span>
+                                                        <span class="sidenav-normal">Member Point List</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">PA</span>
+                                                        <span class="sidenav-normal">Point Analytics Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- game reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gameReports" data-bs-toggle="collapse" data-bs-target="#gameReports"
+                                            aria-controls="gameReports" aria-expanded=""
+                                            id="gameReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gameFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gameFolderIconFull"></i>
+                                                Game Reports
+                                            </span>
+                                        </a>
+                                        <div id="gameReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-utilisation.html">
+                                                        <span class="sidenav-mini-icon">GU</span>
+                                                        <span class="sidenav-normal">Game Utilisation</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-winning.html">
+                                                        <span class="sidenav-mini-icon">GW</span>
+                                                        <span class="sidenav-normal">Game Winning</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#supplierReports" data-bs-toggle="collapse" data-bs-target="#supplierReports"
+                                            aria-controls="supplierReports" aria-expanded=""
+                                            id="supplierReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                Supplier Reports
+                                            </span>
+                                        </a>
+                                        <div id="supplierReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="supplier-consignment-report.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Consignment Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="vendor_default_commission-list.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Vendor Commission Rate</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#jetReports" data-bs-toggle="collapse" data-bs-target="#jetReports"
+                                            aria-controls="jetReports" aria-expanded=""
+                                            id="jetReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                Jet Reports
+                                            </span>
+                                        </a>
+                                        <div id="jetReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="abc-analysis-report.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">ABC Analysis Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-master-listing.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Product Master Listing</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="retail-item-sales.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Retail Item Sales</span>
+                                                    </a>
+                                                </li>
+                                                <!-- <li class="nav-item">
+                                                    <a class="nav-link " href="#stock-movement-report.php">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Stock Movement Report</span>
+                                                    </a>
+                                                </li> -->
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-report-item-cat.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Report By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-by-item-category.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">GP By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-claim-vendor.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Claim From Vendor</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                    </li>
+
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#customerReports" data-bs-toggle="collapse" data-bs-target="#customerReports"
+                                            aria-controls="customerReports" aria-expanded="true"
+                                            id="customerReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="customerFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder-open me-1" id="customerFolderIconFull"></i>
+                                                Customer Report
+                                            </span>
+                                        </a>
+                                        <div id="customerReports" class="collapse submenu submenu-2 show">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" href="no-sale-report.html">
+                                                        <span class="sidenav-mini-icon">NS</span>
+                                                        <span class="sidenav-normal">No Sales Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="weekly-customer-product-report.html">
+                                                        <span class="sidenav-mini-icon">EW</span>
+                                                        <span class="sidenav-normal">Customer Consistency Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="customer-behaviour-report.html">
+                                                        <span class="sidenav-mini-icon">CB</span>
+                                                        <span class="sidenav-normal">Customer Behaviour Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-frequency-behaviour.html">
+                                                        <span class="sidenav-mini-icon">PF</span>
+                                                        <span class="sidenav-normal">Product Frequency Behaviour</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            <!-- <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageSales" data-bs-toggle="collapse" data-bs-target="#manageSales"
+                                aria-controls="manageSales" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Sales</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageSales" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#transaction-by-month.php">
+                                            <span class="sidenav-mini-icon">TBM</span>
+                                            <span class="sidenav-normal">Transactions</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li> -->
+                    
+
+                </ul>
+            </div>
+        </div>
+        <style>
+            .navbar-vertical .navbar-nav .nav-link.no-collapse-arrow::after { display: none !important; }
+            /* Third-level folder: green so the nested POS group reads as a folder
+               rather than another report link. */
+            .pos-reports-toggle .fa-folder,
+            .pos-reports-toggle .fa-folder-open { color: rgb(12, 99, 38); }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const sidebarScrollContainer = document.querySelector('.sidenav .overflow-auto');
+
+                if (sidebarScrollContainer) {
+                    const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+                    if (savedScrollPosition !== null) {
+                        sidebarScrollContainer.scrollTop = parseInt(savedScrollPosition);
+                    }
+
+                    sidebarScrollContainer.addEventListener('scroll', function() {
+                        sessionStorage.setItem('sidebarScrollPosition', this.scrollTop);
+                    });
+                }
+            });
+        </script>
+        <script src="./assets/js/core/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const gpCollapse  = document.getElementById('gpReports');
+                const gpIconMini  = document.getElementById('gpFolderIcon');
+                const gpIconFull  = document.getElementById('gpFolderIconFull');
+                const basketCollapse  = document.getElementById('basketReports');
+                const basketIconMini  = document.getElementById('basketFolderIcon');
+                const basketIconFull  = document.getElementById('basketFolderIconFull');
+                const transactionCollapse  = document.getElementById('transactionReports');
+                const transactionMini  = document.getElementById('transactionFolderIcon');
+                const transactionIconFull  = document.getElementById('transactionFolderIconFull');
+                const posCollapse  = document.getElementById('posReports');
+                const posMini  = document.getElementById('posFolderIcon');
+                const posIconFull  = document.getElementById('posFolderIconFull');
+                const pointCollapse  = document.getElementById('pointReports');
+                const pointMini  = document.getElementById('pointFolderIcon');
+                const pointIconFull  = document.getElementById('pointFolderIconFull');
+                const gameCollapse  = document.getElementById('gameReports');
+                const gameMini  = document.getElementById('gameFolderIcon');
+                const gameIconFull  = document.getElementById('gameFolderIconFull');
+                const supplierCollapse  = document.getElementById('supplierReports');
+                const supplierMini  = document.getElementById('supplierFolderIcon');
+                const supplierIconFull  = document.getElementById('supplierFolderIconFull');
+                const customerCollapse  = document.getElementById('customerReports');
+                const customerMini  = document.getElementById('customerFolderIcon');
+                const customerIconFull  = document.getElementById('customerFolderIconFull');
+                function setFolder(open) {
+                    [gpIconMini, gpIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setBasketFolder(open) {
+                    [basketIconMini, basketIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setTransFolder(open) {
+                    [transactionMini, transactionIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPosFolder(open) {
+                    [posMini, posIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPointFolder(open) {
+                    [pointMini, pointIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setGameFolder(open) {
+                    [gameMini, gameIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setSupplierFolder(open) {
+                    [supplierMini, supplierIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setCustomerFolder(open) {
+                    [customerMini, customerIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                if (gpCollapse) {
+                    gpCollapse.addEventListener('show.bs.collapse', function () { setFolder(true);  });
+                    gpCollapse.addEventListener('hide.bs.collapse', function () { setFolder(false); });
+                }
+                if (basketCollapse) {
+                    basketCollapse.addEventListener('show.bs.collapse', function () { setBasketFolder(true);  });
+                    basketCollapse.addEventListener('hide.bs.collapse', function () { setBasketFolder(false); });
+                }
+                // Bootstrap's collapse events bubble, so the POS folder nested
+                // inside Transaction Reports would otherwise close its parent's
+                // icon on every toggle. Only react to this element's own event.
+                function ownCollapse(element, handler) {
+                    return function (event) {
+                        if (event.target !== element) return;
+                        handler();
+                    };
+                }
+                if (transactionCollapse) {
+                    transactionCollapse.addEventListener('show.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(true);  }));
+                    transactionCollapse.addEventListener('hide.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(false); }));
+                }
+                if (posCollapse) {
+                    posCollapse.addEventListener('show.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(true);  }));
+                    posCollapse.addEventListener('hide.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(false); }));
+                }
+                if (pointCollapse) {
+                    pointCollapse.addEventListener('show.bs.collapse', function () { setPointFolder(true);  });
+                    pointCollapse.addEventListener('hide.bs.collapse', function () { setPointFolder(false); });
+                }
+                if (gameCollapse) {
+                    gameCollapse.addEventListener('show.bs.collapse', function () { setGameFolder(true);  });
+                    gameCollapse.addEventListener('hide.bs.collapse', function () { setGameFolder(false); });
+                }
+                if (supplierCollapse) {
+                    supplierCollapse.addEventListener('show.bs.collapse', function () { setSupplierFolder(true);  });
+                    supplierCollapse.addEventListener('hide.bs.collapse', function () { setSupplierFolder(false); });
+                }
+                if (customerCollapse) {
+                    customerCollapse.addEventListener('show.bs.collapse', function () { setCustomerFolder(true);  });
+                    customerCollapse.addEventListener('hide.bs.collapse', function () { setCustomerFolder(false); });
+                }
+            });
+        </script>
+    </aside>
+</body>
+
+</html>
+
+
+    <main class="main-content position-relative border-radius-lg">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
+    <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                <li class="breadcrumb-item text-sm text-white active">Reports | No Sale & Slow Moving Report</li>
+            </ol>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+            <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+            </div>
+            <ul class="navbar-nav  justify-content-end">
+                <li class="nav-item d-flex align-items-center">
+                    <a href="#logout.php" class="nav-link text-white font-weight-bold px-0">
+                        <i class="fa fa-user me-sm-1"></i>
+                        <span class="d-sm-inline d-none">Maram Aashna | Log Out</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+        <div class="container-fluid py-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <h5 class="mb-1">No Sale &amp; Slow Moving Products</h5>
+                        <p class="text-sm text-muted mb-0">
+                            Daily stock-on-hand snapshots are compared across the window and cross-checked against POS sales.
+                            Stock that never moves and never rings through the till is a genuine no-sale line.
+                        </p>
+                    </div>
+                    <div class="window-note" id="windowNote">
+                        Snapshots available <script>document.write(PM.firstSnapshot)</script> to <script>document.write(PM.lastSnapshot)</script>                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="control-label" for="outletFilter">Outlet</label>
+                                <select name="store_no" id="outletFilter" class="form-control select2-search" data-placeholder="Select outlet"><script>document.write(PM.outletOptions())</script></select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label" for="periodFilter">Period</label>
+                                <select name="period" id="periodFilter" class="form-control">
+                                    <option value="1w" selected>Last 1 week</option>
+                                    <option value="2w" >Last 2 weeks</option>
+                                    <option value="1m" >Last 1 month</option>
+                                    <option value="custom" >Custom range</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2" id="dateToWrap">
+                                <label class="control-label" for="dateTo">Compare up to</label>
+                                <input type="date" class="form-control" id="dateTo" name="date_to" data-pm-attrs="min=firstSnapshot;max=lastSnapshot;value=dateTo"
+                                       value="">
+                            </div>
+                            <div class="col-md-2" id="dateFromWrap" style="display:none;">
+                                <label class="control-label" for="dateFrom">Compare from</label>
+                                <input type="date" class="form-control" id="dateFrom" name="date_from" data-pm-attrs="min=firstSnapshot;max=lastSnapshot;value=dateFrom"
+                                       value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label" for="statusFilter">Show</label>
+                                <select name="status" id="statusFilter" class="form-control">
+                                    <option value="attention" selected>Needs attention (no sale + slow)</option>
+                                    <option value="no_sale" >No sale only</option>
+                                    <option value="slow" >Slow moving only</option>
+                                    <option value="no_pos_sale" >Stock moved, no POS sale</option>
+                                    <option value="healthy" >Healthy sellers</option>
+                                    <option value="out_of_stock" >Out of stock</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="control-label" for="categorySelect">Category</label>
+                                <select class="form-control" id="categorySelect" multiple></select>
+                                <input type="hidden" name="category" id="categoryHidden" value="">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label" for="thresholdFilter">Slow-moving threshold</label>
+                                <input type="number" class="form-control" id="thresholdFilter" name="threshold" min="0" step="1"
+                                       value="2">
+                                <span class="kpi-sub">Units sold in window &le; this</span>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label" for="minSohFilter">Min stock on hand</label>
+                                <input type="number" class="form-control" id="minSohFilter" name="min_soh" min="0" step="1"
+                                       value="1">
+                                <span class="kpi-sub">Ignore lines below this SOH</span>
+                            </div>
+                            <div class="col-md-5 d-flex align-items-start gap-2" style="padding-top: 1.7rem;">
+                                <a href="no-sale-report.html" class="btn btn-outline-green mb-0">Reset</a>
+                                <button type="submit" class="btn btn-primary mb-0" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
+                                    Apply filters
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Items in stock</p>
+                            <div class="kpi-value" id="kpiStocked">&mdash;</div>
+                            <span class="kpi-sub" id="kpiWindow">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">No sale</p>
+                            <div class="kpi-value text-danger" id="kpiNoSale">&mdash;</div>
+                            <span class="kpi-sub" id="kpiNoSalePct">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Slow moving</p>
+                            <div class="kpi-value text-warning" id="kpiSlow">&mdash;</div>
+                            <span class="kpi-sub" id="kpiSlowPct">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Dead stock value</p>
+                            <div class="kpi-value" id="kpiDeadValue">&mdash;</div>
+                            <span class="kpi-sub" id="kpiDeadUnits">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-4 mb-4 mb-xl-0">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Assortment split</h6>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="splitChart"></canvas>
+                        </div>
+                        <div class="card-footer pt-0">
+                            <ul class="list-unstyled mb-0 text-sm text-muted">
+                                <li class="mb-1"><span class="status-pill status-no_sale">No sale</span>
+                                    Stock never moved all window and nothing rang through the till.</li>
+                                <li class="mb-1"><span class="status-pill status-slow">Slow moving</span>
+                                    Sold, but at or under the threshold for the window.</li>
+                                <li class="mb-1"><span class="status-pill status-no_pos_sale">Stock moved, no sale</span>
+                                    Stock level changed with no POS sale behind it</li>
+                                <li><span class="status-pill status-healthy">Healthy</span>
+                                    Selling above the threshold.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 mb-4 mb-xl-0">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Top categories with no sale</h6>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h6 class="mb-1">Still unsold as the window widens</h6>
+                            <p class="mb-0 text-sm text-muted">Dead for a month is a delist case; dead for a week may just be a quiet week.</p>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="persistenceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <h6 class="mb-1">No-sale rate by outlet</h6>
+                                <p class="mb-0 text-sm text-muted" id="outletChartNote"></p>
+                            </div>
+                            <button type="button" class="btn btn-outline-green btn-sm mb-0" id="loadOutletChart">Compare all outlets</button>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="outletChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card dashboard-card" id="detailCard">
+                        <div class="card-header">
+                            <h6 class="mb-1">Product detail</h6>
+                            <p class="mb-0 text-sm text-muted">
+                                Click any row to see the daily stock-on-hand line against POS units sold, or a category to filter to it.
+                                Stock Change is end minus start: negative means units left the shelf, positive means a delivery landed.
+                            </p>
+                        </div>
+                        <div class="card-body px-0 pt-0">
+                            <div class="table-responsive px-3">
+                                <table id="noSaleTable" class="table align-items-center w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Item No</th>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>UOM</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-end">SOH Start</th>
+                                            <th class="text-end">SOH End</th>
+                                            <th class="text-end">Stock Change</th>
+                                            <th class="text-end">Units Sold</th>
+                                            <th class="text-end">Revenue</th>
+                                            <th>Last Sold (any date)</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer pt-3">
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-12 mb-lg-0 mb-4">
+                <div class="copyright text-center text-muted"> <!-- Modified this for the footer to be centered -->
+                    <small class="copyright">Copyright ©2026 Prime Supermarket </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>    </main>
+    <script>Api.restoreForms();</script>
+
+    <div class="drill-backdrop" id="drillBackdrop">
+        <div class="drill-dialog">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                <div>
+                    <h5 class="mb-1" id="drillTitle">Item detail</h5>
+                    <p class="text-sm text-muted mb-0" id="drillSubtitle"></p>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary mb-0" id="drillClose">Close</button>
+            </div>
+            <div id="drillUoms" class="mb-2"></div>
+            <div id="drillNetwork" class="network-note mb-2" style="display: none;"></div>
+
+            <div class="drill-tabs mb-3">
+                <button type="button" class="drill-tab active" data-panel="graph">
+                    <i class="fa fa-chart-line me-1"></i> Stock &amp; sales graph
+                </button>
+                <button type="button" class="drill-tab" data-panel="transactions">
+                    <i class="fa fa-receipt me-1"></i> Transaction history
+                </button>
+            </div>
+
+            <div id="drillGraphPanel">
+                <div class="chart-box">
+                    <canvas id="drillChart"></canvas>
+                </div>
+            </div>
+
+            <div id="drillTransactionPanel" style="display: none;">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <div class="text-sm text-muted" id="drillTxnSummary">Loading transactions...</div>
+                    <div>
+                        <label class="control-label d-inline me-1" for="drillTxnMonths">Lookback</label>
+                        <select id="drillTxnMonths" class="form-control form-control-sm d-inline-block" style="width: auto;">
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12" selected>12 months</option>
+                            <option value="24">24 months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive drill-txn-scroll">
+                    <table class="table table-sm align-items-center mb-0" id="drillTxnTable">
+                        <thead>
+                            <tr>
+                                <th>Date / Time</th>
+                                <th>Receipt No</th>
+                                <th>Terminal</th>
+                                <th>UOM</th>
+                                <th class="text-end">Qty</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Discount</th>
+                                <th class="text-end">Net Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<link rel="stylesheet" href="./assets/css/loading.css">
+<script src="./assets/js/loading-overlay.js"></script>
+<script src="./assets/js/loading.js"></script>
+
+<style>
+    .report-assistant-trigger {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        z-index: 1030;
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        color: #fff;
+        font-weight: 700;
+        background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);
+        box-shadow: 0 12px 28px rgba(2, 49, 40, .28);
+    }
+    .report-assistant-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        background: rgba(2, 19, 18, .38);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+    }
+    .report-assistant-overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .report-assistant-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 1050;
+        width: min(440px, 100vw);
+        height: 100vh;
+        transform: translateX(100%);
+        transition: transform .28s ease;
+        background: #eef5f1;
+        box-shadow: -16px 0 38px rgba(2, 19, 18, .18);
+        display: flex;
+        flex-direction: column;
+    }
+    .report-assistant-panel.is-open {
+        transform: translateX(0);
+    }
+    .report-assistant-header {
+        padding: 24px 24px 16px;
+        border-bottom: 1px solid rgba(2, 49, 40, .1);
+    }
+    .report-assistant-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .report-assistant-title {
+        margin: 0;
+        color: #063328;
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+    .report-assistant-subtitle {
+        margin: 8px 0 0;
+        color: #5f7068;
+        font-size: .92rem;
+    }
+    .report-assistant-close {
+        border: 0;
+        background: #fff;
+        color: #063328;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 1.15rem;
+        line-height: 1;
+        box-shadow: 0 4px 14px rgba(2, 49, 40, .1);
+    }
+    .report-assistant-body {
+        padding: 18px 24px 24px;
+        overflow-y: auto;
+    }
+    .report-category-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .report-category-btn {
+        border: 1px solid rgba(2, 49, 40, .12);
+        border-radius: 14px;
+        padding: 10px 12px;
+        min-height: 48px;
+        background: #fff;
+        color: #244238;
+        font-weight: 700;
+        text-align: left;
+        transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+    }
+    .report-category-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(10, 106, 79, .32);
+    }
+    .report-category-btn.is-active {
+        background: #063328;
+        border-color: #063328;
+        color: #fff;
+    }
+    .report-recommendations {
+        margin-top: 20px;
+    }
+    .report-empty-state {
+        margin: 0;
+        padding: 18px;
+        border-radius: 16px;
+        color: #64736c;
+        background: rgba(255, 255, 255, .7);
+        border: 1px dashed rgba(2, 49, 40, .18);
+    }
+    .report-card {
+        padding: 16px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 8px 22px rgba(2, 49, 40, .08);
+    }
+    .report-card + .report-card {
+        margin-top: 12px;
+    }
+    .report-card h6 {
+        margin: 0 0 6px;
+        color: #063328;
+        font-weight: 800;
+    }
+    .report-card p {
+        margin: 0 0 12px;
+        color: #66746e;
+        font-size: .88rem;
+        line-height: 1.45;
+    }
+    .report-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 8px 14px;
+        color: #fff;
+        font-size: .84rem;
+        font-weight: 700;
+        background: #0A6A4F;
+    }
+    .report-card a:hover {
+        color: #fff;
+        background: #063328;
+    }
+    @media (min-width: 768px) {
+        .report-assistant-overlay {
+            display: none;
+        }
+    }
+    @media (max-width: 575.98px) {
+        .report-assistant-trigger {
+            right: 16px;
+            bottom: 16px;
+        }
+        .report-category-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<button type="button" class="report-assistant-trigger" id="reportAssistantOpen">
+    Report Assistant
+</button>
+<div class="report-assistant-overlay" id="reportAssistantOverlay"></div>
+<aside class="report-assistant-panel" id="reportAssistantPanel" aria-hidden="true">
+    <div class="report-assistant-header">
+        <div class="report-assistant-title-row">
+            <h5 class="report-assistant-title">Report Assistant</h5>
+            <button type="button" class="report-assistant-close" id="reportAssistantClose" aria-label="Close Report Assistant">&times;</button>
+        </div>
+        <p class="report-assistant-subtitle">What would you like to analyze today?</p>
+    </div>
+    <div class="report-assistant-body">
+        <div class="report-category-grid" id="reportCategoryGrid"></div>
+        <div class="report-recommendations" id="reportRecommendations">
+            <p class="report-empty-state">Select an interest to view recommended reports.</p>
+        </div>
+    </div>
+</aside>
+<script src="./assets/js/core/jquery-3.7.1.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+
+<script src="./assets/js/core/popper.min.js"></script>
+<!--<script src="./assets/js/core/bootstrap.min.js"></script> disable for now-->
+<script src="./assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="./assets/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="./assets/js/plugins/chartjs.min.js"></script>
+
+<!-- Include Select2 locally -->
+<link href="./assets/css/select2.min.css" rel="stylesheet" />
+<script src="./assets/js/plugins/select2.min.js"></script>
+
+<script src="./assets/js/argon-dashboard.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="./assets/css/dataTables.bootstrap5.css">
+<script src="./assets/js/core/dataTables.js"></script>
+<script src="./assets/js/core/dataTables.bootstrap5.js"></script>
+<script src="./assets/js/core/dataTables.scrollToTop.min.js"></script>
+
+<script>
+    const reportAssistantData = {
+        'Sales Performance': [
+            { name: 'POS Report', url: 'pos-transction-report.html', description: 'Analyze outlet sales, revenue, transactions, and sales trends.' },
+            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze mobile sales performance and customer purchase activity.' },
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand overall basket value, units per basket, and receipt trends.' }
+        ],
+        'Customer Behaviour': [
+            { name: 'Product Frequency Behaviour', url: '#product_frequency_behaviour.php', description: 'Identify products customers repeatedly buy, then drill into individual customer behaviour.' },
+            { name: 'Customer Behaviour Report', url: 'customer-behaviour-report.html', description: 'Find members who repeatedly purchase selected products and analyze their repeat frequency.' },
+            { name: 'Every-Week Customer Products', url: 'weekly-customer-product-report.html', description: 'List customers who purchased the same item every week for at least one complete month.' },
+            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze customer purchase patterns by age group, gender, outlet, and category.' },
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand how customers build their shopping baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'See how different product groups contribute to each basket.' }
+        ],
+        'Customer Loyalty': [
+            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze customer points earning, redemption, and loyalty activity.' },
+            { name: 'Member Point List', url: 'member-point-list.html', description: 'View member point balances and individual loyalty records.' },
+            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Understand member participation in CRM games.' }
+        ],
+        'Product Performance': [
+            { name: 'Item Report', url: 'gp-item-report.html', description: 'Analyze item-level sales, quantity, revenue, and gross profit.' },
+            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare product categories by sales and profitability.' },
+            // No Sale & Slow Moving is hidden from discovery surfaces on purpose; the
+            // page stays live at no-sale-report.php for anyone with the direct link.
+            { name: 'Penetration Report', url: 'penetration-report.html', description: 'See how widely products or categories appear across customer baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Understand each category or item’s contribution to the basket.' }
+        ],
+        'Profitability': [
+            { name: 'GP Summary', url: 'gp-report-summary.html', description: 'View overall gross profit, margin, and profitability trends.' },
+            { name: 'Item Report', url: 'gp-item-report.html', description: 'Identify high and low margin items.' },
+            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare gross profit performance across categories.' }
+        ],
+        'Basket Behaviour': [
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'View basket size, value per basket, units per basket, and receipt trends.' },
+            { name: 'Penetration Report', url: 'penetration-report.html', description: 'Measure how often products or categories appear in baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Analyze what percentage of the basket is contributed by different categories/items.' }
+        ],
+        'Game Engagement': [
+            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Track game plays, active games, unique players, and stamp usage.' },
+            { name: 'Game Winnings', url: 'game-winning.html', description: 'Analyze prize claims, winners, prize types, and game reward performance.' }
+        ],
+        'Points / Rewards': [
+            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze overall points movement, redemption, and loyalty trends.' },
+            { name: 'Member Point List', url: 'member-point-list.html', description: 'Search and view individual member point details.' }
+        ]
+    };
+
+    function escapeReportAssistantHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const openButton = document.getElementById('reportAssistantOpen');
+        const closeButton = document.getElementById('reportAssistantClose');
+        const panel = document.getElementById('reportAssistantPanel');
+        const overlay = document.getElementById('reportAssistantOverlay');
+        const categoryGrid = document.getElementById('reportCategoryGrid');
+        const recommendations = document.getElementById('reportRecommendations');
+
+        if (!openButton || !closeButton || !panel || !overlay || !categoryGrid || !recommendations) {
+            return;
+        }
+
+        function openAssistant() {
+            panel.classList.add('is-open');
+            overlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeAssistant() {
+            panel.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+        }
+
+        function renderRecommendations(category) {
+            const reports = reportAssistantData[category] || [];
+            recommendations.innerHTML = reports.map(function(report) {
+                return `
+                    <div class="report-card">
+                        <h6>${escapeReportAssistantHtml(report.name)}</h6>
+                        <p>${escapeReportAssistantHtml(report.description)}</p>
+                        <a href="${escapeReportAssistantHtml(report.url)}">Open Report</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        Object.keys(reportAssistantData).forEach(function(category) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'report-category-btn';
+            button.textContent = category;
+            button.addEventListener('click', function() {
+                categoryGrid.querySelectorAll('.report-category-btn').forEach(function(item) {
+                    item.classList.remove('is-active');
+                });
+                button.classList.add('is-active');
+                renderRecommendations(category);
+            });
+            categoryGrid.appendChild(button);
+        });
+
+        openButton.addEventListener('click', openAssistant);
+        closeButton.addEventListener('click', closeAssistant);
+        overlay.addEventListener('click', closeAssistant);
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAssistant();
+            }
+        });
+    });
+
+    function formatDateToDisplay(date) {
+        date = new Date(date);
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
+        const month = months[date.getMonth()]; // Get month abbreviation
+        const year = date.getFullYear(); // Get full year
+
+        return day + '-' + month + '-' + year;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const charts = { split: null, category: null, persistence: null, outlet: null, drill: null };
+    const allOutlets = PM.allOutlets;
+    let table = null;
+    let outletComparisonRun = 0;
+
+    const STATUS_LABELS = {
+        no_sale: 'No sale',
+        slow: 'Slow moving',
+        no_pos_sale: 'Stock moved, no POS sale',
+        healthy: 'Healthy',
+        out_of_stock: 'Out of stock'
+    };
+
+    const STATUS_COLORS = {
+        no_sale: '#b42318',
+        slow: '#b45309',
+        no_pos_sale: '#3538cd',
+        healthy: '#0c6326',
+        out_of_stock: '#98a2b3'
+    };
+
+    function formatNumber(value, digits = 0) {
+        return new Intl.NumberFormat('en-SG', { maximumFractionDigits: digits }).format(Number(value || 0));
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' }).format(Number(value || 0));
+    }
+
+    function escapeHtml(value) {
+        return String(value === null || value === undefined ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Every request shares the same filter payload so the table, KPIs and charts
+    // can never drift apart.
+    function currentFilters() {
+        return {
+            store_no: document.getElementById('outletFilter').value,
+            period: document.getElementById('periodFilter').value,
+            date_to: document.getElementById('dateTo').value,
+            date_from: document.getElementById('dateFrom').value,
+            status: document.getElementById('statusFilter').value,
+            threshold: document.getElementById('thresholdFilter').value,
+            min_soh: document.getElementById('minSohFilter').value,
+            category: document.getElementById('categoryHidden').value
+        };
+    }
+
+    // ─── Category dropdown ────────────────────────────────────────────────────
+    // Same source and hierarchy as the penetration report: product-groups returns
+    // both 4-digit categories and their 6-digit sub-groups, indented by depth, and
+    // the API prefix-matches so picking a parent includes its children.
+    let _allCats = [];
+
+    function rebuildCategoryDropdown(currentVal) {
+        const select = document.getElementById('categorySelect');
+        const hidden = document.getElementById('categoryHidden');
+        const raw = currentVal !== undefined ? currentVal : hidden.value;
+        const selected = raw ? raw.split(',').map(value => value.trim()).filter(Boolean) : [];
+
+        if (typeof $.fn.select2 !== 'undefined' && $(select).data('select2')) $(select).select2('destroy');
+        while (select.options.length > 0) select.remove(0);
+
+        _allCats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.text = cat.id + ' - ' + cat.text;
+            select.appendChild(option);
+        });
+
+        if (typeof $.fn.select2 !== 'undefined') {
+            $(select).select2({
+                placeholder: 'All Categories',
+                allowClear: true,
+                width: '100%',
+                templateResult: function (item) {
+                    if (!item.id) return item.text;
+                    const level = Math.max(0, Math.floor((item.id.length - 2) / 2));
+                    return $('<span>').css('padding-left', (level * 14) + 'px').text(item.text);
+                }
+            });
+            $(select).val(selected).trigger('change');
+            $(select).off('change.cats').on('change.cats', function () {
+                hidden.value = ($(this).val() || []).join(',');
+                if (table) table.ajax.reload();
+            });
+        }
+    }
+
+    function loadCategories() {
+        return fetch('api.php?action=product-groups')
+            .then(response => response.json())
+            .then(response => {
+                _allCats = response.data || [];
+                rebuildCategoryDropdown();
+            })
+            .catch(console.error);
+    }
+
+    // Clicking a category bar drops that category into the filter and drops the
+    // user at the detail table, already narrowed.
+    function drillIntoCategory(code) {
+        if (!code) return;
+        document.getElementById('categoryHidden').value = code;
+        const select = document.getElementById('categorySelect');
+        if (typeof $.fn.select2 !== 'undefined' && $(select).data('select2')) {
+            $(select).val([code]).trigger('change');
+        } else if (table) {
+            table.ajax.reload();
+        }
+        document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function togglePeriodControls() {
+        const isCustom = document.getElementById('periodFilter').value === 'custom';
+        document.getElementById('dateFromWrap').style.display = isCustom ? '' : 'none';
+        document.getElementById('dateToWrap').querySelector('label').textContent = isCustom ? 'Compare to' : 'Compare up to';
+    }
+
+    function initSearchDropdowns() {
+        if (!window.jQuery || !$.fn.select2) return;
+        $('.select2-search').each(function () {
+            const $select = $(this);
+            if ($select.data('select2')) return;
+            $select.select2({
+                width: '100%',
+                placeholder: $select.data('placeholder') || 'Select',
+                allowClear: !$select.prop('multiple')
+            });
+        });
+    }
+
+    function renderSplitChart(counts) {
+        const keys = ['no_sale', 'slow', 'no_pos_sale', 'healthy'];
+        const data = keys.map(key => Number(counts[key] || 0));
+
+        if (charts.split) charts.split.destroy();
+        charts.split = new Chart(document.getElementById('splitChart'), {
+            type: 'doughnut',
+            data: {
+                labels: keys.map(key => STATUS_LABELS[key]),
+                datasets: [{ data, backgroundColor: keys.map(key => STATUS_COLORS[key]), borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                const total = data.reduce((sum, value) => sum + value, 0);
+                                const pct = total > 0 ? (context.parsed / total) * 100 : 0;
+                                return `${context.label}: ${formatNumber(context.parsed)} (${pct.toFixed(1)}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderCategoryChart(categories) {
+        const top = categories.filter(row => row.no_sale > 0).slice(0, 10);
+
+        if (charts.category) charts.category.destroy();
+        charts.category = new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: top.map(row => row.name),
+                datasets: [{
+                    label: 'No-sale items',
+                    data: top.map(row => row.no_sale),
+                    backgroundColor: '#b42318',
+                    borderRadius: 5,
+                    maxBarThickness: 22
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (event, elements) => {
+                    if (!elements.length) return;
+                    drillIntoCategory((top[elements[0].index] || {}).code);
+                },
+                onHover: (event, elements) => {
+                    event.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: context => {
+                                const row = top[context.dataIndex];
+                                return row ? [`Dead stock: ${formatCurrency(row.dead_value)}`, 'Click to see the items'] : '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, title: { display: true, text: 'Items with no sale' } },
+                    y: { ticks: { font: { size: 10 } } }
+                }
+            }
+        });
+    }
+
+    function renderPersistenceChart(series) {
+        if (charts.persistence) charts.persistence.destroy();
+        charts.persistence = new Chart(document.getElementById('persistenceChart'), {
+            type: 'bar',
+            data: {
+                labels: series.map(row => row.label),
+                datasets: [
+                    { label: 'No sale', data: series.map(row => row.no_sale), backgroundColor: STATUS_COLORS.no_sale, borderRadius: 5, maxBarThickness: 38 },
+                    { label: 'Slow moving', data: series.map(row => row.slow), backgroundColor: STATUS_COLORS.slow, borderRadius: 5, maxBarThickness: 38 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                    tooltip: {
+                        callbacks: {
+                            afterTitle: context => {
+                                const row = series[context[0].dataIndex];
+                                return row ? `${row.start} to ${row.end}` : '';
+                            }
+                        }
+                    }
+                },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Items' } } }
+            }
+        });
+    }
+
+    function loadSummary() {
+        const params = new URLSearchParams({ action: 'no-sale-summary', ...currentFilters() });
+
+        return fetch(`api.php?${params.toString()}`)
+            .then(response => response.json())
+            .then(response => {
+                if (!response.status) throw new Error(response.error || 'Unable to load summary.');
+                const data = response.data;
+
+                document.getElementById('kpiStocked').textContent = formatNumber(data.stocked);
+                document.getElementById('kpiWindow').textContent = `${data.window.start} to ${data.window.end} (${data.window.days} days)`;
+                document.getElementById('kpiNoSale').textContent = formatNumber(data.counts.no_sale);
+                document.getElementById('kpiNoSalePct').textContent = `${data.no_sale_pct}% of stocked lines`;
+                document.getElementById('kpiSlow').textContent = formatNumber(data.counts.slow);
+                document.getElementById('kpiSlowPct').textContent = `${data.slow_pct}% sold ${data.threshold} units or fewer`;
+                document.getElementById('kpiDeadValue').textContent = formatCurrency(data.dead_value);
+                document.getElementById('kpiDeadUnits').textContent =
+                    `${formatNumber(data.dead_units)} units · ${formatNumber(data.counts.no_pos_sale)} lines moved with no sale`;
+                document.getElementById('windowNote').textContent =
+                    `Comparing ${data.window.start} against ${data.window.end} for outlet ${data.store_no}`;
+
+                renderSplitChart(data.counts);
+                renderCategoryChart(data.categories || []);
+            })
+            .catch(error => {
+                document.getElementById('windowNote').textContent = error.message;
+            });
+    }
+
+    function loadPersistence() {
+        const filters = currentFilters();
+        const params = new URLSearchParams({
+            action: 'no-sale-persistence',
+            store_no: filters.store_no,
+            date_to: filters.date_to,
+            threshold: filters.threshold,
+            min_soh: filters.min_soh
+        });
+
+        fetch(`api.php?${params.toString()}`, { primeNoLoading: true })
+            .then(response => response.json())
+            .then(response => {
+                if (!response.status) throw new Error(response.error || 'Unable to load persistence.');
+                renderPersistenceChart(response.data || []);
+            })
+            .catch(() => renderPersistenceChart([]));
+    }
+
+    function loadOutletComparison() {
+        const button = document.getElementById('loadOutletChart');
+        const note = document.getElementById('outletChartNote');
+        const canvas = document.getElementById('outletChart');
+        const filters = currentFilters();
+        const rows = [];
+        const runId = ++outletComparisonRun;
+
+        button.disabled = true;
+        button.textContent = 'Loading outlets...';
+        canvas.style.visibility = 'hidden';
+        if (charts.outlet) {
+            charts.outlet.destroy();
+            charts.outlet = null;
+        }
+
+        // One outlet per request: a single sweep over the whole estate would sit
+        // well past any sensible request timeout.
+        const runNext = index => {
+            if (runId !== outletComparisonRun) return Promise.resolve();
+
+            if (index >= allOutlets.length) {
+                renderOutletChart(rows);
+                button.disabled = false;
+                button.textContent = 'Reload all outlets';
+                note.textContent = `No-sale rate across ${rows.length} outlets, ${filters.date_to} window.`;
+                return Promise.resolve();
+            }
+
+            note.textContent = `Loading outlet ${index + 1} of ${allOutlets.length} (${allOutlets[index]})...`;
+            const params = new URLSearchParams({
+                action: 'no-sale-outlet',
+                store_no: allOutlets[index],
+                period: filters.period,
+                date_to: filters.date_to,
+                date_from: filters.date_from,
+                threshold: filters.threshold,
+                min_soh: filters.min_soh
+            });
+
+            return fetch(`api.php?${params.toString()}`, { primeNoLoading: true })
+                .then(response => response.json())
+                .then(response => {
+                    if (runId !== outletComparisonRun) return;
+                    if (response.status && response.data && response.data.stocked > 0) {
+                        rows.push(response.data);
+                    }
+                })
+                .catch(() => {})
+                .then(() => runNext(index + 1));
+        };
+
+        runNext(0);
+    }
+    function renderOutletChart(rows) {
+        const sorted = rows.slice().sort((a, b) => b.no_sale_pct - a.no_sale_pct);
+        const selected = document.getElementById('outletFilter').value;
+        const canvas = document.getElementById('outletChart');
+
+        if (charts.outlet) charts.outlet.destroy();
+        charts.outlet = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: sorted.map(row => row.store_no),
+                datasets: [{
+                    label: 'No-sale % of stocked lines',
+                    data: sorted.map(row => row.no_sale_pct),
+                    backgroundColor: sorted.map(row => row.store_no === selected ? '#0c6326' : '#b42318'),
+                    borderRadius: 5,
+                    maxBarThickness: 26
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    onComplete: () => {
+                        canvas.style.visibility = 'visible';
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                const row = sorted[context.dataIndex];
+                                return `${row.no_sale_pct}% (${formatNumber(row.counts.no_sale)} of ${formatNumber(row.stocked)} lines)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'No-sale %' }, ticks: { callback: value => `${value}%` } },
+                    x: { ticks: { autoSkip: false, maxRotation: 60, font: { size: 10 } } }
+                }
+            }
+        });
+    }
+
+    function initTable() {
+        table = $('#noSaleTable').DataTable({
+            serverSide: true,
+            processing: true,
+            searching: true,
+            pageLength: 25,
+            lengthMenu: [25, 50, 100, 250],
+            order: [[6, 'desc']],
+            ajax: {
+                url: 'api.php',
+                type: 'GET',
+                data: function (params) {
+                    params.action = 'no-sale-items';
+                    Object.assign(params, currentFilters());
+                },
+                error: function () {
+                    $('#noSaleTable tbody').html(
+                        '<tr><td colspan="12" class="text-center text-danger py-4">Failed to load product detail.</td></tr>'
+                    );
+                }
+            },
+            columns: [
+                { data: 'item_no' },
+                { data: 'item_name', render: value => escapeHtml(value) },
+                {
+                    data: 'category_name',
+                    render: (value, type, row) => type !== 'display'
+                        ? value
+                        : `<a href="#" class="category-drill" data-code="${escapeHtml(row.category_code)}">${escapeHtml(value)}</a>`
+                },
+                { data: 'uom', render: value => escapeHtml(value) },
+                {
+                    data: 'price',
+                    className: 'text-end',
+                    render: value => value === null
+                        ? '<span class="text-muted" title="No current selling price in NAV for this item">&mdash;</span>'
+                        : formatCurrency(value)
+                },
+                { data: 'soh_start', className: 'text-end', render: value => formatNumber(value, 2) },
+                { data: 'soh_end', className: 'text-end', render: value => formatNumber(value, 2) },
+                {
+                    data: 'soh_change',
+                    className: 'text-end',
+                    // Negative means units left the shelf, positive means a delivery landed.
+                    render: value => {
+                        const number = Number(value || 0);
+                        if (number === 0) return '0';
+                        const cls = number < 0 ? 'text-danger' : 'text-success';
+                        return `<span class="${cls}">${number > 0 ? '+' : ''}${formatNumber(number, 2)}</span>`;
+                    }
+                },
+                { data: 'units_sold', className: 'text-end', render: value => formatNumber(value, 2) },
+                { data: 'revenue', className: 'text-end', render: value => formatCurrency(value) },
+                {
+                    data: 'last_sold_ever',
+                    // The true last sale at this outlet, not just within the window:
+                    // "sold 180 days ago" is the number that settles a delist call.
+                    render: (value, type, row) => {
+                        if (type !== 'display') return value || '';
+                        if (!value) return '<span class="text-muted">No sale in 12 months</span>';
+                        const days = row.days_since_sale;
+                        if (days === null || days <= 0) return escapeHtml(value);
+                        return `${escapeHtml(value)}<br><span class="kpi-sub">${formatNumber(days)} days ago</span>`;
+                    }
+                },
+                {
+                    data: 'status',
+                    render: value => `<span class="status-pill status-${value}">${STATUS_LABELS[value] || value}</span>`
+                }
+            ],
+            language: {
+                emptyTable: 'No products match these filters.',
+                processing: 'Analysing stock movement...'
+            }
+        });
+
+        // Category link wins over the row drilldown, so both can live in one row.
+        $('#noSaleTable tbody').on('click', 'a.category-drill', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            drillIntoCategory(this.dataset.code);
+        });
+
+        $('#noSaleTable tbody').on('click', 'tr', function () {
+            const row = table.row(this).data();
+            if (row) openDrilldown(row);
+        });
+    }
+
+    // The row whose drilldown is open, so the transaction tab and the lookback
+    // selector know what to fetch without re-opening the modal.
+    let drillRow = null;
+
+    function showDrillPanel(panel) {
+        document.querySelectorAll('.drill-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.panel === panel);
+        });
+        document.getElementById('drillGraphPanel').style.display = panel === 'graph' ? '' : 'none';
+        document.getElementById('drillTransactionPanel').style.display = panel === 'transactions' ? '' : 'none';
+
+        if (panel === 'transactions') loadTransactions();
+    }
+
+    function loadTransactions() {
+        if (!drillRow) return;
+
+        const tbody = document.querySelector('#drillTxnTable tbody');
+        const summary = document.getElementById('drillTxnSummary');
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Loading transactions...</td></tr>';
+        summary.textContent = 'Loading transactions...';
+
+        const filters = currentFilters();
+        const params = new URLSearchParams({
+            action: 'no-sale-item-transactions',
+            store_no: filters.store_no,
+            item_no: drillRow.item_no,
+            period: filters.period,
+            date_to: filters.date_to,
+            date_from: filters.date_from,
+            months: document.getElementById('drillTxnMonths').value
+        });
+
+        fetch(`api.php?${params.toString()}`, { primeNoLoading: true })
+            .then(response => response.json())
+            .then(response => {
+                if (!response.status) throw new Error(response.error || 'Unable to load transactions.');
+                const data = response.data;
+
+                if (!data.transactions.length) {
+                    summary.textContent = `No sales at ${data.store_no} between ${data.range.start} and ${data.range.end}.`;
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">
+                        Nothing rang through the till for this item in the last ${data.range.months} months.</td></tr>`;
+                    return;
+                }
+
+                const shown = data.returned < data.total_lines
+                    ? ` Showing the ${formatNumber(data.returned)} most recent of ${formatNumber(data.total_lines)} lines.`
+                    : '';
+                summary.textContent = `${formatNumber(data.receipts)} receipts · ${formatNumber(data.total_units, 2)} units · `
+                    + `${formatCurrency(data.total_revenue)} since ${data.range.start}.${shown}`;
+
+                tbody.innerHTML = data.transactions.map(txn => `
+                    <tr>
+                        <td>${escapeHtml(txn.datetime)}</td>
+                        <td>${escapeHtml(txn.receipt_no)}</td>
+                        <td>${escapeHtml(txn.terminal)}</td>
+                        <td>${escapeHtml(txn.uom)}</td>
+                        <td class="text-end">${formatNumber(txn.quantity, 3)}</td>
+                        <td class="text-end">${txn.unit_price === null ? '&mdash;' : formatCurrency(txn.unit_price)}</td>
+                        <td class="text-end">${txn.discount_amount ? formatCurrency(txn.discount_amount) : '&mdash;'}</td>
+                        <td class="text-end">${formatCurrency(txn.net_amount)}</td>
+                    </tr>
+                `).join('');
+            })
+            .catch(error => {
+                summary.textContent = error.message;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">${escapeHtml(error.message)}</td></tr>`;
+            });
+    }
+
+    function openDrilldown(row) {
+        drillRow = row;
+        const filters = currentFilters();
+        const params = new URLSearchParams({
+            action: 'no-sale-item-trend',
+            store_no: filters.store_no,
+            item_no: row.item_no,
+            period: filters.period,
+            date_to: filters.date_to,
+            date_from: filters.date_from
+        });
+
+        showDrillPanel('graph');
+        document.getElementById('drillTitle').textContent = `${row.item_no} — ${row.item_name}`;
+        document.getElementById('drillSubtitle').textContent =
+            `${STATUS_LABELS[row.status] || row.status} · ${row.category_name} · ${formatNumber(row.units_sold, 2)} units sold · ${formatCurrency(row.revenue)}`;
+        document.getElementById('drillUoms').innerHTML = (row.uom_lines || [])
+            .map(line => `<span class="uom-chip">${escapeHtml(line.uom)}: ${formatNumber(line.start, 2)} &rarr; ${formatNumber(line.end, 2)}</span>`)
+            .join('');
+        document.getElementById('drillBackdrop').classList.add('open');
+
+        fetch(`api.php?${params.toString()}`, { primeNoLoading: true })
+            .then(response => response.json())
+            .then(response => {
+                if (!response.status) throw new Error(response.error || 'Unable to load item trend.');
+                renderDrillChart(response.data);
+            })
+            .catch(() => renderDrillChart(null));
+    }
+
+    // Spells out that the sales you can see in Elasticsearch for this item belong
+    // to other outlets, so a zero here reads as a local problem, not missing data.
+    function renderNetworkNote(data) {
+        const note = document.getElementById('drillNetwork');
+        if (!data) {
+            note.style.display = 'none';
+            return;
+        }
+
+        const others = data.other_outlet_count || 0;
+        const here = Number(data.this_outlet_units || 0);
+        note.style.display = '';
+
+        if (here > 0) {
+            note.className = 'network-note network-note-quiet mb-2';
+            note.innerHTML = `Sold <strong>${formatNumber(here, 2)}</strong> units at ${escapeHtml(data.store_no)} this window`
+                + (others ? `, and ${formatNumber(data.other_outlet_units, 2)} across ${others} other outlets.` : '.');
+            return;
+        }
+
+        if (!others) {
+            note.className = 'network-note network-note-quiet mb-2';
+            note.textContent = 'No outlet in the estate sold this item during the window — this is a product problem, not a local one.';
+            return;
+        }
+
+        const top = (data.top_other_outlets || [])
+            .map(row => `${escapeHtml(row.store_no)} ${formatNumber(row.units, 0)}`)
+            .join(' · ');
+        note.className = 'network-note mb-2';
+        note.innerHTML = `Zero sales at <strong>${escapeHtml(data.store_no)}</strong>, but `
+            + `<strong>${formatNumber(data.other_outlet_units, 0)}</strong> units sold across `
+            + `<strong>${others}</strong> other outlets this window (${top}). `
+            + 'The item moves elsewhere, so look at this outlet: shelf placement, never put out, or a pricing issue.';
+    }
+
+    function renderDrillChart(data) {
+        renderNetworkNote(data);
+        const labels = data ? data.labels : [];
+        const sohColors = ['#0c6326', '#2563eb', '#7c3aed', '#0891b2', '#b45309'];
+
+        const datasets = (data ? data.soh_series : []).map((series, index) => ({
+            type: 'line',
+            label: `SOH ${series.uom}`,
+            data: series.values,
+            borderColor: sohColors[index % sohColors.length],
+            backgroundColor: sohColors[index % sohColors.length],
+            borderWidth: 3,
+            pointRadius: 2,
+            tension: 0.25,
+            spanGaps: true,
+            yAxisID: 'y'
+        }));
+
+        if (data) {
+            datasets.push({
+                type: 'bar',
+                label: 'Units sold (POS)',
+                data: data.units_sold,
+                backgroundColor: '#b42318',
+                borderRadius: 4,
+                maxBarThickness: 18,
+                yAxisID: 'y1'
+            });
+        }
+
+        if (charts.drill) charts.drill.destroy();
+        charts.drill = new Chart(document.getElementById('drillChart'), {
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                scales: {
+                    y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Stock on hand' } },
+                    y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Units sold' } }
+                }
+            }
+        });
+    }
+
+    function closeDrilldown() {
+        document.getElementById('drillBackdrop').classList.remove('open');
+    }
+
+    function refreshAll() {
+        loadSummary();
+        loadPersistence();
+        loadOutletComparison();
+        if (table) table.ajax.reload();
+    }
+
+    document.getElementById('filterForm').addEventListener('submit', event => {
+        event.preventDefault();
+        refreshAll();
+    });
+
+    document.getElementById('periodFilter').addEventListener('change', () => {
+        togglePeriodControls();
+        refreshAll();
+    });
+
+    document.getElementById('statusFilter').addEventListener('change', () => {
+        if (table) table.ajax.reload();
+    });
+
+    document.querySelectorAll('.drill-tab').forEach(tab => {
+        tab.addEventListener('click', () => showDrillPanel(tab.dataset.panel));
+    });
+    document.getElementById('drillTxnMonths').addEventListener('change', loadTransactions);
+
+    document.getElementById('loadOutletChart').addEventListener('click', loadOutletComparison);
+    document.getElementById('drillClose').addEventListener('click', closeDrilldown);
+    document.getElementById('drillBackdrop').addEventListener('click', event => {
+        if (event.target.id === 'drillBackdrop') closeDrilldown();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeDrilldown();
+    });
+
+    togglePeriodControls();
+    initSearchDropdowns();
+    $('#outletFilter').on('change', () => refreshAll());
+    initTable();
+    loadCategories();
+    loadSummary();
+    loadPersistence();
+    loadOutletComparison();
+</script>
+
+</html>

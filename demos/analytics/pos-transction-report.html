@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="mock/world.js"></script>
+    <script src="mock/net.js"></script>
+    <script src="mock/esagg.js"></script>
+    <script src="mock/common.js"></script>
+    <script src="mock/pm.js"></script>
+    <script src="mock/gp.js"></script>
+    <script src="mock/penetration.js"></script>
+    <script src="mock/pricing.js"></script>
+    <script src="mock/reports.js"></script>
+    <script src="mock/pos.js"></script>
+    <script src="mock/nosale.js"></script>
+    <script src="mock/pages/pos-transction-report.js"></script>
+    <link rel="stylesheet" href="demo.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="./assets/img/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <link id="pagestyle" href="./assets/css/argon-dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+</head><title>POS Transaction Report</title>
+
+<head>
+    <style>
+        .btn-outline-green {
+            border: 1px solid rgb(12, 99, 38);
+            color: rgb(12, 99, 38);
+        }
+
+        .btn-outline-green:hover {
+            background-color: rgb(12, 99, 38);
+            color: white;
+        }
+
+        .kpi-link {
+            color: inherit;
+            display: block;
+            height: 100%;
+            text-decoration: none;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            transition: 0.2s;
+        }
+
+        .chart-clickable {
+            cursor: pointer;
+        }
+
+        .dashboard-card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(31, 41, 55, 0.08);
+        height: 100%;
+    }
+
+    .dashboard-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 1.25rem;
+    }
+
+    .control-label {
+        color: #344767;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+    }
+
+    .metric-toggle {
+        display: inline-flex;
+        border: 1px solid #d7dde8;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .metric-toggle button {
+        border: 0;
+        background: transparent;
+        color: #344767;
+        font-weight: 700;
+        min-width: 78px;
+        padding: 0.55rem 0.85rem;
+    }
+
+    .metric-toggle button.active {
+        background: #0c6326;
+        color: #fff;
+    }
+
+    .outlet-comparison-table {
+        margin-bottom: 0;
+    }
+
+    .outlet-comparison-table th {
+        color: #67748e;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02rem;
+    }
+
+    .outlet-row {
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .outlet-row:hover {
+        background: #f7faf9;
+    }
+
+    .outlet-row.selected {
+        background: #e7f4ec;
+        box-shadow: inset 4px 0 0 #0c6326;
+    }
+
+    .selection-pill {
+        border: 1px solid #d7dde8;
+        border-radius: 999px;
+        color: #344767;
+        display: inline-flex;
+        font-size: 0.78rem;
+        font-weight: 700;
+        gap: 0.35rem;
+        line-height: 1;
+        margin: 0.2rem 0.25rem 0 0;
+        padding: 0.38rem 0.55rem;
+    }
+
+    .chart-box {
+        height: 330px;
+        position: relative;
+    }
+
+    .chart-box canvas {
+        height: 300px !important;
+        max-height: 300px;
+        width: 100% !important;
+    }
+
+    .benchmark-chart-box {
+        height: 360px;
+    }
+
+    .benchmark-chart-box canvas {
+        height: 285px !important;
+        max-height: 285px;
+    }
+
+    .benchmark-control {
+        min-width: 135px;
+    }
+
+    .status-text {
+        color: #67748e;
+        font-size: 0.82rem;
+        margin-top: 0.45rem;
+    }
+
+    .breakdown-table th {
+        color: #67748e;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02rem;
+        white-space: nowrap;
+    }
+
+    .breakdown-table th.sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .breakdown-table th.sortable:hover {
+        color: #0c6326;
+    }
+
+    .breakdown-table th .sort-arrow {
+        color: #0c6326;
+        font-size: 0.7rem;
+        margin-left: 0.25rem;
+    }
+
+    .breakdown-table td {
+        font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .breakdown-table tfoot td {
+        border-top: 2px solid #d7dde8;
+        color: #344767;
+        font-weight: 700;
+    }
+    </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 position-absolute w-100" style="background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);"></div>
+
+    
+<html>
+
+<head>
+</head>
+
+<body>
+    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Sticky header section -->
+        <div class="position-sticky top-0 z-index-sticky bg-white">
+            <div class="sidenav-header">
+                <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+                    aria-hidden="true" id="iconSidenav"></i>
+                <a class="navbar-brand m-0" href="#">
+                    <img src="./assets/img/logos/prime-logo.jpg" class="navbar-brand-img h-100" alt="main_logo">
+                    <span class="ms-1 font-weight-bold">Analytic Dashboard</span>
+                </a>
+            </div>
+
+            <hr class="horiznavbl dark mt-0">
+        </div>
+
+        <!-- Scrollable menu section -->
+        <div class="overflow-auto" style="max-height: calc(100vh - 170px);">
+            <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 3.293l6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+                                    <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+                                </svg>
+                            </div>
+                            <span class="nav-link-text">Home</span>
+                        </a>
+                    </li>
+                                            <li class="nav-item has-submenu"> <!-- Users -->
+                            <a class="nav-link" href="#manageUsers" data-bs-toggle="collapse" data-bs-target="#manageUsers"
+                                aria-controls="manageUsers">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Users</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+                                                        <div id="manageUsers" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="users-list.html">
+                                            <span class="sidenav-mini-icon">UL</span>
+                                            <span class="sidenav-normal">Users List</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            
+                        <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageStatistics" data-bs-toggle="collapse" data-bs-target="#manageStatistics"
+                                aria-controls="manageStatistics" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                        <path d="M0 0h1v15h15v1H0V0z" />
+                                        <path d="M2 13V6h2v7H2zm4 0V3h2v10H6zm4 0V8h2v5h-2zm4 0V5h2v8h-2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Statistics</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageStatistics" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="overview.html">
+                                            <span class="sidenav-mini-icon">OV</span>
+                                            <span class="sidenav-normal">Overview</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="comparison.html">
+                                            <span class="sidenav-mini-icon">CP</span>
+                                            <span class="sidenav-normal">Comparison</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="graphs.html">
+                                            <span class="sidenav-mini-icon">GR</span>
+                                            <span class="sidenav-normal">Graph</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="product-mapping.html">
+                                            <span class="sidenav-mini-icon">MP</span>
+                                            <span class="sidenav-normal">Product Mapping</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#basket-insights.php">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="basket-summary.html">
+                                            <span class="sidenav-mini-icon">BI</span>
+                                            <span class="sidenav-normal">Basket & Insights</span>
+                                        </a>
+                                    </li> -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="pricing-insights.html">
+                                            <span class="sidenav-mini-icon">PI</span>
+                                            <span class="sidenav-normal">Price Insights</span>
+                                        </a>
+                                    </li>
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#forecast.php">
+                                            <span class="sidenav-mini-icon">FC</span>
+                                            <span class="sidenav-normal">Revenue Forecast</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- Customer Insights hidden from sidebar; file kept intact -->
+                                                                        <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#stock-risk-insights.php">
+                                            <span class="sidenav-mini-icon">SRI</span>
+                                            <span class="sidenav-normal">Stock Risk Insights</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#store-performance.php">
+                                            <span class="sidenav-mini-icon">SP</span>
+                                            <span class="sidenav-normal">Store Performance</span>
+                                        </a>
+                                    </li> -->
+
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="share-of-basket-report.html">
+                                            <span class="sidenav-mini-icon">SB</span>
+                                            <span class="sidenav-normal">Share of Basket</span>
+                                        </a>
+                                    </li> -->
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link " href="#retail-intelligence.php">
+                                            <span class="sidenav-mini-icon">RI</span>
+                                            <span class="sidenav-normal">Retail Intelligence</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#operational-intelligence.php">
+                                            <span class="sidenav-mini-icon">OI</span>
+                                            <span class="sidenav-normal">Operational Intelligence</span>
+                                        </a>
+                                    </li> -->
+                                </ul>
+                            </div>
+                        </li>
+
+
+                    
+                                            <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageReports" data-bs-toggle="collapse" data-bs-target="#manageReports"
+                                aria-controls="manageReports" aria-expanded="true">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5 7h6v1H5V7zm0 2h6v1H5V9zm0 2h4v1H5v-1z" />
+                                        <path d="M4 0h5.5L14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5 1v3h3L9 1z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Reports</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageReports" class="collapse submenu submenu-1 show">
+                                <ul class="nav ms-4">
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#basketReports" data-bs-toggle="collapse" data-bs-target="#basketReports"
+                                            aria-controls="basketReports" aria-expanded=""
+                                            id="basketReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="basketFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="basketFolderIconFull"></i>
+                                                Basket Reports
+                                            </span>
+                                        </a>
+                                        
+                                        <div id="basketReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="basket-summary.html">
+                                                        <span class="sidenav-mini-icon">BS</span>
+                                                        <span class="sidenav-normal">Basket Summary</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="penetration-report.html">
+                                                        <span class="sidenav-mini-icon">PR</span>
+                                                        <span class="sidenav-normal">Penetration Report</span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="share-of-basket-report.html">
+                                                        <span class="sidenav-mini-icon">SB</span>
+                                                        <span class="sidenav-normal">Share of Basket</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gpReports" data-bs-toggle="collapse" data-bs-target="#gpReports"
+                                            aria-controls="gpReports" aria-expanded=""
+                                            id="gpReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gpFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gpFolderIconFull"></i>
+                                                Gross Profit Reports
+                                            </span>
+                                        </a>
+                                        <div id="gpReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-report-summary.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Summary Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-item-report.html">
+                                                        <span class="sidenav-mini-icon">IR</span>
+                                                        <span class="sidenav-normal">Item Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-category-report.html">
+                                                        <span class="sidenav-mini-icon">CR</span>
+                                                        <span class="sidenav-normal">Category Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <!-- transaction report -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#transactionReports" data-bs-toggle="collapse" data-bs-target="#transactionReports"
+                                            aria-controls="transactionReports" aria-expanded="true"
+                                            id="transactionReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="transactionFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder-open me-1" id="transactionFolderIconFull"></i>
+                                                Transaction Reports
+                                            </span>
+                                        </a>
+                                        <div id="transactionReports" class="collapse submenu submenu-2 show">
+                                            <ul class="nav ms-3">
+                                                <!-- POS Report is a folder: the dashboard plus the line-level
+                                                     drill-down that sits behind its numbers. -->
+                                                <li class="nav-item has-submenu">
+                                                    <a class="nav-link no-collapse-arrow pos-reports-toggle" href="#posReports" data-bs-toggle="collapse" data-bs-target="#posReports"
+                                                        aria-controls="posReports" aria-expanded="true"
+                                                        id="posReportsToggle">
+                                                        <span class="sidenav-mini-icon"><i class="fa fa-folder" id="posFolderIcon"></i></span>
+                                                        <span class="sidenav-normal">
+                                                            <i class="fa fa-folder-open me-1" id="posFolderIconFull"></i>
+                                                            POS Report
+                                                        </span>
+                                                    </a>
+                                                    <div id="posReports" class="collapse submenu submenu-3 show">
+                                                        <ul class="nav ms-3">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" href="pos-transction-report.html">
+                                                                    <span class="sidenav-mini-icon">POSD</span>
+                                                                    <span class="sidenav-normal">POS Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link " href="pos-detailed-transaction-report.html">
+                                                                    <span class="sidenav-mini-icon">PDT</span>
+                                                                    <span class="sidenav-normal">Detailed Transaction Report</span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                                                                                <li class="nav-item">
+                                                    <a class="nav-link " href="mobile-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">MR</span>
+                                                        <span class="sidenav-normal">Mobile Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- point reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#pointReports" data-bs-toggle="collapse" data-bs-target="#pointReports"
+                                            aria-controls="pointReports" aria-expanded=""
+                                            id="pointReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="pointFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="pointFolderIconFull"></i>
+                                                Point Reports
+                                            </span>
+                                        </a>
+                                        <div id="pointReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-list.html">
+                                                        <span class="sidenav-mini-icon">PL</span>
+                                                        <span class="sidenav-normal">Member Point List</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="member-point-transaction-report.html">
+                                                        <span class="sidenav-mini-icon">PA</span>
+                                                        <span class="sidenav-normal">Point Analytics Report</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <!-- game reports -->
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#gameReports" data-bs-toggle="collapse" data-bs-target="#gameReports"
+                                            aria-controls="gameReports" aria-expanded=""
+                                            id="gameReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="gameFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="gameFolderIconFull"></i>
+                                                Game Reports
+                                            </span>
+                                        </a>
+                                        <div id="gameReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-utilisation.html">
+                                                        <span class="sidenav-mini-icon">GU</span>
+                                                        <span class="sidenav-normal">Game Utilisation</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="game-winning.html">
+                                                        <span class="sidenav-mini-icon">GW</span>
+                                                        <span class="sidenav-normal">Game Winning</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#supplierReports" data-bs-toggle="collapse" data-bs-target="#supplierReports"
+                                            aria-controls="supplierReports" aria-expanded=""
+                                            id="supplierReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                Supplier Reports
+                                            </span>
+                                        </a>
+                                        <div id="supplierReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="supplier-consignment-report.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Consignment Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="vendor_default_commission-list.html">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Vendor Commission Rate</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#jetReports" data-bs-toggle="collapse" data-bs-target="#jetReports"
+                                            aria-controls="jetReports" aria-expanded=""
+                                            id="jetReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="supplierFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="supplierFolderIconFull"></i>
+                                                Jet Reports
+                                            </span>
+                                        </a>
+                                        <div id="jetReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="abc-analysis-report.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">ABC Analysis Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-master-listing.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Product Master Listing</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="retail-item-sales.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Retail Item Sales</span>
+                                                    </a>
+                                                </li>
+                                                <!-- <li class="nav-item">
+                                                    <a class="nav-link " href="#stock-movement-report.php">
+                                                        <span class="sidenav-mini-icon">SR</span>
+                                                        <span class="sidenav-normal">Stock Movement Report</span>
+                                                    </a>
+                                                </li> -->
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-report-item-cat.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Report By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="gp-by-item-category.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">GP By Item Category</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="sales-claim-vendor.html">
+                                                        <span class="sidenav-mini-icon">JR</span>
+                                                        <span class="sidenav-normal">Sales Claim From Vendor</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                    </li>
+
+                                                                        <li class="nav-item has-submenu">
+                                        <a class="nav-link no-collapse-arrow" href="#customerReports" data-bs-toggle="collapse" data-bs-target="#customerReports"
+                                            aria-controls="customerReports" aria-expanded=""
+                                            id="customerReportsToggle">
+                                            <span class="sidenav-mini-icon"><i class="fa fa-folder" id="customerFolderIcon"></i></span>
+                                            <span class="sidenav-normal">
+                                                <i class="fa fa-folder me-1" id="customerFolderIconFull"></i>
+                                                Customer Report
+                                            </span>
+                                        </a>
+                                        <div id="customerReports" class="collapse submenu submenu-2 ">
+                                            <ul class="nav ms-3">
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="no-sale-report.html">
+                                                        <span class="sidenav-mini-icon">NS</span>
+                                                        <span class="sidenav-normal">No Sales Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="weekly-customer-product-report.html">
+                                                        <span class="sidenav-mini-icon">EW</span>
+                                                        <span class="sidenav-normal">Customer Consistency Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="customer-behaviour-report.html">
+                                                        <span class="sidenav-mini-icon">CB</span>
+                                                        <span class="sidenav-normal">Customer Behaviour Report</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " href="product-frequency-behaviour.html">
+                                                        <span class="sidenav-mini-icon">PF</span>
+                                                        <span class="sidenav-normal">Product Frequency Behaviour</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
+                    
+                                            <!-- <li class="nav-item has-submenu">
+                            <a class="nav-link" href="#manageSales" data-bs-toggle="collapse" data-bs-target="#manageSales"
+                                aria-controls="manageSales" aria-expanded="">
+                                <div class="icon icon-shape icon-md text-center d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                        <path d="M2 2v5.586l5.707 5.707a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414L8 1.586A2 2 0 0 0 6.586 1H2z" />
+                                        <path d="M3.5 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                    </svg>
+                                </div>
+                                <span class="nav-link-text">Manage Sales</span>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                            
+                            <div id="manageSales" class="collapse submenu submenu-1 ">
+                                <ul class="nav ms-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#transaction-by-month.php">
+                                            <span class="sidenav-mini-icon">TBM</span>
+                                            <span class="sidenav-normal">Transactions</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="#pos-sales.php">
+                                            <span class="sidenav-normal">POS Sales</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li> -->
+                    
+
+                </ul>
+            </div>
+        </div>
+        <style>
+            .navbar-vertical .navbar-nav .nav-link.no-collapse-arrow::after { display: none !important; }
+            /* Third-level folder: green so the nested POS group reads as a folder
+               rather than another report link. */
+            .pos-reports-toggle .fa-folder,
+            .pos-reports-toggle .fa-folder-open { color: rgb(12, 99, 38); }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const sidebarScrollContainer = document.querySelector('.sidenav .overflow-auto');
+
+                if (sidebarScrollContainer) {
+                    const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+                    if (savedScrollPosition !== null) {
+                        sidebarScrollContainer.scrollTop = parseInt(savedScrollPosition);
+                    }
+
+                    sidebarScrollContainer.addEventListener('scroll', function() {
+                        sessionStorage.setItem('sidebarScrollPosition', this.scrollTop);
+                    });
+                }
+            });
+        </script>
+        <script src="./assets/js/core/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const gpCollapse  = document.getElementById('gpReports');
+                const gpIconMini  = document.getElementById('gpFolderIcon');
+                const gpIconFull  = document.getElementById('gpFolderIconFull');
+                const basketCollapse  = document.getElementById('basketReports');
+                const basketIconMini  = document.getElementById('basketFolderIcon');
+                const basketIconFull  = document.getElementById('basketFolderIconFull');
+                const transactionCollapse  = document.getElementById('transactionReports');
+                const transactionMini  = document.getElementById('transactionFolderIcon');
+                const transactionIconFull  = document.getElementById('transactionFolderIconFull');
+                const posCollapse  = document.getElementById('posReports');
+                const posMini  = document.getElementById('posFolderIcon');
+                const posIconFull  = document.getElementById('posFolderIconFull');
+                const pointCollapse  = document.getElementById('pointReports');
+                const pointMini  = document.getElementById('pointFolderIcon');
+                const pointIconFull  = document.getElementById('pointFolderIconFull');
+                const gameCollapse  = document.getElementById('gameReports');
+                const gameMini  = document.getElementById('gameFolderIcon');
+                const gameIconFull  = document.getElementById('gameFolderIconFull');
+                const supplierCollapse  = document.getElementById('supplierReports');
+                const supplierMini  = document.getElementById('supplierFolderIcon');
+                const supplierIconFull  = document.getElementById('supplierFolderIconFull');
+                const customerCollapse  = document.getElementById('customerReports');
+                const customerMini  = document.getElementById('customerFolderIcon');
+                const customerIconFull  = document.getElementById('customerFolderIconFull');
+                function setFolder(open) {
+                    [gpIconMini, gpIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setBasketFolder(open) {
+                    [basketIconMini, basketIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setTransFolder(open) {
+                    [transactionMini, transactionIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPosFolder(open) {
+                    [posMini, posIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setPointFolder(open) {
+                    [pointMini, pointIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setGameFolder(open) {
+                    [gameMini, gameIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setSupplierFolder(open) {
+                    [supplierMini, supplierIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                function setCustomerFolder(open) {
+                    [customerMini, customerIconFull].forEach(function(el) {
+                        if (!el) return;
+                        if (open) { el.classList.replace('fa-folder', 'fa-folder-open'); }
+                        else      { el.classList.replace('fa-folder-open', 'fa-folder'); }
+                    });
+                }
+                if (gpCollapse) {
+                    gpCollapse.addEventListener('show.bs.collapse', function () { setFolder(true);  });
+                    gpCollapse.addEventListener('hide.bs.collapse', function () { setFolder(false); });
+                }
+                if (basketCollapse) {
+                    basketCollapse.addEventListener('show.bs.collapse', function () { setBasketFolder(true);  });
+                    basketCollapse.addEventListener('hide.bs.collapse', function () { setBasketFolder(false); });
+                }
+                // Bootstrap's collapse events bubble, so the POS folder nested
+                // inside Transaction Reports would otherwise close its parent's
+                // icon on every toggle. Only react to this element's own event.
+                function ownCollapse(element, handler) {
+                    return function (event) {
+                        if (event.target !== element) return;
+                        handler();
+                    };
+                }
+                if (transactionCollapse) {
+                    transactionCollapse.addEventListener('show.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(true);  }));
+                    transactionCollapse.addEventListener('hide.bs.collapse', ownCollapse(transactionCollapse, function () { setTransFolder(false); }));
+                }
+                if (posCollapse) {
+                    posCollapse.addEventListener('show.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(true);  }));
+                    posCollapse.addEventListener('hide.bs.collapse', ownCollapse(posCollapse, function () { setPosFolder(false); }));
+                }
+                if (pointCollapse) {
+                    pointCollapse.addEventListener('show.bs.collapse', function () { setPointFolder(true);  });
+                    pointCollapse.addEventListener('hide.bs.collapse', function () { setPointFolder(false); });
+                }
+                if (gameCollapse) {
+                    gameCollapse.addEventListener('show.bs.collapse', function () { setGameFolder(true);  });
+                    gameCollapse.addEventListener('hide.bs.collapse', function () { setGameFolder(false); });
+                }
+                if (supplierCollapse) {
+                    supplierCollapse.addEventListener('show.bs.collapse', function () { setSupplierFolder(true);  });
+                    supplierCollapse.addEventListener('hide.bs.collapse', function () { setSupplierFolder(false); });
+                }
+                if (customerCollapse) {
+                    customerCollapse.addEventListener('show.bs.collapse', function () { setCustomerFolder(true);  });
+                    customerCollapse.addEventListener('hide.bs.collapse', function () { setCustomerFolder(false); });
+                }
+            });
+        </script>
+    </aside>
+</body>
+
+</html>
+
+
+    <main class="main-content position-relative border-radius-lg">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
+    <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                <li class="breadcrumb-item text-sm text-white active">Reports | POS Transaction Report</li>
+            </ol>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+            <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+            </div>
+            <ul class="navbar-nav  justify-content-end">
+                <li class="nav-item d-flex align-items-center">
+                    <a href="#logout.php" class="nav-link text-white font-weight-bold px-0">
+                        <i class="fa fa-user me-sm-1"></i>
+                        <span class="d-sm-inline d-none">Maram Aashna | Log Out</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+        <div class="container-fluid py-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5 class="mb-0">POS Transactions (In-store)</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">Date From</label>
+                                <input type="date" class="form-control" name="date_from" data-pm-value="dateFrom" value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">Date To</label>
+                                <input type="date" class="form-control" name="date_to" data-pm-value="dateTo" value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">Outlet</label>
+                                <select name="store_no" id="globalOutletFilter" class="form-control select2-search" data-placeholder="All Outlets">
+                                    <option value="">All Outlets</option><script>document.write(PM.outletOptions())</script></select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                <a href="pos-transction-report.html" class="btn btn-outline-green w-50">Reset</a>
+                                <button type="submit" class="btn btn-primary w-50" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">
+                                    Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Revenue</p>
+                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.totalRevenue, 2))</script></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Items Sold</p>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalItems))</script></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Transactions</p>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalTransactions))</script></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Total Units Sold</p>
+                            <h4 class="mb-0"><script>document.write(PM.nf(PM.totalUnits, 2))</script></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="text-sm text-muted mb-1">Avg Transaction Value</p>
+                            <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2))</script></h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <a class="kpi-link" href="gp-report-summary.html" data-pm-query>
+                            <div class="card-body">
+                                <p class="text-sm text-muted mb-1">Gross Profit (GP)</p>
+                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.grossProfit, 2))</script></h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <a class="kpi-link" href="gp-report-summary.html" data-pm-query>
+                            <div class="card-body">
+                                <p class="text-sm text-muted mb-1">GP %</p>
+                                <h4 class="mb-0"><script>document.write(PM.nf(PM.grossProfitMargin, 2))</script>%</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <a class="kpi-link" href="basket-summary.html" data-pm-query>
+                            <div class="card-body">
+                                <p class="text-sm text-muted mb-1">Average Basket Value</p>
+                                <h4 class="mb-0">$<script>document.write(PM.nf(PM.avgTransactionValue, 2))</script></h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outlet breakdown: the figures above, split per branch, so
+                 "All Outlets" no longer means running the report once per outlet. -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header pb-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <h6 class="mb-1">Breakdown by Outlet</h6>
+                                <p class="mb-0 text-sm text-muted">The KPIs above, split per branch for the selected period. Click a column to sort.</p>
+                            </div>
+                            <button type="button" class="btn btn-outline-green btn-sm mb-0" id="downloadBreakdown">Download CSV</button>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0 breakdown-table" id="outletBreakdownTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-3 sortable" data-sort-key="outlet_label">Outlet</th>
+                                            <th class="text-end sortable" data-sort-key="total_revenue">Total Revenue</th>
+                                            <th class="text-end sortable" data-sort-key="total_items">Items Sold</th>
+                                            <th class="text-end sortable" data-sort-key="total_units">Units Sold</th>
+                                            <th class="text-end sortable" data-sort-key="transactions">Transactions</th>
+                                            <th class="text-end sortable" data-sort-key="avg_txn_value">Avg Txn Value</th>
+                                            <th class="text-end sortable" data-sort-key="total_discount">Discount</th>
+                                            <th class="text-end sortable" data-sort-key="gross_profit">Gross Profit</th>
+                                            <th class="text-end pe-3 sortable" data-sort-key="gp_percent">GP %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="outletBreakdownBody">
+                                        <tr><td colspan="9" class="text-center py-4 text-muted">Loading outlet breakdown...</td></tr>
+                                    </tbody>
+                                    <tfoot id="outletBreakdownFoot"></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <h4 class="mb-1 text-dark">Outlet Performance</h4>
+                                <p class="mb-0 text-sm text-muted">Revenue uses net_amount. Select up to 3 outlets to filter the trend chart.</p>
+                            </div>
+                            <div id="selectedOutlets" class="text-end"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-xl-5 mb-4 mb-xl-0">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex justify-content-between align-items-center gap-3">
+                            <h6 class="mb-0">Outlet Comparison</h6>
+                            <div style="min-width: 160px;">
+                                <label class="control-label" for="outletLimitFilter">Filter</label>
+                                <select id="outletLimitFilter" class="form-control form-control-sm">
+                                    <option value="top5">Top 5 by revenue</option>
+                                    <option value="bottom5">Bottom 5 by revenue</option>
+                                    <option value="all">All</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body px-0 pt-0">
+                            <div class="table-responsive">
+                                <table class="table align-items-center outlet-comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4">Outlet Name</th>
+                                            <th class="text-end pe-4">Total Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="outletComparisonBody">
+                                        <tr>
+                                            <td colspan="2" class="text-center py-4 text-muted">Loading outlets...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-4 status-text" id="selectionStatus">No outlet selected. Charts show all outlets.</div>
+                            <div class="px-4 py-3 d-flex justify-content-end" id="outletPagination"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-7">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <h6 class="mb-0">Revenue Performance by Outlet</h6>
+                            <div class="metric-toggle" aria-label="Chart metric">
+                                <button type="button" class="active" data-metric="revenue">Revenue</button>
+                                <button type="button" data-metric="gp">GP</button>
+                                <button type="button" data-metric="gp_percent">GP%</button>
+                            </div>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="outletBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xl-6 mb-4 mb-xl-0">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+                                <div>
+                                    <h6 class="mb-1" id="trendTitle">Weekly Sales Trend</h6>
+                                    <p class="mb-0 text-sm text-muted" id="trendSubtitle">Weekly revenue for the selected month.</p>
+                                </div>
+                                <div class="d-flex flex-wrap align-items-end gap-2">
+                                    <div>
+                                        <label class="control-label" for="trendType">Trend</label>
+                                        <select id="trendType" class="form-control form-control-sm">
+                                            <option value="weekly">Weekly</option>
+                                            <option value="hourly">Hourly</option>
+                                        </select>
+                                    </div>
+                                    <div id="trendMonthControl">
+                                        <label class="control-label" for="trendMonth">Month</label>
+                                        <input id="trendMonth" type="month" class="form-control form-control-sm">
+                                    </div>
+                                    <div id="trendDateControl" style="display: none;">
+                                        <label class="control-label" for="trendDate">Date</label>
+                                        <input id="trendDate" type="date" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body chart-box">
+                            <canvas id="hourlyTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+                                <div>
+                                    <div class="d-flex flex-wrap align-items-center gap-4 mb-1">
+                                        <h6 class="mb-0">Outlet vs Outlet Group Average</h6>
+                                        <a href="#assign-outlet-grouping.php" class="btn btn-sm btn-primary mb-0" style="background-color: rgb(12,99,38); border-color: rgb(12,99,38);">Assign Groups</a>
+                                    </div>
+                                    <p class="mb-0 text-sm text-muted">Select an outlet to compare with its group average</p>
+                                </div>
+                                <div class="d-flex flex-wrap align-items-end gap-2">
+                                    <div class="benchmark-control">
+                                        <label class="control-label" for="benchmarkDateFrom">Date From</label>
+                                        <input id="benchmarkDateFrom" type="date" class="form-control form-control-sm" data-pm-value="dateFrom" value="">
+                                    </div>
+                                    <div class="benchmark-control">
+                                        <label class="control-label" for="benchmarkDateTo">Date To</label>
+                                        <input id="benchmarkDateTo" type="date" class="form-control form-control-sm" data-pm-value="dateTo" value="">
+                                    </div>
+                                    <div class="benchmark-control">
+                                        <label class="control-label" for="benchmarkOutlet">Outlet</label>
+                                        <select id="benchmarkOutlet" class="form-control form-control-sm select2-search" data-placeholder="Select Outlet"><script>document.write(PM.outletOptions())</script></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body chart-box benchmark-chart-box">
+                            <canvas id="benchmarkChart"></canvas>
+                            <div id="benchmarkInsight" class="status-text mt-3">Select an outlet to view benchmark.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer pt-3">
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-12 mb-lg-0 mb-4">
+                <div class="copyright text-center text-muted"> <!-- Modified this for the footer to be centered -->
+                    <small class="copyright">Copyright ©2026 Prime Supermarket </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>    </main>
+    <script>Api.restoreForms();</script>
+</body>
+
+<link rel="stylesheet" href="./assets/css/loading.css">
+<script src="./assets/js/loading-overlay.js"></script>
+<script src="./assets/js/loading.js"></script>
+
+<style>
+    .report-assistant-trigger {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        z-index: 1030;
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        color: #fff;
+        font-weight: 700;
+        background: linear-gradient(135deg, #021312 0%, #063328 25%, #0A6A4F 60%, #19A97A 100%);
+        box-shadow: 0 12px 28px rgba(2, 49, 40, .28);
+    }
+    .report-assistant-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        background: rgba(2, 19, 18, .38);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+    }
+    .report-assistant-overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .report-assistant-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 1050;
+        width: min(440px, 100vw);
+        height: 100vh;
+        transform: translateX(100%);
+        transition: transform .28s ease;
+        background: #eef5f1;
+        box-shadow: -16px 0 38px rgba(2, 19, 18, .18);
+        display: flex;
+        flex-direction: column;
+    }
+    .report-assistant-panel.is-open {
+        transform: translateX(0);
+    }
+    .report-assistant-header {
+        padding: 24px 24px 16px;
+        border-bottom: 1px solid rgba(2, 49, 40, .1);
+    }
+    .report-assistant-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .report-assistant-title {
+        margin: 0;
+        color: #063328;
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+    .report-assistant-subtitle {
+        margin: 8px 0 0;
+        color: #5f7068;
+        font-size: .92rem;
+    }
+    .report-assistant-close {
+        border: 0;
+        background: #fff;
+        color: #063328;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 1.15rem;
+        line-height: 1;
+        box-shadow: 0 4px 14px rgba(2, 49, 40, .1);
+    }
+    .report-assistant-body {
+        padding: 18px 24px 24px;
+        overflow-y: auto;
+    }
+    .report-category-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .report-category-btn {
+        border: 1px solid rgba(2, 49, 40, .12);
+        border-radius: 14px;
+        padding: 10px 12px;
+        min-height: 48px;
+        background: #fff;
+        color: #244238;
+        font-weight: 700;
+        text-align: left;
+        transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+    }
+    .report-category-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(10, 106, 79, .32);
+    }
+    .report-category-btn.is-active {
+        background: #063328;
+        border-color: #063328;
+        color: #fff;
+    }
+    .report-recommendations {
+        margin-top: 20px;
+    }
+    .report-empty-state {
+        margin: 0;
+        padding: 18px;
+        border-radius: 16px;
+        color: #64736c;
+        background: rgba(255, 255, 255, .7);
+        border: 1px dashed rgba(2, 49, 40, .18);
+    }
+    .report-card {
+        padding: 16px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 8px 22px rgba(2, 49, 40, .08);
+    }
+    .report-card + .report-card {
+        margin-top: 12px;
+    }
+    .report-card h6 {
+        margin: 0 0 6px;
+        color: #063328;
+        font-weight: 800;
+    }
+    .report-card p {
+        margin: 0 0 12px;
+        color: #66746e;
+        font-size: .88rem;
+        line-height: 1.45;
+    }
+    .report-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 8px 14px;
+        color: #fff;
+        font-size: .84rem;
+        font-weight: 700;
+        background: #0A6A4F;
+    }
+    .report-card a:hover {
+        color: #fff;
+        background: #063328;
+    }
+    @media (min-width: 768px) {
+        .report-assistant-overlay {
+            display: none;
+        }
+    }
+    @media (max-width: 575.98px) {
+        .report-assistant-trigger {
+            right: 16px;
+            bottom: 16px;
+        }
+        .report-category-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<button type="button" class="report-assistant-trigger" id="reportAssistantOpen">
+    Report Assistant
+</button>
+<div class="report-assistant-overlay" id="reportAssistantOverlay"></div>
+<aside class="report-assistant-panel" id="reportAssistantPanel" aria-hidden="true">
+    <div class="report-assistant-header">
+        <div class="report-assistant-title-row">
+            <h5 class="report-assistant-title">Report Assistant</h5>
+            <button type="button" class="report-assistant-close" id="reportAssistantClose" aria-label="Close Report Assistant">&times;</button>
+        </div>
+        <p class="report-assistant-subtitle">What would you like to analyze today?</p>
+    </div>
+    <div class="report-assistant-body">
+        <div class="report-category-grid" id="reportCategoryGrid"></div>
+        <div class="report-recommendations" id="reportRecommendations">
+            <p class="report-empty-state">Select an interest to view recommended reports.</p>
+        </div>
+    </div>
+</aside>
+<script src="./assets/js/core/jquery-3.7.1.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+
+<script src="./assets/js/core/popper.min.js"></script>
+<!--<script src="./assets/js/core/bootstrap.min.js"></script> disable for now-->
+<script src="./assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="./assets/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="./assets/js/plugins/chartjs.min.js"></script>
+
+<!-- Include Select2 locally -->
+<link href="./assets/css/select2.min.css" rel="stylesheet" />
+<script src="./assets/js/plugins/select2.min.js"></script>
+
+<script src="./assets/js/argon-dashboard.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="./assets/css/dataTables.bootstrap5.css">
+<script src="./assets/js/core/dataTables.js"></script>
+<script src="./assets/js/core/dataTables.bootstrap5.js"></script>
+<script src="./assets/js/core/dataTables.scrollToTop.min.js"></script>
+
+<script>
+    const reportAssistantData = {
+        'Sales Performance': [
+            { name: 'POS Report', url: 'pos-transction-report.html', description: 'Analyze outlet sales, revenue, transactions, and sales trends.' },
+            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze mobile sales performance and customer purchase activity.' },
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand overall basket value, units per basket, and receipt trends.' }
+        ],
+        'Customer Behaviour': [
+            { name: 'Product Frequency Behaviour', url: '#product_frequency_behaviour.php', description: 'Identify products customers repeatedly buy, then drill into individual customer behaviour.' },
+            { name: 'Customer Behaviour Report', url: 'customer-behaviour-report.html', description: 'Find members who repeatedly purchase selected products and analyze their repeat frequency.' },
+            { name: 'Every-Week Customer Products', url: 'weekly-customer-product-report.html', description: 'List customers who purchased the same item every week for at least one complete month.' },
+            { name: 'Mobile Transaction Report', url: 'mobile-transaction-report.html', description: 'Analyze customer purchase patterns by age group, gender, outlet, and category.' },
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'Understand how customers build their shopping baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'See how different product groups contribute to each basket.' }
+        ],
+        'Customer Loyalty': [
+            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze customer points earning, redemption, and loyalty activity.' },
+            { name: 'Member Point List', url: 'member-point-list.html', description: 'View member point balances and individual loyalty records.' },
+            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Understand member participation in CRM games.' }
+        ],
+        'Product Performance': [
+            { name: 'Item Report', url: 'gp-item-report.html', description: 'Analyze item-level sales, quantity, revenue, and gross profit.' },
+            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare product categories by sales and profitability.' },
+            // No Sale & Slow Moving is hidden from discovery surfaces on purpose; the
+            // page stays live at no-sale-report.php for anyone with the direct link.
+            { name: 'Penetration Report', url: 'penetration-report.html', description: 'See how widely products or categories appear across customer baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Understand each category or item’s contribution to the basket.' }
+        ],
+        'Profitability': [
+            { name: 'GP Summary', url: 'gp-report-summary.html', description: 'View overall gross profit, margin, and profitability trends.' },
+            { name: 'Item Report', url: 'gp-item-report.html', description: 'Identify high and low margin items.' },
+            { name: 'Category Report', url: 'gp-category-report.html', description: 'Compare gross profit performance across categories.' }
+        ],
+        'Basket Behaviour': [
+            { name: 'Basket Summary', url: 'basket-summary.html', description: 'View basket size, value per basket, units per basket, and receipt trends.' },
+            { name: 'Penetration Report', url: 'penetration-report.html', description: 'Measure how often products or categories appear in baskets.' },
+            { name: 'Share of Basket Report', url: 'share-of-basket-report.html', description: 'Analyze what percentage of the basket is contributed by different categories/items.' }
+        ],
+        'Game Engagement': [
+            { name: 'Game Utilisation', url: 'game-utilisation.html', description: 'Track game plays, active games, unique players, and stamp usage.' },
+            { name: 'Game Winnings', url: 'game-winning.html', description: 'Analyze prize claims, winners, prize types, and game reward performance.' }
+        ],
+        'Points / Rewards': [
+            { name: 'Points Analytics Report', url: 'member-point-transaction-report.html', description: 'Analyze overall points movement, redemption, and loyalty trends.' },
+            { name: 'Member Point List', url: 'member-point-list.html', description: 'Search and view individual member point details.' }
+        ]
+    };
+
+    function escapeReportAssistantHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const openButton = document.getElementById('reportAssistantOpen');
+        const closeButton = document.getElementById('reportAssistantClose');
+        const panel = document.getElementById('reportAssistantPanel');
+        const overlay = document.getElementById('reportAssistantOverlay');
+        const categoryGrid = document.getElementById('reportCategoryGrid');
+        const recommendations = document.getElementById('reportRecommendations');
+
+        if (!openButton || !closeButton || !panel || !overlay || !categoryGrid || !recommendations) {
+            return;
+        }
+
+        function openAssistant() {
+            panel.classList.add('is-open');
+            overlay.classList.add('is-open');
+            panel.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeAssistant() {
+            panel.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+        }
+
+        function renderRecommendations(category) {
+            const reports = reportAssistantData[category] || [];
+            recommendations.innerHTML = reports.map(function(report) {
+                return `
+                    <div class="report-card">
+                        <h6>${escapeReportAssistantHtml(report.name)}</h6>
+                        <p>${escapeReportAssistantHtml(report.description)}</p>
+                        <a href="${escapeReportAssistantHtml(report.url)}">Open Report</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        Object.keys(reportAssistantData).forEach(function(category) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'report-category-btn';
+            button.textContent = category;
+            button.addEventListener('click', function() {
+                categoryGrid.querySelectorAll('.report-category-btn').forEach(function(item) {
+                    item.classList.remove('is-active');
+                });
+                button.classList.add('is-active');
+                renderRecommendations(category);
+            });
+            categoryGrid.appendChild(button);
+        });
+
+        openButton.addEventListener('click', openAssistant);
+        closeButton.addEventListener('click', closeAssistant);
+        overlay.addEventListener('click', closeAssistant);
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAssistant();
+            }
+        });
+    });
+
+    function formatDateToDisplay(date) {
+        date = new Date(date);
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
+        const month = months[date.getMonth()]; // Get month abbreviation
+        const year = date.getFullYear(); // Get full year
+
+        return day + '-' + month + '-' + year;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        const state = {
+            outlets: [],
+            selectedStores: [],
+            outletFilter: 'top5',
+            outletPage: 1,
+            metric: 'revenue',
+            breakdownSort: { key: 'total_revenue', direction: 'desc' },
+            charts: {
+                outletBar: null,
+                salesTrend: null,
+                benchmark: null
+            }
+        };
+
+        const mainFilterDefaults = {
+            dateFrom: PM.dateFrom,
+            dateTo: PM.dateTo
+        };
+
+        const ALL_OUTLETS_COLOR = '#0c6326';
+        const outletColors = [
+            '#2563eb',
+            '#b45309',
+            '#7c3aed',
+            '#be123c',
+            '#0891b2',
+            '#4d7c0f'
+        ];
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-SG', {
+                style: 'currency',
+                currency: 'SGD'
+            }).format(Number(value || 0));
+        }
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat('en-SG', {
+                maximumFractionDigits: 2
+            }).format(Number(value || 0));
+        }
+
+        function initSearchDropdowns() {
+            if (!window.jQuery || !$.fn.select2) return;
+            $('.select2-search').each(function() {
+                const $select = $(this);
+                if ($select.data('select2')) return;
+                $select.select2({
+                    width: '100%',
+                    placeholder: $select.data('placeholder') || 'Select',
+                    allowClear: true
+                });
+            });
+        }
+
+        function setSelectValue(selector, value) {
+            const element = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (!element) return;
+            element.value = value || '';
+            if (window.jQuery && $.fn.select2 && $(element).data('select2')) {
+                $(element).trigger('change.select2');
+            }
+        }
+
+        function getDefaultTrendDefaults() {
+            const reportStart = mainFilterDefaults.dateFrom || formatDate(new Date());
+            const reportEnd = mainFilterDefaults.dateTo || reportStart;
+
+            return {
+                month: reportStart.substring(0, 7),
+                date: reportEnd
+            };
+        }
+
+        function formatMonth(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${year}-${month}`;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function colorForStore(storeNo) {
+            const index = state.outlets.findIndex(outlet => outlet.store_no === storeNo);
+            return outletColors[(index >= 0 ? index : 0) % outletColors.length];
+        }
+
+        function getVisibleOutlets() {
+            const sorted = [...state.outlets].sort((a, b) => b.total_revenue - a.total_revenue);
+
+            if (state.outletFilter === 'bottom5') {
+                return sorted.slice(-5).reverse();
+            }
+
+            if (state.outletFilter === 'all') {
+                return sorted;
+            }
+
+            return sorted.slice(0, 5);
+        }
+
+        function getOutletPageRows() {
+            const outlets = getVisibleOutlets();
+            if (state.outletFilter !== 'all') {
+                return outlets;
+            }
+
+            const totalPages = getOutletTotalPages();
+            state.outletPage = Math.min(Math.max(state.outletPage, 1), totalPages);
+            const start = (state.outletPage - 1) * 10;
+            return outlets.slice(start, start + 10);
+        }
+
+        function getOutletTotalPages() {
+            if (state.outletFilter !== 'all') {
+                return 1;
+            }
+
+            return Math.max(1, Math.ceil(getVisibleOutlets().length / 10));
+        }
+
+        function renderOutletTable() {
+            const tbody = document.getElementById('outletComparisonBody');
+            const outlets = getOutletPageRows();
+
+            if (!outlets.length) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-muted">No outlet revenue found.</td></tr>';
+                renderOutletPagination();
+                return;
+            }
+
+            tbody.innerHTML = outlets.map(outlet => {
+                const selected = state.selectedStores.includes(outlet.store_no);
+                return `
+                    <tr class="outlet-row ${selected ? 'selected' : ''}" data-store-no="${escapeHtml(outlet.store_no)}">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${colorForStore(outlet.store_no)}; display: inline-block;"></span>
+                                <strong>${escapeHtml(outlet.outlet_name)}</strong>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">${formatCurrency(outlet.total_revenue)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.querySelectorAll('.outlet-row').forEach(row => {
+                row.addEventListener('click', () => toggleOutlet(row.dataset.storeNo));
+            });
+
+            renderOutletPagination();
+        }
+
+        function renderOutletPagination() {
+            const holder = document.getElementById('outletPagination');
+            if (!holder) return;
+
+            if (state.outletFilter !== 'all' || getVisibleOutlets().length <= 10) {
+                holder.innerHTML = '';
+                return;
+            }
+
+            const totalPages = getOutletTotalPages();
+            const current = Math.min(Math.max(state.outletPage, 1), totalPages);
+
+            holder.innerHTML = `
+                <div class="dataTables_paginate paging_simple_numbers">
+                    <ul class="pagination mb-0">
+                        <li class="paginate_button page-item previous ${current === 1 ? 'disabled' : ''}">
+                            <button type="button" class="page-link" data-page="${current - 1}">Previous</button>
+                        </li>
+                        ${Array.from({ length: totalPages }, (_, i) => i + 1).map(page => `
+                            <li class="paginate_button page-item ${page === current ? 'active' : ''}">
+                                <button type="button" class="page-link" data-page="${page}">${page}</button>
+                            </li>
+                        `).join('')}
+                        <li class="paginate_button page-item next ${current === totalPages ? 'disabled' : ''}">
+                            <button type="button" class="page-link" data-page="${current + 1}">Next</button>
+                        </li>
+                    </ul>
+                </div>
+            `;
+
+            holder.querySelectorAll('button[data-page]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const page = Number(button.dataset.page);
+                    if (!page || page < 1 || page > totalPages || page === current) return;
+                    state.outletPage = page;
+                    renderOutletTable();
+                });
+            });
+        }
+
+        function renderSelectionStatus() {
+            const holder = document.getElementById('selectedOutlets');
+            const status = document.getElementById('selectionStatus');
+
+            if (!state.selectedStores.length) {
+                holder.innerHTML = '<span class="text-sm text-muted">All outlets</span>';
+                status.textContent = 'No outlet selected. Charts show all outlets.';
+                return;
+            }
+
+            holder.innerHTML = state.selectedStores.map(storeNo => {
+                return `<span class="selection-pill">${escapeHtml(storeNo)}</span>`;
+            }).join('');
+            status.textContent = `${state.selectedStores.length} outlet${state.selectedStores.length > 1 ? 's' : ''} selected. Hourly chart is filtered.`;
+        }
+
+        function toggleOutlet(storeNo) {
+            const currentIndex = state.selectedStores.indexOf(storeNo);
+
+            if (currentIndex >= 0) {
+                state.selectedStores.splice(currentIndex, 1);
+            } else if (state.selectedStores.length < 3) {
+                state.selectedStores.push(storeNo);
+            } else {
+                document.getElementById('selectionStatus').textContent = 'Maximum 3 outlets can be selected.';
+                return;
+            }
+
+            renderOutletTable();
+            renderSelectionStatus();
+            loadSalesTrend({ skipLoading: document.getElementById('trendType').value === 'weekly' });
+            selectBenchmarkOutlet(storeNo, true, { skipLoading: true });
+        }
+
+        function renderOutletBarChart() {
+            const outlets = getVisibleOutlets();
+            const labels = outlets.map(outlet => outlet.outlet_name);
+            const metricMap = {
+                revenue: {
+                    label: 'Revenue ($)',
+                    key: 'total_revenue'
+                },
+                gp: {
+                    label: 'Gross Profit ($)',
+                    key: 'gross_profit'
+                },
+                gp_percent: {
+                    label: 'GP (%)',
+                    key: 'gp_percent'
+                }
+            };
+            const metric = metricMap[state.metric];
+            const data = outlets.map(outlet => Number(outlet[metric.key] || 0));
+
+            if (state.charts.outletBar) {
+                state.charts.outletBar.destroy();
+            }
+
+            state.charts.outletBar = new Chart(document.getElementById('outletBarChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: metric.label,
+                        data,
+                        backgroundColor: outlets.map(outlet => colorForStore(outlet.store_no)),
+                        borderRadius: 6,
+                        maxBarThickness: 48
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => state.metric === 'gp_percent'
+                                    ? `${metric.label}: ${formatNumber(context.parsed.y)}%`
+                                    : `${metric.label}: ${formatCurrency(context.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: metric.label
+                            },
+                            ticks: {
+                                callback: value => state.metric === 'gp_percent' ? `${value}%` : formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadOutletComparison() {
+            const params = new URLSearchParams({
+                action: 'store-outlet-comparison',
+                date_from: mainFilterDefaults.dateFrom,
+                date_to: mainFilterDefaults.dateTo
+            });
+            const globalOutlet = document.getElementById('globalOutletFilter');
+            if (globalOutlet && globalOutlet.value) {
+                params.set('store_no', globalOutlet.value);
+            }
+
+            fetch(`api.php?${params.toString()}`)
+                .then(response => response.json())
+                .then(response => {
+                    if (!response.status) {
+                        throw new Error(response.error || 'Unable to load outlet comparison.');
+                    }
+
+                    state.outlets = response.data || [];
+                    renderOutletTable();
+                    renderOutletBreakdown();
+                    renderSelectionStatus();
+                    renderOutletBarChart();
+                    hydrateBenchmarkOutlet();
+                    loadSalesTrend();
+                    syncBenchmarkOutletFromGlobal(true);
+                })
+                .catch(error => {
+                    document.getElementById('outletComparisonBody').innerHTML =
+                        `<tr><td colspan="2" class="text-center py-4 text-danger">${escapeHtml(error.message)}</td></tr>`;
+                    document.getElementById('outletBreakdownBody').innerHTML =
+                        `<tr><td colspan="9" class="text-center py-4 text-danger">${escapeHtml(error.message)}</td></tr>`;
+                });
+        }
+
+        // ─── Breakdown by outlet ─────────────────────────────────────────────
+        // Same rows the comparison table and bar chart use, laid out with every
+        // KPI column so "All Outlets" gives a per-branch report in one pass.
+        const breakdownColumns = [
+            { key: 'outlet_label',   label: 'Outlet',        type: 'text' },
+            { key: 'total_revenue',  label: 'Total Revenue', type: 'money' },
+            { key: 'total_items',    label: 'Items Sold',    type: 'int' },
+            { key: 'total_units',    label: 'Units Sold',    type: 'decimal' },
+            { key: 'transactions',   label: 'Transactions',  type: 'int' },
+            { key: 'avg_txn_value',  label: 'Avg Txn Value', type: 'money' },
+            { key: 'total_discount', label: 'Discount',      type: 'money' },
+            { key: 'gross_profit',   label: 'Gross Profit',  type: 'money' },
+            { key: 'gp_percent',     label: 'GP %',          type: 'percent' }
+        ];
+
+        function breakdownRows() {
+            const rows = [...state.outlets];
+            const { key, direction } = state.breakdownSort;
+
+            rows.sort((a, b) => {
+                const left = a[key];
+                const right = b[key];
+                const comparison = typeof left === 'string'
+                    ? String(left).localeCompare(String(right))
+                    : Number(left || 0) - Number(right || 0);
+                return direction === 'asc' ? comparison : -comparison;
+            });
+
+            return rows;
+        }
+
+        function formatBreakdownValue(value, type) {
+            if (type === 'money') return formatCurrency(value);
+            if (type === 'percent') return `${formatNumber(value)}%`;
+            if (type === 'int') return new Intl.NumberFormat('en-SG').format(Number(value || 0));
+            if (type === 'decimal') return formatNumber(value);
+            return escapeHtml(value == null ? '' : value);
+        }
+
+        function renderOutletBreakdown() {
+            const tbody = document.getElementById('outletBreakdownBody');
+            const tfoot = document.getElementById('outletBreakdownFoot');
+            const rows = breakdownRows();
+
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">No outlet data for this period.</td></tr>';
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = rows.map(row => {
+                const cells = breakdownColumns.map((column, index) => {
+                    const alignment = index === 0 ? 'ps-3' : 'text-end';
+                    const padding = index === breakdownColumns.length - 1 ? ' pe-3' : '';
+                    return `<td class="${alignment}${padding}">${formatBreakdownValue(row[column.key], column.type)}</td>`;
+                }).join('');
+                return `<tr>${cells}</tr>`;
+            }).join('');
+
+            // Totals are re-derived from the rows rather than reusing the KPI
+            // cards, so the column and its total can never disagree.
+            const totals = rows.reduce((carry, row) => ({
+                total_revenue:  carry.total_revenue  + Number(row.total_revenue || 0),
+                total_items:    carry.total_items    + Number(row.total_items || 0),
+                total_units:    carry.total_units    + Number(row.total_units || 0),
+                transactions:   carry.transactions   + Number(row.transactions || 0),
+                total_discount: carry.total_discount + Number(row.total_discount || 0),
+                gross_profit:   carry.gross_profit   + Number(row.gross_profit || 0)
+            }), {
+                total_revenue: 0, total_items: 0, total_units: 0,
+                transactions: 0, total_discount: 0, gross_profit: 0
+            });
+
+            totals.avg_txn_value = totals.transactions > 0 ? totals.total_revenue / totals.transactions : 0;
+            totals.gp_percent = totals.total_revenue > 0 ? (totals.gross_profit / totals.total_revenue) * 100 : 0;
+            totals.outlet_label = `All Outlets (${rows.length})`;
+
+            tfoot.innerHTML = `<tr>${breakdownColumns.map((column, index) => {
+                const alignment = index === 0 ? 'ps-3' : 'text-end';
+                const padding = index === breakdownColumns.length - 1 ? ' pe-3' : '';
+                return `<td class="${alignment}${padding}">${formatBreakdownValue(totals[column.key], column.type)}</td>`;
+            }).join('')}</tr>`;
+
+            renderBreakdownSortArrows();
+        }
+
+        function renderBreakdownSortArrows() {
+            document.querySelectorAll('#outletBreakdownTable th.sortable').forEach(header => {
+                const existing = header.querySelector('.sort-arrow');
+                if (existing) existing.remove();
+
+                if (header.dataset.sortKey !== state.breakdownSort.key) return;
+
+                const arrow = document.createElement('span');
+                arrow.className = 'sort-arrow';
+                arrow.textContent = state.breakdownSort.direction === 'asc' ? '▲' : '▼';
+                header.appendChild(arrow);
+            });
+        }
+
+        function downloadBreakdownCsv() {
+            const rows = breakdownRows();
+            if (!rows.length) return;
+
+            const escapeCsv = value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`;
+            const lines = [breakdownColumns.map(column => escapeCsv(column.label)).join(',')];
+
+            rows.forEach(row => {
+                lines.push(breakdownColumns.map(column => escapeCsv(row[column.key])).join(','));
+            });
+
+            const blob = new Blob([lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `pos_outlet_breakdown_${mainFilterDefaults.dateFrom}_to_${mainFilterDefaults.dateTo}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+        document.querySelectorAll('#outletBreakdownTable th.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const key = header.dataset.sortKey;
+                if (state.breakdownSort.key === key) {
+                    state.breakdownSort.direction = state.breakdownSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.breakdownSort.key = key;
+                    state.breakdownSort.direction = key === 'outlet_label' ? 'asc' : 'desc';
+                }
+                renderOutletBreakdown();
+            });
+        });
+
+        document.getElementById('downloadBreakdown').addEventListener('click', downloadBreakdownCsv);
+
+        function updateTrendControls() {
+            const trendType = document.getElementById('trendType').value;
+            const isWeekly = trendType === 'weekly';
+
+            document.getElementById('trendTitle').textContent = isWeekly ? 'Weekly Sales Trend' : 'Hourly Sales Trend';
+            document.getElementById('trendSubtitle').textContent = isWeekly
+                ? 'Weekly revenue for the selected month.'
+                : 'Hourly revenue for the selected date.';
+            document.getElementById('trendMonthControl').style.display = isWeekly ? '' : 'none';
+            document.getElementById('trendDateControl').style.display = isWeekly ? 'none' : '';
+        }
+
+        function loadSalesTrend(options = {}) {
+            updateTrendControls();
+
+            const trendType = document.getElementById('trendType').value;
+            const params = new URLSearchParams();
+
+            if (trendType === 'weekly') {
+                params.set('action', 'store-weekly-revenue');
+                params.set('month', document.getElementById('trendMonth').value);
+            } else {
+                const dateInput = document.getElementById('trendDate');
+                if (!dateInput.value) {
+                    dateInput.value = getDefaultTrendDefaults().date;
+                }
+                const selectedDate = dateInput.value;
+                params.set('action', 'store-hourly-revenue');
+                params.set('mode', 'actual');
+                params.set('date_from', selectedDate);
+                params.set('date_to', selectedDate);
+            }
+
+            state.selectedStores.forEach(storeNo => params.append('store_nos[]', storeNo));
+
+            fetch(`api.php?${params.toString()}`, options.skipLoading ? { primeNoLoading: true } : undefined)
+                .then(response => response.text())
+                .then(text => {
+                    let response;
+                    try {
+                        response = JSON.parse(text);
+                    } catch (error) {
+                        throw new Error(text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || 'Invalid API response.');
+                    }
+                    if (!response.status) {
+                        throw new Error(response.error || 'Unable to load sales trend.');
+                    }
+
+                    renderSalesTrend(response.data, trendType);
+                })
+                .catch(error => {
+                    const labels = trendType === 'weekly' ? ['No data'] : Array.from({ length: 24 }, (_, hour) => `${hour}:00`);
+                    const values = labels.map(() => 0);
+                    renderSalesTrend({ labels, series: [{ outlet_name: error.message, store_no: 'ERR', values, hours: values }] }, trendType);
+                });
+        }
+
+        function renderSalesTrend(data, trendType) {
+            const labels = trendType === 'weekly'
+                ? (data.labels || [])
+                : Array.from({ length: 24 }, (_, hour) => `${hour}:00`);
+            const series = data.series || [];
+            const datasets = series.map((row, index) => {
+                const color = row.store_no === 'ALL' ? ALL_OUTLETS_COLOR : colorForStore(row.store_no);
+                return {
+                    label: row.outlet_name,
+                    data: trendType === 'weekly' ? (row.values || []) : (row.hours || Array(24).fill(0)),
+                    borderColor: color,
+                    backgroundColor: color,
+                    borderWidth: 3,
+                    pointRadius: 2,
+                    tension: 0.3
+                };
+            });
+
+            if (state.charts.salesTrend) {
+                state.charts.salesTrend.destroy();
+            }
+
+            state.charts.salesTrend = new Chart(document.getElementById('hourlyTrendChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: trendType === 'weekly' ? 'Week' : 'Hour'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)'
+                            },
+                            ticks: {
+                                callback: value => formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function hydrateBenchmarkOutlet() {
+            const select = document.getElementById('benchmarkOutlet');
+            if (!select || select.options.length || !state.outlets.length) return;
+
+            state.outlets.forEach(outlet => {
+                const option = document.createElement('option');
+                option.value = outlet.store_no;
+                option.text = outlet.outlet_name;
+                select.appendChild(option);
+            });
+        }
+
+        function syncBenchmarkOutletFromGlobal(refresh = true) {
+            const globalOutlet = document.getElementById('globalOutletFilter');
+            const benchmarkOutlet = document.getElementById('benchmarkOutlet');
+            if (!globalOutlet || !benchmarkOutlet) return;
+
+            const globalValue = globalOutlet.value;
+            if (globalValue && Array.from(benchmarkOutlet.options).some(option => option.value === globalValue)) {
+                setSelectValue(benchmarkOutlet, globalValue);
+            } else if (!globalValue) {
+                const firstOutletWithData = state.outlets[0]?.store_no || '';
+                if (firstOutletWithData) {
+                    setSelectValue(benchmarkOutlet, firstOutletWithData);
+                } else if (!benchmarkOutlet.value && benchmarkOutlet.options.length) {
+                    setSelectValue(benchmarkOutlet, benchmarkOutlet.options[0].value);
+                }
+            }
+
+            if (refresh) {
+                loadBenchmark();
+            }
+        }
+
+        function selectBenchmarkOutlet(storeNo, refresh = true, options = {}) {
+            const benchmarkOutlet = document.getElementById('benchmarkOutlet');
+            if (!benchmarkOutlet || !storeNo) return;
+
+            if (!Array.from(benchmarkOutlet.options).some(option => option.value === storeNo)) {
+                return;
+            }
+
+            setSelectValue(benchmarkOutlet, storeNo);
+            if (refresh) {
+                loadBenchmark(options);
+            }
+        }
+
+        function loadBenchmark(options = {}) {
+            const outletInput = document.getElementById('benchmarkOutlet');
+            const fromInput = document.getElementById('benchmarkDateFrom');
+            const toInput = document.getElementById('benchmarkDateTo');
+
+            if (!outletInput.value && outletInput.options.length) {
+                outletInput.value = outletInput.options[0].value;
+            }
+
+            if (!fromInput.value) fromInput.value = mainFilterDefaults.dateFrom;
+            if (!toInput.value) toInput.value = mainFilterDefaults.dateTo;
+
+            if (!outletInput.value) {
+                document.getElementById('benchmarkInsight').textContent = 'Select an outlet to view benchmark.';
+                renderBenchmarkChart(null);
+                return;
+            }
+
+            const params = new URLSearchParams({
+                action: 'store-outlet-benchmark',
+                store_no: outletInput.value,
+                date_from: fromInput.value,
+                date_to: toInput.value
+            });
+
+            fetch(`api.php?${params.toString()}`, options.skipLoading ? { primeNoLoading: true } : undefined)
+                .then(response => response.text())
+                .then(text => {
+                    let response;
+                    try {
+                        response = JSON.parse(text);
+                    } catch (error) {
+                        throw new Error(text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || 'Invalid API response.');
+                    }
+                    if (!response.status) {
+                        throw new Error(response.error || 'Unable to load benchmark.');
+                    }
+
+                    renderBenchmarkChart(response.data);
+                })
+                .catch(error => {
+                    document.getElementById('benchmarkInsight').textContent = error.message;
+                    renderBenchmarkChart(null);
+                });
+        }
+
+        function bindBenchmarkOutletChange() {
+            const benchmarkOutlet = document.getElementById('benchmarkOutlet');
+            if (!benchmarkOutlet) return;
+            const refreshBenchmark = () => loadBenchmark({ skipLoading: true });
+
+            if (window.jQuery && $.fn.select2 && $(benchmarkOutlet).data('select2')) {
+                $(benchmarkOutlet).off('change.benchmark').on('change.benchmark', refreshBenchmark);
+                return;
+            }
+
+            benchmarkOutlet.addEventListener('change', refreshBenchmark);
+        }
+
+        function bindGlobalOutletChange() {
+            const globalOutlet = document.getElementById('globalOutletFilter');
+            if (!globalOutlet) return;
+
+            const syncBenchmark = () => syncBenchmarkOutletFromGlobal(true);
+            if (window.jQuery && $.fn.select2 && $(globalOutlet).data('select2')) {
+                $(globalOutlet).off('change.benchmarkSync').on('change.benchmarkSync', syncBenchmark);
+                return;
+            }
+
+            globalOutlet.addEventListener('change', syncBenchmark);
+        }
+
+        function renderBenchmarkChart(data) {
+            const ctx = document.getElementById('benchmarkChart');
+            const labels = data ? (data.labels || []) : [];
+
+            if (state.charts.benchmark) {
+                state.charts.benchmark.destroy();
+            }
+
+            state.charts.benchmark = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: data ? data.store_no : 'Selected Outlet',
+                            data: data ? (data.selected_daily_revenue || []) : [],
+                            borderColor: colorForStore(data ? data.store_no : ''),
+                            backgroundColor: colorForStore(data ? data.store_no : ''),
+                            borderWidth: 3,
+                            pointRadius: 2,
+                            tension: 0.3
+                        },
+                        {
+                            label: data ? `${data.benchmark_group_name || 'Outlet Group'} Average` : 'Outlet Group Average',
+                            data: data ? (data.benchmark_avg_daily_revenue_by_day || []) : [],
+                            borderColor: ALL_OUTLETS_COLOR,
+                            backgroundColor: ALL_OUTLETS_COLOR,
+                            borderWidth: 3,
+                            pointRadius: 2,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)'
+                            },
+                            ticks: {
+                                callback: value => formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+
+            const insight = document.getElementById('benchmarkInsight');
+            if (!data) {
+                insight.textContent = 'Select an outlet to view benchmark.';
+                return;
+            }
+
+            const diff = Number(data.difference_percent || 0);
+            const direction = diff >= 0 ? 'above' : 'below';
+            const groupName = data.benchmark_group_name || 'outlet group';
+            insight.textContent = `Selected outlet is ${Math.abs(diff).toFixed(2)}% ${direction} ${groupName} average.`;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        document.getElementById('outletLimitFilter').addEventListener('change', event => {
+            state.outletFilter = event.target.value;
+            state.outletPage = 1;
+            renderOutletTable();
+            renderOutletBarChart();
+        });
+
+        document.querySelectorAll('.metric-toggle button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.metric-toggle button').forEach(item => item.classList.remove('active'));
+                button.classList.add('active');
+                state.metric = button.dataset.metric;
+                renderOutletBarChart();
+            });
+        });
+
+        document.getElementById('trendType').addEventListener('change', loadSalesTrend);
+        document.getElementById('trendMonth').addEventListener('change', loadSalesTrend);
+        document.getElementById('trendDate').addEventListener('change', loadSalesTrend);
+        document.getElementById('benchmarkDateFrom').addEventListener('change', loadBenchmark);
+        document.getElementById('benchmarkDateTo').addEventListener('change', loadBenchmark);
+
+        const defaultTrend = getDefaultTrendDefaults();
+        document.getElementById('trendType').value = 'weekly';
+        document.getElementById('trendMonth').value = defaultTrend.month;
+        document.getElementById('trendDate').value = defaultTrend.date;
+        updateTrendControls();
+
+        initSearchDropdowns();
+        bindBenchmarkOutletChange();
+        bindGlobalOutletChange();
+        syncBenchmarkOutletFromGlobal(false);
+        loadOutletComparison();
+    </script>
+
+</html>

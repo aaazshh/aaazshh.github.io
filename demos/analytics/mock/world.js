@@ -32,6 +32,9 @@ var World = (function () {
   function round(v, n) { var m = Math.pow(10, n == null ? 2 : n); return Math.round(v * m) / m; }
 
   var TODAY = ymd(new Date());
+  var NOW_MINUTE = new Date().getHours() * 60 + new Date().getMinutes();
+  // Receipts later than now today have not happened yet.
+  function later(date, hour, minute) { return date === TODAY && hour * 60 + minute > NOW_MINUTE; }
 
   // Outlets, the same town list the IAM walkthrough uses.
   var STORES = [
@@ -102,13 +105,26 @@ var World = (function () {
   var VENDORS = [];
   for (var v = 1; v <= 24; v++) VENDORS.push({ no: 'V' + pad(v, 4), name: 'VENDOR ' + pad(v, 3) + ' PTE LTD', consignment: v % 4 === 0, rate: v % 3 === 0 ? 0 : 15 + (v * 7) % 16 });
 
+  var VARIANTS = [['VALUE PACK', 1.6], ['ORGANIC', 1.45], ['LESS SUGAR', 1.05], ['FAMILY SIZE', 1.8], ['MINI', 0.6],
+    ['IMPORTED', 1.35], ['PREMIUM', 1.5], ['TWIN PACK', 1.9], ['REFILL', 0.85], ['LIMITED EDITION', 1.25]];
   var ITEMS = [];
   (function buildItems() {
     var r = rng(1234);
     var n = 0;
     Object.keys(NOUNS).forEach(function (code) {
       var margin = GROUP_MARGIN[code];
+      var list = [];
       NOUNS[code].forEach(function (x, i) {
+        list.push([x, i, 1]);
+        // Slow moving variants: the long tail a real range carries.
+        var k = 1 + (hash(x[0]) % 4);
+        for (var v = 0; v < k; v++) {
+          var label = VARIANTS[(hash(x[0]) + v * 7) % VARIANTS.length];
+          list.push([[x[0] + ' ' + label[0], x[1], round(x[2] * label[1], 2)], i, 0.015 + r() * 0.07]);
+        }
+      });
+      list.forEach(function (entry) {
+        var x = entry[0], i = entry[1], tail = entry[2];
         n++;
         var itemMargin = margin + (r() - 0.5) * 0.14;
         if (n % 37 === 0) itemMargin = -0.04 - r() * 0.05;
@@ -119,7 +135,7 @@ var World = (function () {
           product_group_code: code, item_category_code: GROUP_PARENT[code],
           vendor_no: vendor.no, vendor_name: vendor.name, consignment: vendor.consignment,
           barcode: '888' + pad(hash(x[0]) % 1000000000, 10),
-          weight: Math.pow(1 / (1 + (hash(x[0]) % 40)), 0.6) * (x[1] === 'KG' ? 1.2 : 1),
+          weight: Math.pow(1 / (1 + (hash(x[0]) % 40)), 0.6) * (x[1] === 'KG' ? 1.2 : 1) * tail,
           weighted: x[1] === 'KG', created: '2024-0' + (1 + (n % 9)) + '-1' + (n % 9)
         });
       });
@@ -185,11 +201,15 @@ var World = (function () {
     if (cache[key]) return cache[key];
     var lines = [];
     var stamp = date.replace(/-/g, '');
+    var lastReceipt = -1, lineNo = 0;
     generate(store, date, function (i, hour, minute, second, member, terminal, staff, it, qty, promo, disc, gross, net, cost) {
       var receipt = store.code + stamp + pad(i + 1, 4);
+      if (later(date, hour, minute)) return;
+      if (i !== lastReceipt) { lastReceipt = i; lineNo = 0; }
+      lineNo += 10000;
       lines.push({
         store_no: store.code, datetime: date + 'T' + pad(hour) + ':' + pad(minute) + ':' + pad(second), date: date, hour: hour,
-        receipt_no: receipt, transaction_no: receipt,
+        receipt_no: receipt, transaction_no: receipt, line_no: lineNo,
         item_no: it.item_no, name: it.name, uom: it.uom, product_group_code: it.product_group_code,
         item_category_code: it.item_category_code, vendor_no: it.vendor_no, barcode_no: it.barcode,
         unit_of_measure: it.uom, batch_no: 'STMT' + stamp.slice(2, 6) + store.code.slice(1),
@@ -218,6 +238,7 @@ var World = (function () {
     }
     var totals = {};
     generate(store, date, function (i, hour, minute, second, member, terminal, staff, it, qty, promo, disc, gross, net, cost) {
+      if (later(date, hour, minute)) return;
       var t = totals[it.item_no] || (totals[it.item_no] = { qty: 0, net: 0, cost: 0, disc: 0, lines: 0 });
       t.qty += qty; t.net += net; t.cost += cost; t.disc += disc; t.lines++;
     });
@@ -272,3 +293,51 @@ var World = (function () {
     storeList: storeList, inCategory: inCategory
   };
 })();
+
+// outlet_avg_group: the benchmark groups the POS report compares an outlet with.
+World.OUTLET_GROUPS = [
+  { id: 1, name: 'Heartland Large', store_nos: ['S001', 'S002', 'S009', 'S010'] },
+  { id: 2, name: 'Heartland Standard', store_nos: ['S003', 'S006', 'S007', 'S013'] },
+  { id: 3, name: 'Compact', store_nos: ['S004', 'S005', 'S008', 'S012'] }
+];
+
+// Daily stock on hand (prod-daily-soh-index): one snapshot per outlet, item
+// and night for the last 60 days. Stock falls with what the POS sold, gets
+// written off now and then, and is topped up when it runs low. A few items
+// per outlet are discontinued and left to run out.
+(function (W) {
+  'use strict';
+  var DAYS = 60, cache = {};
+  function snapshotDates() {
+    var out = [];
+    for (var i = DAYS; i >= 1; i--) out.push(W.ymd(W.addDays(new Date(), -i)));
+    return out;
+  }
+  function soh(storeCode) {
+    if (cache[storeCode]) return cache[storeCode];
+    var store = W.STORES.filter(function (s) { return s.code === storeCode; })[0];
+    var dates = snapshotDates();
+    var r = W.rng(W.hash('soh' + storeCode));
+    var table = {};
+    W.ITEMS.forEach(function (it) {
+      var reorder = 4 + Math.floor(r() * 10), pack = reorder * 2 + Math.floor(r() * 12);
+      var discontinued = r() < 0.05, stock = discontinued ? Math.floor(r() * 3) : reorder + Math.floor(r() * pack);
+      table[it.item_no] = { reorder: reorder, pack: pack, discontinued: discontinued, stock: stock, days: [] };
+    });
+    dates.forEach(function (d) {
+      var sold = W.daySummary(store, d);
+      W.ITEMS.forEach(function (it) {
+        var t = table[it.item_no];
+        var s = t.stock - (sold[it.item_no] ? sold[it.item_no].qty : 0);
+        if (r() < 0.012) s -= 1 + Math.floor(r() * 2);
+        if (!t.discontinued && s < t.reorder && r() < 0.6) s += t.pack;
+        if (s < 0) s = 0;
+        t.stock = W.round(s, 3);
+        t.days.push(t.stock);
+      });
+    });
+    return (cache[storeCode] = { dates: dates, items: table });
+  }
+  W.snapshotDates = snapshotDates;
+  W.soh = soh;
+})(World);

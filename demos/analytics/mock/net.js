@@ -55,6 +55,10 @@ var Api = (function () {
 
   function handles(url) {
     var u = parseUrl(url);
+    // A page that is also its own DataTables endpoint (comparison.php?draw=...).
+    if (/\.html$/.test(u.file) && u.params.draw && routes[u.file.replace(/\.html$/, '.php')]) {
+      return { key: u.file.replace(/\.html$/, '.php'), params: u.params, file: u.file };
+    }
     if (!/\.php$/.test(u.file)) return null;
     var key = u.file === 'api.php' ? 'api:' + (u.params.action || '') : u.file;
     return { key: key, params: u.params, file: u.file };
@@ -179,6 +183,7 @@ var Api = (function () {
   // PHP echoed the GET parameters back into the filter forms. The pages are
   // static here, so put the values back from the query string instead.
   function restoreForms() {
+    if (window.PM && PM.apply) PM.apply();
     var q = parseUrl(location.href).params;
     Object.keys(q).forEach(function (name) {
       if (name === 'success' || name === 'message') return;

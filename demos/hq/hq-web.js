@@ -374,12 +374,16 @@ var HqWeb = (function () {
     var b = req.body || {};
     if (!b.username) return validation('username', 'The username field is required.');
     if (!b.password) return validation('password', 'The password field is required.');
-    // IAM public-api.php?action=login accepts the demo account for any password.
-    return signIn(false);
+    // IAM public-api.php?action=login: the walkthrough's accounts sign in with
+    // their own username as the password; anything else is refused as IAM would.
+    var u = db.users.filter(function (x) { return x.username.toLowerCase() === String(b.username).trim().toLowerCase(); })[0];
+    if (!u || String(b.password) !== u.username) {
+      return json(401, { success: false, message: 'Invalid credentials.', error: 'Invalid username or password.' });
+    }
+    return signIn(u, false);
   }, true);
-  on('POST', '/auth/microsoft/login', function () { return signIn(true); }, true);
-  function signIn(isMicrosoft) {
-    var u = db.users[0];
+  on('POST', '/auth/microsoft/login', function () { return signIn(db.users[0], true); }, true);
+  function signIn(u, isMicrosoft) {
     u.is_microsoft = isMicrosoft;
     db.session = { user_id: u.id, token: 'hq.' + Math.random().toString(36).slice(2), refresh: Math.random().toString(36).slice(2), is_microsoft: isMicrosoft };
     save();

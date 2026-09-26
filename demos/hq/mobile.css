@@ -226,6 +226,8 @@ input, textarea { outline: none; }
   box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 6px 14px color-mix(in srgb, var(--ink) 18%, transparent); color: var(--ink); }
 .widget .hq-tile { width: 72px; height: 72px; border-radius: 19.44px; }
 .widget .hq-tile .mo, .widget .hq-tile .mi { font-size: 30px; }
+/* Image.asset(color: palette.ink, colorBlendMode: BlendMode.srcIn) inside 14px padding */
+.widget-art { width: 44px; height: 44px; background: var(--ink); -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
 .widget b { margin-top: 7px; font-size: 11.5px; font-weight: 600; color: var(--ink); line-height: 1.1; text-align: center; }
 .upcoming-head { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px; }
 .upcoming-head .label-caps { padding: 0; }

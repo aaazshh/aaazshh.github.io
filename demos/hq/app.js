@@ -498,8 +498,8 @@ var HQ = (function () {
       '<button class="lang-link press" data-lang>' + esc(t('selectLanguage')) + '</button>' +
       '<img class="login-logo" src="assets/hq_logo.png" alt="HQ">' +
       '<form class="glass" novalidate autocomplete="off">' +
-      '<div class="login-field">' + icon('person_outline_rounded') + '<input name="u" placeholder="' + esc(t('enterUsername')) + '"></div>' +
-      '<div class="login-field">' + icon('lock_outline_rounded') + '<input name="p" type="password" placeholder="' + esc(t('enterPassword')) + '">' +
+      '<div class="login-field">' + icon('person_outline_rounded') + '<input name="u" value="guest1" placeholder="' + esc(t('enterUsername')) + '"></div>' +
+      '<div class="login-field">' + icon('lock_outline_rounded') + '<input name="p" type="password" value="guest1" placeholder="' + esc(t('enterPassword')) + '">' +
       '<button type="button" class="eye" data-eye aria-label="Show password">' + icon('visibility_off_rounded') + '</button></div>' +
       '<div style="height:6px"></div><button class="primary-btn" type="submit" data-login>' + esc(t('login')) + '</button>' +
       '<button type="button" class="ms-btn press" data-ms><img src="assets/microsoft.png" alt="">Sign in with Microsoft</button></form>' +
@@ -661,9 +661,9 @@ var HQ = (function () {
 
   /* ==== HomePage ========================================================== */
   var WIDGETS = [
-    ['Meetings', 'meeting_room_outlined', 'meet', 'meetings'], ['Apps', 'apps_rounded', 'apps', 'apps'],
-    ['IT Ticketing', 'confirmation_number_outlined', 'ticket', 'ticketing'], ['Meal Order', 'restaurant_menu_outlined', 'meal', 'mealOrder'],
-    ['Memos', 'sticky_note_2_outlined', 'memo', 'memos'], ['Bulletin Board', 'push_pin_outlined', 'bull', 'bulletinBoardTitle']
+    ['Meetings', 'widget_meeting', 'meet', 'meetings'], ['Apps', 'widget_apps1', 'apps', 'apps'],
+    ['IT Ticketing', 'widget_ticket', 'ticket', 'ticketing'], ['Meal Order', 'widget_kitchen', 'meal', 'mealOrder'],
+    ['Memos', 'widget_memos1', 'memo', 'memos'], ['Bulletin Board', 'widget_bulletin', 'bull', 'bulletinBoardTitle']
   ];
   function HomePage(showAnimation) {
     var roleId = +prefs.role_id || 0, department = prefs.department || '', username = prefs.username || '';
@@ -673,7 +673,7 @@ var HQ = (function () {
     for (var i = 0; i < items.length; i += 3) {
       var row = items.slice(i, i + 3);
       rows += '<div class="widget-row">' + row.map(function (w) {
-        return '<button class="widget press" data-w="' + w[0] + '"><span class="hq-tile" style="--bg:var(--t-' + w[2] + '-bg);--ink:var(--t-' + w[2] + '-ink)">' + icon(w[1]) + '</span><b>' + esc(t(w[3])) + '</b></button>';
+        return '<button class="widget press" data-w="' + w[0] + '"><span class="hq-tile" style="--bg:var(--t-' + w[2] + '-bg);--ink:var(--t-' + w[2] + '-ink)"><span class="widget-art" style="--src:url(assets/' + w[1] + '.png)"></span></span><b>' + esc(t(w[3])) + '</b></button>';
       }).join('') + (row.length < 3 ? new Array(3 - row.length + 1).join('<span class="widget ghost"></span>') : '') + '</div>';
     }
     var node = screen('', '<div class="pager" data-noswipe><div class="page">' +
@@ -839,7 +839,7 @@ var HQ = (function () {
   function UpdateAccountPage() {
     var node = screen('', hero('Update Account') + '<form class="scroll" style="padding:20px" novalidate>' +
       '<p style="margin:0;text-align:center;font-size:16px;color:#9E9E9E">Edit your account details below.</p><div style="height:25px"></div>' +
-      '<div class="outline-field" data-f="u">' + icon('account_circle_outlined') + '<input name="u" placeholder=" " value="' + esc(prefs.username || '') + '"><label>Username</label></div>' +
+      '<div class="outline-field" data-f="u">' + icon('account_circle_outlined') + '<input name="u" value="guest1" placeholder=" " value="' + esc(prefs.username || '') + '"><label>Username</label></div>' +
       '<div style="height:16px"></div><div class="outline-field" data-f="e">' + icon('email_outlined') + '<input name="e" type="email" placeholder=" " value="' + esc(prefs.email || '') + '"><label>Email</label></div>' +
       '<div style="height:30px"></div><button class="primary-btn" type="submit">' + icon('save_rounded') + 'Save Changes</button></form>');
     var sc = { el: node }, form = node.querySelector('form');

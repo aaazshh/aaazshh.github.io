@@ -26,3 +26,20 @@
   html body.g-sidenav-show:not(.rtl) .sidenav { transform: translateX(0); }
   html body.g-sidenav-show .sidenav.fixed-start + .main-content { margin-left: 17.125rem !important; }
 }
+
+/* The scraper card on Overview: the jobs from CRON.txt and a console for a run. */
+.scrape-jobs tr.is-running td { background: rgb(12 99 38 / 0.06); }
+.scrape-jobs tr.is-running [data-last] { color: rgb(12, 99, 38); font-weight: 600; }
+.scrape-log {
+  max-height: 260px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #16201a;
+  color: #cfe3d4;
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.scrape-line.is-error { color: #f3a39a; }

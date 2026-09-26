@@ -7,6 +7,7 @@
   var sm = PM.get('supermarket', ''), cat = PM.get('category', ''), from = PM.get('date_from', ''), to = PM.get('date_to', '');
   // Each listing carries the date it was last scraped; most were seen today.
   function lastSeen(p) {
+    if (Cat.scrapedToday(p.id)) return W.TODAY;
     var r = W.rng(W.hash('seen' + p.id));
     return r() < 0.85 ? W.TODAY : W.ymd(W.addDays(new Date(), -1 - Math.floor(r() * 29)));
   }
